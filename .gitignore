@@ -11,3 +11,17 @@ Geekium/obj/Geekium.csproj.nuget.dgspec.json
 Geekium/obj/project.assets.json
 Geekium/obj/project.nuget.cache
 Geekium/obj/Debug/netcoreapp3.1/Geekium.assets.cache
+*.cache
+*.json
+*.props
+*.json
+*.cache
+*.cache
+Geekium/obj/Debug/netcoreapp3.1/Geekium.assets.cache
+Geekium/obj/Debug/netcoreapp3.1/Geekium.csprojAssemblyReference.cache
+Geekium/obj/Geekium.csproj.nuget.dgspec.json
+Geekium/obj/Geekium.csproj.nuget.g.props
+Geekium/obj/project.assets.json
+Geekium/obj/project.nuget.cache
+.vs/Geekium/v16/.suo
+Geekium/obj/Debug/netcoreapp3.1/Geekium.assets.cache

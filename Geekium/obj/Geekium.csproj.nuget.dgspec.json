@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj": {}
+    "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj": {}
   },
   "projects": {
-    "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj": {
+    "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj",
+        "projectUniqueName": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
         "projectName": "Geekium",
-        "projectPath": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj",
-        "packagesPath": "C:\\Users\\saunn\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\obj\\",
+        "projectPath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
+        "packagesPath": "C:\\Users\\antru\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\saunn\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\antru\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,6 +26,7 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -37,6 +38,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "dependencies": {
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
@@ -75,7 +77,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.406\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
         }
       }
     }
