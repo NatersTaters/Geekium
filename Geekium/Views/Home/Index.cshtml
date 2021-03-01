@@ -22,26 +22,32 @@
 
 <!--Carousel -->
 <div id="indexCarousel" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-target="#indexCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#indexCarousel" data-slide-to="1"></li>
+        <li data-target="#indexCarousel" data-slide-to="2"></li>
+        <li data-target="#indexCarousel" data-slide-to="3"></li>
+    </ol>
     <div class="carousel-inner">
         <div class="carousel-item active">
             <div class="d-flex justify-content-center">
                 <!--div class="d-flex justify-content-center" is meant-->
-                <img src="~/images/geekium_logo.png" alt="Geekium Logo" height="550"> <!--Image from https://www.brandbucket.com/names/geekium -->
+                <img src="~/images/geekium_logo.png" alt="Geekium Logo" height="450">
             </div>
         </div>
         <div class="carousel-item">
             <div class="d-flex justify-content-center">
-                <img src="~/images/buy_products.jpg" alt="Buy placeholder" height="550"> <!--Image from https://fivekatzantiques.com/selling-antiques-collectibles-in-a-brick-mortar-store-vs-online/ -->
+                <img src="~/images/buy_products.jpg" alt="Marketplace" height="450">
             </div>
         </div>
         <div class="carousel-item">
             <div class="d-flex justify-content-center">
-                <img src="~/images/geekium_logo.png" alt="Geekium Logo" height="550"> <!--Image from https://www.brandbucket.com/names/geekium -->
+                <img src="~/images/geekium_collectibles.jpg" alt="Antique Collectibles" height="450">
             </div>
         </div>
         <div class="carousel-item">
             <div class="d-flex justify-content-center">
-                <img src="~/images/geekium_logo.png" alt="Geekium Logo" height="550"> <!--Image from https://www.brandbucket.com/names/geekium -->
+                <img src="~/images/collectible_product.jpg" alt="Game products" height="450"> <!--Image from https://www.pymnts.com/news/ecommerce/2020/as-classic-video-games-turn-into-collectibles-can-ecommerce-keep-up/ -->
             </div>
         </div>
     </div>
@@ -58,10 +64,15 @@
 <!--End of Carousel-->
 
 <div class="text-center">
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    <p class="greeting">
+        A local based place for anyone looking to buy, sell or trade products!  Anything in specific you are looking for today? 
+        <br /><br />
+        Learn more about us on our <a asp-area="" asp-controller="Home" asp-action="About">About Page</a>!
+        </br><br />
+        Need assistance?  Head over to our <a asp-area="" asp-controller="Home" asp-action="Support">Support Page</a> where one of our professional Geeks are surely to help you!
+        <br /><br />
+        Have a question needing answering?  The <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ Page</a> may be just what you need!
+
     </p>
 </div>
 

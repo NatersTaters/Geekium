@@ -1,6 +1,23 @@
 ﻿@{
     ViewData["Title"] = "FAQ";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Frequently Asked Questions answered by Geeks!</p>
+<div class="text-center">
+    <h1 class="display-4">Frequently Asked Questions answered by Geeks!</h1>
+</div>
+
+<br />
+<input type="text" id="searchFAQ" onkeyup="filterListing()" placeholder="Search for your question here!">
+
+<ul id="listFAQ">
+    <li><a href="#">What is Geekium?</a></li>
+    <li><a href="#">Who made Geekium?</a></li>
+    <li><a href="#">What can I do on Geekium?</a></li>
+    <li><a href="#">How do I report someone?</a></li>
+    <li><a href="#">How do I upgrade to a seller account?</a></li>
+    <li><a href="#">What do I do if my product has not shipped?</a></li>
+</ul><br />
+
+     <p>
+         Not seeing your question? Get in contact with our <a asp-area="" asp-controller="Home" asp-action="Support">Support</a> team!
+     </p>

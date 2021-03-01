@@ -1,8 +1,8 @@
 {
   "runtimeOptions": {
     "additionalProbingPaths": [
-      "C:\\Users\\saunn\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\saunn\\.nuget\\packages"
+      "C:\\Users\\leuna\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\leuna\\.nuget\\packages"
     ]
   }
 }
