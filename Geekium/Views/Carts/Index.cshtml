@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Geekium.Models.Cart>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Cart</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfProducts)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PointsGained)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberOfProducts)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PointsGained)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.Email)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.CartId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.CartId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.CartId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-success" role="button" asp-controller="Carts" asp-action="Checkout" style="float: right;">Proceed to Checkout</a>
+<a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>

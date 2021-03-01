@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Geekium.Models.ServiceListing>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Service Listings</h1>
+
+<a class="btn btn-primary" role="button" asp-controller="MyListings" asp-action="Index">View My Listings</a>
+<hr />
+<input type="text" id="filterInput" onkeyup="FilterTable()" placeholder="Search for names..">
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ListingDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ListingDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.Email)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ServiceListingId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ServiceListingId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ServiceListingId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function FilterTable() {
+        var inputId, filterString, tableId, tableRow, tableData, textValue;
+
+        tableId = document.getElementById("memberTable");
+        inputId = document.getElementById("filterInput");
+        filterString = inputId.value.toUpperCase();
+        tableRow = tableId.getElementsByTagName("tr");
+
+        for (i = 0; i < tableRow.length; i++) {
+            tableData = tableRow[i].getElementsByTagName("td")[0];
+            if (tableData) {
+                textValue = tableData.textContent || tableData.innerText;
+                if (textValue.toUpperCase().indexOf(filterString) > -1)
+                    tableRow[i].style.display = "";
+                else
+                    tableRow[i].style.display = "none";
+            }
+        }
+    }
+</script>

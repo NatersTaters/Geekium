@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Geekium.Models.TradeListing>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Trade Listings</h1>
+
+<a class="btn btn-primary" role="button" asp-controller="MyListings" asp-action="Index">View My Listings</a>
+<hr />
+<input type="text" id="filterInput" onkeyup="FilterTable()" placeholder="Search for names..">
+<hr />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeFor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeItemType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeQuantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Seller)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TradeTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TradeDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TradeFor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TradeDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TradeItemType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TradeQuantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Seller.SellerId)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.TradeListingId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.TradeListingId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.TradeListingId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function FilterTable() {
+        var inputId, filterString, tableId, tableRow, tableData, textValue;
+
+        tableId = document.getElementById("memberTable");
+        inputId = document.getElementById("filterInput");
+        filterString = inputId.value.toUpperCase();
+        tableRow = tableId.getElementsByTagName("tr");
+
+        for (i = 0; i < tableRow.length; i++) {
+            tableData = tableRow[i].getElementsByTagName("td")[0];
+            if (tableData) {
+                textValue = tableData.textContent || tableData.innerText;
+                if (textValue.toUpperCase().indexOf(filterString) > -1)
+                    tableRow[i].style.display = "";
+                else
+                    tableRow[i].style.display = "none";
+            }
+        }
+    }
+</script>

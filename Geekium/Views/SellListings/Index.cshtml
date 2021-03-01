@@ -1,0 +1,103 @@
+﻿@model IEnumerable<Geekium.Models.SellListing>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Sell Listings</h1>
+
+<a class="btn btn-primary" role="button" asp-controller="MyListings" asp-action="Index">View My Listings</a>
+<hr />
+<input type="text" id="filterInput" onkeyup="FilterTable()" placeholder="Search for names..">
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SellTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellItemType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellQuantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PriceTrend)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Seller)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellItemType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellQuantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PriceTrend.PriceTrendId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Seller.SellerId)
+                </td>
+                <td>
+                    <!-- If the listing matches the user, display edit and delete-->
+                    <a asp-action="Edit" asp-route-id="@item.SellListingId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.SellListingId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.SellListingId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function FilterTable() {
+        var inputId, filterString, tableId, tableRow, tableData, textValue;
+
+        tableId = document.getElementById("memberTable");
+        inputId = document.getElementById("filterInput");
+        filterString = inputId.value.toUpperCase();
+        tableRow = tableId.getElementsByTagName("tr");
+
+        for (i = 0; i < tableRow.length; i++) {
+            tableData = tableRow[i].getElementsByTagName("td")[0];
+            if (tableData) {
+                textValue = tableData.textContent || tableData.innerText;
+                if (textValue.toUpperCase().indexOf(filterString) > -1)
+                    tableRow[i].style.display = "";
+                else
+                    tableRow[i].style.display = "none";
+            }
+        }
+    }
+</script>

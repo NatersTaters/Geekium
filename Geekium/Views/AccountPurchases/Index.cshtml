@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Geekium.Models.AccountPurchase>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchasePrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrackingNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PointsGained)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Seller)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PurchaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PurchasePrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrackingNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SellerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PointsGained)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Account.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Seller.SellerId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AccountPurchaseId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.AccountPurchaseId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.AccountPurchaseId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

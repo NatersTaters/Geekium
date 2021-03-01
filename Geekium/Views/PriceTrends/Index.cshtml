@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Geekium.Models.PriceTrend>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfUpdate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AveragePrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LowestPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HighestPrice)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfUpdate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AveragePrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LowestPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HighestPrice)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PriceTrendId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PriceTrendId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PriceTrendId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
