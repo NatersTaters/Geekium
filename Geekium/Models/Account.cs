@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
 
 namespace Geekium.Models
 {
@@ -10,7 +12,7 @@ namespace Geekium.Models
         public Account()
         {
             AccountPurchases = new HashSet<AccountPurchase>();
-            Carts = new HashSet<Cart>();
+            Cart = new HashSet<Cart>();
             Rewards = new HashSet<Reward>();
             SellerAccounts = new HashSet<SellerAccount>();
             ServiceListings = new HashSet<ServiceListing>();
@@ -25,7 +27,7 @@ namespace Geekium.Models
         public int? PointBalance { get; set; }
 
         public virtual ICollection<AccountPurchase> AccountPurchases { get; set; }
-        public virtual ICollection<Cart> Carts { get; set; }
+        public virtual ICollection<Cart> Cart { get; set; }
         public virtual ICollection<Reward> Rewards { get; set; }
         public virtual ICollection<SellerAccount> SellerAccounts { get; set; }
         public virtual ICollection<ServiceListing> ServiceListings { get; set; }

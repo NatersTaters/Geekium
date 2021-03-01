@@ -21,7 +21,7 @@ namespace Geekium.Controllers
         // GET: Receipts
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.Receipts.Include(r => r.Cart);
+            var geekiumContext = _context.Receipt.Include(r => r.Cart);
             return View(await geekiumContext.ToListAsync());
         }
     }
