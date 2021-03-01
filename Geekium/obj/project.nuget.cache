@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "h29RzTyS/9e+H6DSlmtLUJwhBmvqGIGC1c29KQZ4a1PR5gLcS3UrdqBi2wkSBG18wzRQdrz+UJbngsO778fx4Q==",
+  "dgSpecHash": "UAPP2qiGJUI8Fl2/1aHq9hptrVnFRZPWcEzzAQRosNAWygkGb7ktpMYWKtvC0x33LNdfeLLjLRUGHPUtVxmbfw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\saunn\\source\\repos\\INFO3220 Capstone Project\\Geekium\\Geekium\\Geekium.csproj",
+  "projectFilePath": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\saunn\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\saunn\\.nuget\\packages\\microsoft.aspnetcore.razor\\2.2.0\\microsoft.aspnetcore.razor.2.2.0.nupkg.sha512",

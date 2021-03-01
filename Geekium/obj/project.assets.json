@@ -8826,11 +8826,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\saunn\\source\\repos\\INFO3220 Capstone Project\\Geekium\\Geekium\\Geekium.csproj",
+      "projectUniqueName": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj",
       "projectName": "Geekium",
-      "projectPath": "C:\\Users\\saunn\\source\\repos\\INFO3220 Capstone Project\\Geekium\\Geekium\\Geekium.csproj",
+      "projectPath": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj",
       "packagesPath": "C:\\Users\\saunn\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\saunn\\source\\repos\\INFO3220 Capstone Project\\Geekium\\Geekium\\obj\\",
+      "outputPath": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\saunn\\AppData\\Roaming\\NuGet\\NuGet.Config",
