@@ -15,6 +15,6 @@ namespace Geekium.Models
         public int Quantity { get; set; }
 
         public virtual Cart Cart { get; set; }
-        public virtual SellListings SellListing { get; set; }
+        public virtual SellListing SellListing { get; set; }
     }
 }

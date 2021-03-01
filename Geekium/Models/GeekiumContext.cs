@@ -19,18 +19,18 @@ namespace Geekium.Models
         {
         }
 
-        public virtual DbSet<AccountPurchases> AccountPurchases { get; set; }
-        public virtual DbSet<Accounts> Accounts { get; set; }
+        public virtual DbSet<AccountPurchase> AccountPurchases { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Cart> Cart { get; set; }
         public virtual DbSet<ItemsForCart> ItemsForCart { get; set; }
-        public virtual DbSet<PriceTrends> PriceTrends { get; set; }
+        public virtual DbSet<PriceTrend> PriceTrends { get; set; }
         public virtual DbSet<Receipt> Receipt { get; set; }
-        public virtual DbSet<Rewards> Rewards { get; set; }
-        public virtual DbSet<SellListings> SellListings { get; set; }
-        public virtual DbSet<SellerAccounts> SellerAccounts { get; set; }
-        public virtual DbSet<SellerReviews> SellerReviews { get; set; }
-        public virtual DbSet<ServiceListings> ServiceListings { get; set; }
-        public virtual DbSet<TradeListings> TradeListings { get; set; }
+        public virtual DbSet<Reward> Rewards { get; set; }
+        public virtual DbSet<SellListing> SellListings { get; set; }
+        public virtual DbSet<SellerAccount> SellerAccounts { get; set; }
+        public virtual DbSet<SellerReview> SellerReviews { get; set; }
+        public virtual DbSet<ServiceListing> ServiceListings { get; set; }
+        public virtual DbSet<TradeListing> TradeListings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,7 +43,7 @@ namespace Geekium.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AccountPurchases>(entity =>
+            modelBuilder.Entity<AccountPurchase>(entity =>
             {
                 entity.HasKey(e => e.AccountPurchaseId)
                     .HasName("PK__accountP__40A9D28D82047698");
@@ -93,7 +93,7 @@ namespace Geekium.Models
                     .HasConstraintName("accountPurchases_fk_sellerAccounts");
             });
 
-            modelBuilder.Entity<Accounts>(entity =>
+            modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(e => e.AccountId)
                     .HasName("PK__accounts__46A222CD73CC8741");
@@ -187,7 +187,7 @@ namespace Geekium.Models
                     .HasConstraintName("itemsForCart_fk_sellListings");
             });
 
-            modelBuilder.Entity<PriceTrends>(entity =>
+            modelBuilder.Entity<PriceTrend>(entity =>
             {
                 entity.HasKey(e => e.PriceTrendId)
                     .HasName("PK__priceTre__A1354F70D2D4C443");
@@ -227,7 +227,7 @@ namespace Geekium.Models
                     .HasConstraintName("receipt_fk_cart");
             });
 
-            modelBuilder.Entity<Rewards>(entity =>
+            modelBuilder.Entity<Reward>(entity =>
             {
                 entity.HasKey(e => e.RewardId)
                     .HasName("PK__rewards__3DD599BC4208F18A");
@@ -263,7 +263,7 @@ namespace Geekium.Models
                     .HasConstraintName("rewards_fk_accounts");
             });
 
-            modelBuilder.Entity<SellListings>(entity =>
+            modelBuilder.Entity<SellListing>(entity =>
             {
                 entity.HasKey(e => e.SellListingId)
                     .HasName("PK__sellList__BC5EA2631F777626");
@@ -317,7 +317,7 @@ namespace Geekium.Models
                     .HasConstraintName("sellListings_fk_sellerAccounts");
             });
 
-            modelBuilder.Entity<SellerAccounts>(entity =>
+            modelBuilder.Entity<SellerAccount>(entity =>
             {
                 entity.HasKey(e => e.SellerId)
                     .HasName("PK__sellerAc__780A0A971844B78A");
@@ -337,7 +337,7 @@ namespace Geekium.Models
                     .HasConstraintName("sellerAccounts_fk_accounts");
             });
 
-            modelBuilder.Entity<SellerReviews>(entity =>
+            modelBuilder.Entity<SellerReview>(entity =>
             {
                 entity.HasKey(e => e.SellerReviewId)
                     .HasName("PK__sellerRe__E62B70AFAF3602CA");
@@ -362,7 +362,7 @@ namespace Geekium.Models
                     .HasConstraintName("sellerReviews_fk_sellerAccounts");
             });
 
-            modelBuilder.Entity<ServiceListings>(entity =>
+            modelBuilder.Entity<ServiceListing>(entity =>
             {
                 entity.HasKey(e => e.ServiceListingId)
                     .HasName("PK__serviceL__6F79AD45113C6780");
@@ -400,7 +400,7 @@ namespace Geekium.Models
                     .HasConstraintName("serviceListings_fk_accounts");
             });
 
-            modelBuilder.Entity<TradeListings>(entity =>
+            modelBuilder.Entity<TradeListing>(entity =>
             {
                 entity.HasKey(e => e.TradeListingId)
                     .HasName("PK__tradeLis__609C8CAE25F67DA0");

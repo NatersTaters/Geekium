@@ -21,7 +21,7 @@ namespace Geekium.Controllers
         // GET: Carts
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.Carts.Include(c => c.Account);
+            var geekiumContext = _context.Cart.Include(c => c.Account);
             return View(await geekiumContext.ToListAsync());
         }
 
@@ -29,7 +29,7 @@ namespace Geekium.Controllers
 
         private bool CartExists(int id)
         {
-            return _context.Carts.Any(e => e.CartId == id);
+            return _context.Cart.Any(e => e.CartId == id);
         }
 
         //Checkout - THIS IS WHERE PAYMENT PORTAL

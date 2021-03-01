@@ -11,7 +11,7 @@ namespace Geekium.Models
     {
         public Cart()
         {
-            AccountPurchases = new HashSet<AccountPurchases>();
+            AccountPurchases = new HashSet<AccountPurchase>();
             ItemsForCart = new HashSet<ItemsForCart>();
             Receipt = new HashSet<Receipt>();
         }
@@ -23,8 +23,8 @@ namespace Geekium.Models
         public int? TotalPrice { get; set; }
         public int? PointsGained { get; set; }
 
-        public virtual Accounts Account { get; set; }
-        public virtual ICollection<AccountPurchases> AccountPurchases { get; set; }
+        public virtual Account Account { get; set; }
+        public virtual ICollection<AccountPurchase> AccountPurchases { get; set; }
         public virtual ICollection<ItemsForCart> ItemsForCart { get; set; }
         public virtual ICollection<Receipt> Receipt { get; set; }
     }
