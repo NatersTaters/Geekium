@@ -25,3 +25,6 @@ Geekium/obj/project.assets.json
 Geekium/obj/project.nuget.cache
 .vs/Geekium/v16/.suo
 Geekium/obj/Debug/netcoreapp3.1/Geekium.assets.cache
+*.cache
+*.json
+*.props
