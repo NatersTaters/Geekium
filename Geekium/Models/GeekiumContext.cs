@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-#nullable disable
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
 
 namespace Geekium.Models
 {
@@ -17,82 +19,48 @@ namespace Geekium.Models
         {
         }
 
-        public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<AccountPurchase> AccountPurchases { get; set; }
-        public virtual DbSet<Cart> Carts { get; set; }
-        public virtual DbSet<ItemsForCart> ItemsForCarts { get; set; }
-        public virtual DbSet<PriceTrend> PriceTrends { get; set; }
-        public virtual DbSet<Receipt> Receipts { get; set; }
-        public virtual DbSet<Reward> Rewards { get; set; }
-        public virtual DbSet<SellListing> SellListings { get; set; }
-        public virtual DbSet<SellerAccount> SellerAccounts { get; set; }
-        public virtual DbSet<SellerReview> SellerReviews { get; set; }
-        public virtual DbSet<ServiceListing> ServiceListings { get; set; }
-        public virtual DbSet<TradeListing> TradeListings { get; set; }
+        public virtual DbSet<AccountPurchases> AccountPurchases { get; set; }
+        public virtual DbSet<Accounts> Accounts { get; set; }
+        public virtual DbSet<Cart> Cart { get; set; }
+        public virtual DbSet<ItemsForCart> ItemsForCart { get; set; }
+        public virtual DbSet<PriceTrends> PriceTrends { get; set; }
+        public virtual DbSet<Receipt> Receipt { get; set; }
+        public virtual DbSet<Rewards> Rewards { get; set; }
+        public virtual DbSet<SellListings> SellListings { get; set; }
+        public virtual DbSet<SellerAccounts> SellerAccounts { get; set; }
+        public virtual DbSet<SellerReviews> SellerReviews { get; set; }
+        public virtual DbSet<ServiceListings> ServiceListings { get; set; }
+        public virtual DbSet<TradeListings> TradeListings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-UO7UC42;Database=geekium_db;Trusted_Connection=True;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=.\\sqlexpress19;Database=geekium_db;Trusted_Connection=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-
-            modelBuilder.Entity<Account>(entity =>
+            modelBuilder.Entity<AccountPurchases>(entity =>
             {
-                entity.ToTable("accounts");
+                entity.HasKey(e => e.AccountPurchaseId)
+                    .HasName("PK__accountP__40A9D28D82047698");
 
-                entity.Property(e => e.AccountId).HasColumnName("account_id");
-
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("email");
-
-                entity.Property(e => e.FirstName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("first_name");
-
-                entity.Property(e => e.LastName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("last_name");
-
-                entity.Property(e => e.PointBalance).HasColumnName("point_balance");
-
-                entity.Property(e => e.UserName)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("user_name");
-
-                entity.Property(e => e.UserPassword)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("user_password");
-            });
-
-            modelBuilder.Entity<AccountPurchase>(entity =>
-            {
                 entity.ToTable("accountPurchases");
 
                 entity.Property(e => e.AccountPurchaseId).HasColumnName("account_purchase_id");
 
                 entity.Property(e => e.AccountId).HasColumnName("account_id");
 
+                entity.Property(e => e.CartId).HasColumnName("cart_id");
+
                 entity.Property(e => e.PointsGained).HasColumnName("points_gained");
 
                 entity.Property(e => e.PurchaseDate)
-                    .HasColumnType("date")
-                    .HasColumnName("purchase_date");
+                    .HasColumnName("purchase_date")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.PurchasePrice).HasColumnName("purchase_price");
 
@@ -100,9 +68,9 @@ namespace Geekium.Models
 
                 entity.Property(e => e.SellerName)
                     .IsRequired()
+                    .HasColumnName("seller_name")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("seller_name");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TrackingNumber).HasColumnName("tracking_number");
 
@@ -112,11 +80,61 @@ namespace Geekium.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("accountPurchases_fk_accounts");
 
+                entity.HasOne(d => d.Cart)
+                    .WithMany(p => p.AccountPurchases)
+                    .HasForeignKey(d => d.CartId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("accountPurchases_fk_cart");
+
                 entity.HasOne(d => d.Seller)
                     .WithMany(p => p.AccountPurchases)
                     .HasForeignKey(d => d.SellerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("accountPurchases_fk_sellerAccounts");
+            });
+
+            modelBuilder.Entity<Accounts>(entity =>
+            {
+                entity.HasKey(e => e.AccountId)
+                    .HasName("PK__accounts__46A222CD73CC8741");
+
+                entity.ToTable("accounts");
+
+                entity.HasIndex(e => e.UserName)
+                    .HasName("UQ__accounts__7C9273C40519ECA3")
+                    .IsUnique();
+
+                entity.Property(e => e.AccountId).HasColumnName("account_id");
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasColumnName("email")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FirstName)
+                    .HasColumnName("first_name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LastName)
+                    .HasColumnName("last_name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PointBalance).HasColumnName("point_balance");
+
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasColumnName("user_name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserPassword)
+                    .IsRequired()
+                    .HasColumnName("user_password")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Cart>(entity =>
@@ -133,8 +151,12 @@ namespace Geekium.Models
 
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price");
 
+                entity.Property(e => e.TransactionComplete)
+                    .HasColumnName("transactionComplete")
+                    .HasDefaultValueSql("((0))");
+
                 entity.HasOne(d => d.Account)
-                    .WithMany(p => p.Carts)
+                    .WithMany(p => p.Cart)
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("cart_fk_accounts");
@@ -148,23 +170,28 @@ namespace Geekium.Models
 
                 entity.Property(e => e.CartId).HasColumnName("cart_id");
 
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+
                 entity.Property(e => e.SellListingId).HasColumnName("sell_listing_id");
 
                 entity.HasOne(d => d.Cart)
-                    .WithMany(p => p.ItemsForCarts)
+                    .WithMany(p => p.ItemsForCart)
                     .HasForeignKey(d => d.CartId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("itemsForCart_fk_cart");
 
                 entity.HasOne(d => d.SellListing)
-                    .WithMany(p => p.ItemsForCarts)
+                    .WithMany(p => p.ItemsForCart)
                     .HasForeignKey(d => d.SellListingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("itemsForCart_fk_sellListings");
             });
 
-            modelBuilder.Entity<PriceTrend>(entity =>
+            modelBuilder.Entity<PriceTrends>(entity =>
             {
+                entity.HasKey(e => e.PriceTrendId)
+                    .HasName("PK__priceTre__A1354F70D2D4C443");
+
                 entity.ToTable("priceTrends");
 
                 entity.Property(e => e.PriceTrendId).HasColumnName("price_trend_id");
@@ -172,15 +199,15 @@ namespace Geekium.Models
                 entity.Property(e => e.AveragePrice).HasColumnName("average_price");
 
                 entity.Property(e => e.DateOfUpdate)
-                    .HasColumnType("date")
-                    .HasColumnName("date_of_update");
+                    .HasColumnName("date_of_update")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.HighestPrice).HasColumnName("highest_price");
 
                 entity.Property(e => e.ItemName)
+                    .HasColumnName("item_name")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("item_name");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.LowestPrice).HasColumnName("lowest_price");
             });
@@ -194,14 +221,17 @@ namespace Geekium.Models
                 entity.Property(e => e.CartId).HasColumnName("cart_id");
 
                 entity.HasOne(d => d.Cart)
-                    .WithMany(p => p.Receipts)
+                    .WithMany(p => p.Receipt)
                     .HasForeignKey(d => d.CartId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("receipt_fk_cart");
             });
 
-            modelBuilder.Entity<Reward>(entity =>
+            modelBuilder.Entity<Rewards>(entity =>
             {
+                entity.HasKey(e => e.RewardId)
+                    .HasName("PK__rewards__3DD599BC4208F18A");
+
                 entity.ToTable("rewards");
 
                 entity.Property(e => e.RewardId).HasColumnName("reward_id");
@@ -209,22 +239,22 @@ namespace Geekium.Models
                 entity.Property(e => e.AccountId).HasColumnName("account_id");
 
                 entity.Property(e => e.DateReceived)
-                    .HasColumnType("date")
-                    .HasColumnName("date_received");
+                    .HasColumnName("date_received")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.PointCost).HasColumnName("point_cost");
 
                 entity.Property(e => e.RewardCode)
                     .IsRequired()
+                    .HasColumnName("reward_code")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("reward_code");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.RewardType)
                     .IsRequired()
+                    .HasColumnName("reward_type")
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("reward_type");
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Rewards)
@@ -233,8 +263,11 @@ namespace Geekium.Models
                     .HasConstraintName("rewards_fk_accounts");
             });
 
-            modelBuilder.Entity<SellListing>(entity =>
+            modelBuilder.Entity<SellListings>(entity =>
             {
+                entity.HasKey(e => e.SellListingId)
+                    .HasName("PK__sellList__BC5EA2631F777626");
+
                 entity.ToTable("sellListings");
 
                 entity.Property(e => e.SellListingId).HasColumnName("sell_listing_id");
@@ -242,20 +275,22 @@ namespace Geekium.Models
                 entity.Property(e => e.PriceTrendId).HasColumnName("price_trend_id");
 
                 entity.Property(e => e.SellDate)
-                    .HasColumnType("date")
-                    .HasColumnName("sell_date");
+                    .HasColumnName("sell_date")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.SellDescription)
                     .IsRequired()
+                    .HasColumnName("sell_description")
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("sell_description");
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SellImage).HasColumnName("sell_image");
 
                 entity.Property(e => e.SellItemType)
                     .IsRequired()
+                    .HasColumnName("sell_item_type")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("sell_item_type");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SellPrice).HasColumnName("sell_price");
 
@@ -263,9 +298,9 @@ namespace Geekium.Models
 
                 entity.Property(e => e.SellTitle)
                     .IsRequired()
+                    .HasColumnName("sell_title")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("sell_title");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SellerId).HasColumnName("seller_id");
 
@@ -282,10 +317,10 @@ namespace Geekium.Models
                     .HasConstraintName("sellListings_fk_sellerAccounts");
             });
 
-            modelBuilder.Entity<SellerAccount>(entity =>
+            modelBuilder.Entity<SellerAccounts>(entity =>
             {
                 entity.HasKey(e => e.SellerId)
-                    .HasName("PK__sellerAc__780A0A9706F60101");
+                    .HasName("PK__sellerAc__780A0A971844B78A");
 
                 entity.ToTable("sellerAccounts");
 
@@ -302,8 +337,11 @@ namespace Geekium.Models
                     .HasConstraintName("sellerAccounts_fk_accounts");
             });
 
-            modelBuilder.Entity<SellerReview>(entity =>
+            modelBuilder.Entity<SellerReviews>(entity =>
             {
+                entity.HasKey(e => e.SellerReviewId)
+                    .HasName("PK__sellerRe__E62B70AFAF3602CA");
+
                 entity.ToTable("sellerReviews");
 
                 entity.Property(e => e.SellerReviewId).HasColumnName("seller_review_id");
@@ -311,9 +349,9 @@ namespace Geekium.Models
                 entity.Property(e => e.BuyerRating).HasColumnName("buyer_rating");
 
                 entity.Property(e => e.ReviewDescription)
+                    .HasColumnName("review_description")
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("review_description");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SellerId).HasColumnName("seller_id");
 
@@ -324,8 +362,11 @@ namespace Geekium.Models
                     .HasConstraintName("sellerReviews_fk_sellerAccounts");
             });
 
-            modelBuilder.Entity<ServiceListing>(entity =>
+            modelBuilder.Entity<ServiceListings>(entity =>
             {
+                entity.HasKey(e => e.ServiceListingId)
+                    .HasName("PK__serviceL__6F79AD45113C6780");
+
                 entity.ToTable("serviceListings");
 
                 entity.Property(e => e.ServiceListingId).HasColumnName("service_listing_id");
@@ -333,20 +374,24 @@ namespace Geekium.Models
                 entity.Property(e => e.AccountId).HasColumnName("account_id");
 
                 entity.Property(e => e.ListingDate)
-                    .HasColumnType("date")
-                    .HasColumnName("listing_date");
+                    .HasColumnName("listing_date")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.ServiceDescription)
                     .IsRequired()
+                    .HasColumnName("service_description")
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("service_description");
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ServiceImage)
+                    .IsRequired()
+                    .HasColumnName("service_image");
 
                 entity.Property(e => e.ServiceTitle)
                     .IsRequired()
+                    .HasColumnName("service_title")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("service_title");
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.ServiceListings)
@@ -355,8 +400,11 @@ namespace Geekium.Models
                     .HasConstraintName("serviceListings_fk_accounts");
             });
 
-            modelBuilder.Entity<TradeListing>(entity =>
+            modelBuilder.Entity<TradeListings>(entity =>
             {
+                entity.HasKey(e => e.TradeListingId)
+                    .HasName("PK__tradeLis__609C8CAE25F67DA0");
+
                 entity.ToTable("tradeListings");
 
                 entity.Property(e => e.TradeListingId).HasColumnName("trade_listing_id");
@@ -364,34 +412,36 @@ namespace Geekium.Models
                 entity.Property(e => e.SellerId).HasColumnName("seller_id");
 
                 entity.Property(e => e.TradeDate)
-                    .HasColumnType("date")
-                    .HasColumnName("trade_date");
+                    .HasColumnName("trade_date")
+                    .HasColumnType("date");
 
                 entity.Property(e => e.TradeDescription)
                     .IsRequired()
+                    .HasColumnName("trade_description")
                     .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("trade_description");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TradeFor)
                     .IsRequired()
+                    .HasColumnName("trade_for")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("trade_for");
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TradeImage).HasColumnName("trade_image");
 
                 entity.Property(e => e.TradeItemType)
                     .IsRequired()
+                    .HasColumnName("trade_item_type")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("trade_item_type");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TradeQuantity).HasColumnName("trade_quantity");
 
                 entity.Property(e => e.TradeTitle)
                     .IsRequired()
+                    .HasColumnName("trade_title")
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("trade_title");
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Seller)
                     .WithMany(p => p.TradeListings)

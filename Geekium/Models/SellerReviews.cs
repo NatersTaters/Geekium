@@ -7,11 +7,13 @@ using System.Collections.Generic;
 
 namespace Geekium.Models
 {
-    public partial class Receipt
+    public partial class SellerReviews
     {
-        public int ReceiptId { get; set; }
-        public int CartId { get; set; }
+        public int SellerReviewId { get; set; }
+        public int SellerId { get; set; }
+        public int? BuyerRating { get; set; }
+        public string ReviewDescription { get; set; }
 
-        public virtual Cart Cart { get; set; }
+        public virtual SellerAccounts Seller { get; set; }
     }
 }
