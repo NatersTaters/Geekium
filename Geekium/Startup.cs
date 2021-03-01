@@ -27,6 +27,10 @@ namespace Geekium
 		{
 			services.AddControllersWithViews();
 
+			// Add support for session variables
+			services.AddDistributedMemoryCache();
+			services.AddSession();
+
 			// **context - enable dependency injection for context of Geekium database
 			services.AddDbContext<GeekiumContext>(options =>
 				options.UseSqlServer(Configuration.GetConnectionString("GeekiumConnection")));
@@ -45,8 +49,12 @@ namespace Geekium
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
+
+			//Initialize Session
+			app.UseSession();
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
+			app.UseCookiePolicy();
 
 			app.UseRouting();
 

@@ -845,3 +845,4 @@ C:\Users\saunn\Desktop\Geekium\Geekium\obj\Debug\netcoreapp3.1\staticwebassets\G
 C:\Users\saunn\Desktop\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.dll
 C:\Users\saunn\Desktop\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.pdb
 C:\Users\saunn\Desktop\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.genruntimeconfig.cache
+C:\Users\saunn\Desktop\Geekium\Geekium\obj\Debug\netcoreapp3.1\Razor\Views\Accounts\Login.cshtml.g.cs

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace Geekium.Controllers
 {
@@ -64,6 +65,25 @@ namespace Geekium.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(account);
+        }
+
+        // GET: Accounts/Login
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Accounts/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login([Bind("UserName,UserPassword")] Account account)
+        {
+            var accountContext = _context.Accounts.Where(m => m.UserName == account.UserName).Where(m => m.UserPassword == account.UserPassword);
+
+            string accountUserName = account.UserName;
+            HttpContext.Session.SetString("userName", accountUserName);
+
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Accounts/Edit/5
