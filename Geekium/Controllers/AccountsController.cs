@@ -15,6 +15,7 @@ namespace Geekium.Controllers
     public class AccountsController : Controller
     {
         private readonly GeekiumContext _context;
+        private readonly SignInManager<IdentityUser> _signManager;
 
         public AccountsController(GeekiumContext context)
         {
@@ -67,23 +68,36 @@ namespace Geekium.Controllers
             return View(account);
         }
 
-        // GET: Accounts/Login
-        public IActionResult Login()
+        [HttpGet]
+        public IActionResult Login(string returnUrl = "")
         {
-            return View();
+            var model = new LoginViewModel { ReturnUrl = returnUrl };
+            return View(model);
         }
 
-        // POST: Accounts/Login
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("UserName,UserPassword")] Account account)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var accountContext = _context.Accounts.Where(m => m.UserName == account.UserName).Where(m => m.UserPassword == account.UserPassword);
+            if (ModelState.IsValid)
+            {
+                var result = _context.Accounts.Any(m => m.UserName == model.Username && m.UserPassword == model.Password);
 
-            string accountUserName = account.UserName;
-            HttpContext.Session.SetString("userName", accountUserName);
-
-            return RedirectToAction("Index", "Home");
+                if (result == true)
+                {
+                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else
+                    {
+                        ViewBag.username = model.Username;
+                        ViewBag.password = model.Password;
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+            }
+            ModelState.AddModelError("", "Invalid login attempt");
+            return View(model);
         }
 
         // GET: Accounts/Edit/5

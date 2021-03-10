@@ -1,4 +1,5 @@
-﻿@{
+﻿@model LoginViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -64,15 +65,17 @@
 <!--End of Carousel-->
 
 <div class="text-center">
-    <p class="greeting">
-        A local based place for anyone looking to buy, sell or trade products!  Anything in specific you are looking for today? 
-        <br /><br />
-        Learn more about us on our <a asp-area="" asp-controller="Home" asp-action="About">About Page</a>!
-        </br><br />
-        Need assistance?  Head over to our <a asp-area="" asp-controller="Home" asp-action="Support">Support Page</a> where one of our professional Geeks are surely to help you!
-        <br /><br />
-        Have a question needing answering?  The <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ Page</a> may be just what you need!
+	<p class="greeting">
+		A local based place for anyone looking to buy, sell or trade products!  Anything in specific you are looking for today?
+		<br /><br />
+		Learn more about us on our <a asp-area="" asp-controller="Home" asp-action="About">About Page</a>!
+		</br><br />
+		Need assistance?  Head over to our <a asp-area="" asp-controller="Home" asp-action="Support">Support Page</a> where one of our professional Geeks are surely to help you!
+		<br /><br />
+		Have a question needing answering?  The <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ Page</a> may be just what you need!
 
-    </p>
+	</p>
+	<p>Username: @ViewBag.username</p>
+	<p>Password: @ViewBag.password</p>
 </div>
 

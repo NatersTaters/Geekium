@@ -1,38 +1,26 @@
-﻿@model Geekium.Models.Account
-
+﻿@model LoginViewModel
 @{
-	ViewData["Title"] = "Login";
+	ViewBag.Title = "Login";
 }
+<h2>Login</h2>
 
-<h1>Login</h1>
-
-<h4>Account</h4>
-<hr />
-<div class="row">
-	<div class="col-md-4">
-		<form asp-action="Login">
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<div class="form-group">
-				<label asp-for="UserName" class="control-label">User Name</label>
-				<input asp-for="UserName" class="form-control" />
-				<span asp-validation-for="UserName" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="UserPassword" class="control-label">Password</label>
-				<input asp-for="UserPassword" class="form-control" />
-				<span asp-validation-for="UserPassword" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<input type="submit" value="Login" class="btn btn-primary" />
-			</div>
-		</form>
+<form method="post" asp-controller="Accounts" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl">
+	<div>
+		<label asp-for="Username"></label>
+		<input asp-for="Username" />
+		<span asp-validation-for="Username"></span>
 	</div>
-</div>
 
-<div>
-	<a asp-action="Index">Back to List</a>
-</div>
+	<div>
+		<label asp-for="Password"></label>
+		<input asp-for="Password" />
+		<span asp-validation-for="Password"></span>
+	</div>
 
-@section Scripts {
-	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+	<div>
+		<label asp-for="RememberMe"></label>
+		<input asp-for="RememberMe" />
+		<span asp-validation-for="RememberMe"></span>
+	</div>
+	<input type="submit" value="Login" />
+</form>        
