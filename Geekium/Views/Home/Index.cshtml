@@ -1,10 +1,12 @@
 ﻿@model LoginViewModel
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to Geekium!</h1>
+	<h1 class="display-4">Welcome to Geekium!</h1>
 </div>
 
 <!-- Required meta tags -->
@@ -23,43 +25,43 @@
 
 <!--Carousel -->
 <div id="indexCarousel" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-        <li data-target="#indexCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#indexCarousel" data-slide-to="1"></li>
-        <li data-target="#indexCarousel" data-slide-to="2"></li>
-        <li data-target="#indexCarousel" data-slide-to="3"></li>
-    </ol>
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <div class="d-flex justify-content-center">
-                <!--div class="d-flex justify-content-center" is meant-->
-                <img src="~/images/geekium_logo.png" alt="Geekium Logo" height="450">
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="d-flex justify-content-center">
-                <img src="~/images/buy_products.jpg" alt="Marketplace" height="450">
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="d-flex justify-content-center">
-                <img src="~/images/geekium_collectibles.jpg" alt="Antique Collectibles" height="450">
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="d-flex justify-content-center">
-                <img src="~/images/collectible_product.jpg" alt="Game products" height="450"> <!--Image from https://www.pymnts.com/news/ecommerce/2020/as-classic-video-games-turn-into-collectibles-can-ecommerce-keep-up/ -->
-            </div>
-        </div>
-    </div>
-    <a class="carousel-control-prev" href="#indexCarousel" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#indexCarousel" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
+	<ol class="carousel-indicators">
+		<li data-target="#indexCarousel" data-slide-to="0" class="active"></li>
+		<li data-target="#indexCarousel" data-slide-to="1"></li>
+		<li data-target="#indexCarousel" data-slide-to="2"></li>
+		<li data-target="#indexCarousel" data-slide-to="3"></li>
+	</ol>
+	<div class="carousel-inner">
+		<div class="carousel-item active">
+			<div class="d-flex justify-content-center">
+				<!--div class="d-flex justify-content-center" is meant-->
+				<img src="~/images/geekium_logo.png" alt="Geekium Logo" height="450">
+			</div>
+		</div>
+		<div class="carousel-item">
+			<div class="d-flex justify-content-center">
+				<img src="~/images/buy_products.jpg" alt="Marketplace" height="450">
+			</div>
+		</div>
+		<div class="carousel-item">
+			<div class="d-flex justify-content-center">
+				<img src="~/images/geekium_collectibles.jpg" alt="Antique Collectibles" height="450">
+			</div>
+		</div>
+		<div class="carousel-item">
+			<div class="d-flex justify-content-center">
+				<img src="~/images/collectible_product.jpg" alt="Game products" height="450"> <!--Image from https://www.pymnts.com/news/ecommerce/2020/as-classic-video-games-turn-into-collectibles-can-ecommerce-keep-up/ -->
+			</div>
+		</div>
+	</div>
+	<a class="carousel-control-prev" href="#indexCarousel" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#indexCarousel" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>
 </div>
 <br />
 <!--End of Carousel-->
@@ -75,7 +77,6 @@
 		Have a question needing answering?  The <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ Page</a> may be just what you need!
 
 	</p>
-	<p>Username: @ViewBag.username</p>
-	<p>Password: @ViewBag.password</p>
+	<p>@HttpContextAccessor.HttpContext.Session.GetString("userId")</p>
 </div>
 

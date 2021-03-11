@@ -15,7 +15,6 @@ namespace Geekium.Controllers
     public class AccountsController : Controller
     {
         private readonly GeekiumContext _context;
-        private readonly SignInManager<IdentityUser> _signManager;
 
         public AccountsController(GeekiumContext context)
         {
@@ -90,8 +89,9 @@ namespace Geekium.Controllers
                     }
                     else
                     {
-                        ViewBag.username = model.Username;
-                        ViewBag.password = model.Password;
+                        HttpContext.Session.SetString("username", model.Username);
+                        HttpContext.Session.SetString("password", model.Password);
+
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -184,5 +184,6 @@ namespace Geekium.Controllers
         {
             return _context.Accounts.Any(e => e.AccountId == id);
         }
+
     }
 }
