@@ -89,8 +89,16 @@ namespace Geekium.Controllers
                     }
                     else
                     {
+                        foreach (var dbItem in _context.Accounts)
+						{
+                            if (dbItem.UserName == model.Username && dbItem.UserPassword == model.Password)
+							{
+                                HttpContext.Session.SetString("userId", dbItem.AccountId.ToString());
+                                break;
+                            }
+						}
+
                         HttpContext.Session.SetString("username", model.Username);
-                        HttpContext.Session.SetString("password", model.Password);
 
                         return RedirectToAction("Index", "Home");
                     }
@@ -98,6 +106,13 @@ namespace Geekium.Controllers
             }
             ModelState.AddModelError("", "Invalid login attempt");
             return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.SetString("userId", "");
+            HttpContext.Session.SetString("username", "");
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Accounts/Edit/5
@@ -184,6 +199,5 @@ namespace Geekium.Controllers
         {
             return _context.Accounts.Any(e => e.AccountId == id);
         }
-
     }
 }

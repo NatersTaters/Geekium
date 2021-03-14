@@ -2,10 +2,10 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @if (HttpContextAccessor.HttpContext.Session.GetString("username") != null)
 {
-	<ul class="nav navbar-nav navbar-right">
-		<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Edit">@HttpContextAccessor.HttpContext.Session.GetString("username")</a></li>
-		<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Logout">Logout</a></li>
-	</ul>
+<ul class="nav navbar-nav navbar-right">
+	<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">@HttpContextAccessor.HttpContext.Session.GetString("username")</a></li>
+	<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Logout">Logout</a></li>
+</ul>
 }
 else
 {
