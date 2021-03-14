@@ -9,12 +9,18 @@ using Geekium.Models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Text;
+using System.IO;
 
 namespace Geekium.Controllers
 {
     public class AccountsController : Controller
     {
         private readonly GeekiumContext _context;
+
+        private static Random random = new Random();
 
         public AccountsController(GeekiumContext context)
         {
@@ -59,9 +65,15 @@ namespace Geekium.Controllers
         {
             if (ModelState.IsValid)
             {
+                var originalPassword = model.Password;
+                string key = "E546C8DF278CD5931069B522E695D4F2";
+
+                var encryptedPassword = EncryptString(originalPassword, key);
+
                 Account account = new Account();
                 account.UserName = model.Username;
-                account.UserPassword = model.Password;
+                account.UserPassword = encryptedPassword.ToString();
+                account.PaswordHash = key.ToString();
                 account.FirstName = model.FirstName;
                 account.LastName = model.LastName;
                 account.Email = model.Email;
@@ -96,28 +108,23 @@ namespace Geekium.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = _context.Accounts.Any(m => m.UserName == model.Username && m.UserPassword == model.Password);
-
-                if (result == true)
+                foreach (var dbItem in _context.Accounts)
                 {
-                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    if (dbItem.UserName == model.Username)
                     {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    else
-                    {
-                        foreach (var dbItem in _context.Accounts)
+                        var key = dbItem.PaswordHash;
+                        var account = _context.Accounts.Find(dbItem.AccountId);
+                        var originalPassword = account.UserPassword;
+
+                        var decryptedPassword = DecryptString(originalPassword, key);
+
+                        if (decryptedPassword == model.Password)
 						{
-                            if (dbItem.UserName == model.Username && dbItem.UserPassword == model.Password)
-							{
-                                HttpContext.Session.SetString("userId", dbItem.AccountId.ToString());
-                                break;
-                            }
-						}
-
-                        HttpContext.Session.SetString("username", model.Username);
-
-                        return RedirectToAction("Index", "Home");
+                            HttpContext.Session.SetString("username", dbItem.UserName);
+                            HttpContext.Session.SetString("userId", dbItem.AccountId.ToString());
+                            return RedirectToAction("Index", "Home");
+                        }
+                        break;
                     }
                 }
             }
@@ -149,7 +156,7 @@ namespace Geekium.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AccountId,UserName,UserPassword,FirstName,LastName,Email,PointBalance")] Account account)
+        public async Task<IActionResult> Edit(int id, [Bind("AccountId,UserName,UserPassword,PaswordHash,FirstName,LastName,Email,PointBalance")] Account account)
         {
             if (id != account.AccountId)
             {
@@ -214,6 +221,71 @@ namespace Geekium.Controllers
         private bool AccountExists(int id)
         {
             return _context.Accounts.Any(e => e.AccountId == id);
+        }
+
+        //Will encrypt a provided string using a provided key
+        public static string EncryptString(string text, string keyString)
+        {
+            var key = Encoding.UTF8.GetBytes(keyString);
+
+            using (var aesAlg = Aes.Create())
+            {
+                using (var encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV))
+                {
+                    using (var msEncrypt = new MemoryStream())
+                    {
+                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            swEncrypt.Write(text);
+                        }
+
+                        var iv = aesAlg.IV;
+
+                        var decryptedContent = msEncrypt.ToArray();
+
+                        var result = new byte[iv.Length + decryptedContent.Length];
+
+                        Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
+                        Buffer.BlockCopy(decryptedContent, 0, result, iv.Length, decryptedContent.Length);
+
+                        return Convert.ToBase64String(result);
+                    }
+                }
+            }
+        }
+
+        //Will decrypt a string using a provided key
+        public static string DecryptString(string cipherText, string keyString)
+        {
+            var fullCipher = Convert.FromBase64String(cipherText);
+
+            var iv = new byte[16];
+            var cipher = new byte[16];
+
+            Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
+            Buffer.BlockCopy(fullCipher, iv.Length, cipher, 0, iv.Length);
+            var key = Encoding.UTF8.GetBytes(keyString);
+
+            using (var aesAlg = Aes.Create())
+            {
+                using (var decryptor = aesAlg.CreateDecryptor(key, iv))
+                {
+                    string result;
+                    using (var msDecrypt = new MemoryStream(cipher))
+                    {
+                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                result = srDecrypt.ReadToEnd();
+                            }
+                        }
+                    }
+
+                    return result;
+                }
+            }
         }
     }
 }
