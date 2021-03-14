@@ -24,7 +24,7 @@ namespace Geekium.Controllers
         // GET: Accounts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Accounts.ToListAsync());
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Accounts/Details/5
@@ -45,28 +45,43 @@ namespace Geekium.Controllers
             return View(account);
         }
 
-        // GET: Accounts/Create
-        public IActionResult Create()
+        [HttpGet]
+        public IActionResult Create(string returnUrl = "")
         {
-            return View();
+            var model = new AccountViewModel { ReturnUrl = returnUrl };
+            return View(model);
         }
 
-        // POST: Accounts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //Will retrieve the AccountViewModel data given by the user, create a new account object with that data, add that account
+        //object to the Dbcontext, and perform a login with the supplied username and password
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AccountId,UserName,UserPassword,FirstName,LastName,Email,PointBalance")] Account account)
+        public async Task<IActionResult> Create(AccountViewModel model)
         {
             if (ModelState.IsValid)
             {
+                Account account = new Account();
+                account.UserName = model.Username;
+                account.UserPassword = model.Password;
+                account.FirstName = model.FirstName;
+                account.LastName = model.LastName;
+                account.Email = model.Email;
+
                 _context.Add(account);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                LoginViewModel loginModel = new LoginViewModel();
+                loginModel.Username = model.Username;
+                loginModel.Password = model.Password;
+
+                await Login(loginModel);
+                return RedirectToAction("Index", "Home");
             }
-            return View(account);
+            ModelState.AddModelError("", "Invalid attempt");
+            return View(model);
         }
 
+        //Will retrieve the Login screen for the user and set the returnUrl accordingly so that the user is directed back to the
+        //same page in the event that the login attempt has failed
         [HttpGet]
         public IActionResult Login(string returnUrl = "")
         {
@@ -74,6 +89,8 @@ namespace Geekium.Controllers
             return View(model);
         }
 
+        //Will retrieve the LoginViewModel data given by the user, check that the data corresponds with an existing account on the
+        //database, create session objects for the account username and id, and direct the user to the Home page
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -104,18 +121,17 @@ namespace Geekium.Controllers
                     }
                 }
             }
-            ModelState.AddModelError("", "Invalid login attempt");
+            ModelState.AddModelError("", "Invalid attempt");
             return View(model);
         }
 
+        //Will clear all session variables and return the user to the Home screen
         public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.SetString("userId", "");
-            HttpContext.Session.SetString("username", "");
+            HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Accounts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -131,9 +147,6 @@ namespace Geekium.Controllers
             return View(account);
         }
 
-        // POST: Accounts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AccountId,UserName,UserPassword,FirstName,LastName,Email,PointBalance")] Account account)
@@ -149,6 +162,8 @@ namespace Geekium.Controllers
                 {
                     _context.Update(account);
                     await _context.SaveChangesAsync();
+
+                    HttpContext.Session.SetString("username", account.UserName);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,12 +176,11 @@ namespace Geekium.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
             return View(account);
         }
 
-        // GET: Accounts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -184,7 +198,6 @@ namespace Geekium.Controllers
             return View(account);
         }
 
-        // POST: Accounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -192,7 +205,10 @@ namespace Geekium.Controllers
             var account = await _context.Accounts.FindAsync(id);
             _context.Accounts.Remove(account);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            await Logout();
+
+            return RedirectToAction("Index", "Home");
         }
 
         private bool AccountExists(int id)

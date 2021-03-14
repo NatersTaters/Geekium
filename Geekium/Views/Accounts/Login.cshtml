@@ -6,21 +6,15 @@
 
 <form method="post" asp-controller="Accounts" asp-action="Login" asp-route-returnurl="@Model.ReturnUrl">
 	<div>
-		<label asp-for="Username"></label>
+		<label asp-for="Username">Username:</label>
 		<input asp-for="Username" />
-		<span asp-validation-for="Username"></span>
 	</div>
-
 	<div>
-		<label asp-for="Password"></label>
+		<label asp-for="Password">Password:</label>
 		<input asp-for="Password" />
-		<span asp-validation-for="Password"></span>
 	</div>
-
 	<div>
-		<label asp-for="RememberMe"></label>
-		<input asp-for="RememberMe" />
-		<span asp-validation-for="RememberMe"></span>
+		@Html.ValidationSummary()
 	</div>
 	<input type="submit" value="Login" />
 </form>        
