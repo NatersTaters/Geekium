@@ -66,7 +66,7 @@ namespace Geekium.Controllers
             if (ModelState.IsValid)
             {
                 var originalPassword = model.Password;
-                string key = "E546C8DF278CD5931069B522E695D4F2";
+                string key = RandomString(32);
 
                 var encryptedPassword = EncryptString(originalPassword, key);
 
@@ -112,11 +112,7 @@ namespace Geekium.Controllers
                 {
                     if (dbItem.UserName == model.Username)
                     {
-                        var key = dbItem.PaswordHash;
-                        var account = _context.Accounts.Find(dbItem.AccountId);
-                        var originalPassword = account.UserPassword;
-
-                        var decryptedPassword = DecryptString(originalPassword, key);
+                        var decryptedPassword = DecryptString(dbItem.UserPassword, dbItem.PaswordHash);
 
                         if (decryptedPassword == model.Password)
 						{
@@ -124,7 +120,6 @@ namespace Geekium.Controllers
                             HttpContext.Session.SetString("userId", dbItem.AccountId.ToString());
                             return RedirectToAction("Index", "Home");
                         }
-                        break;
                     }
                 }
             }
@@ -221,6 +216,15 @@ namespace Geekium.Controllers
         private bool AccountExists(int id)
         {
             return _context.Accounts.Any(e => e.AccountId == id);
+        }
+
+        //Will return a random string 32 characters in length to be used as a key for password encryption
+        //and decryption
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         //Will encrypt a provided string using a provided key

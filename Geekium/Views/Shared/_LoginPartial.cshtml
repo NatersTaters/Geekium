@@ -1,16 +1,66 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<style>
+	/* Dropdown Button */
+	.dropbtn {
+		background-color: #007bff;
+		color: black;
+		font-size: 16px;
+		border: none;
+	}
+
+	/* The container <div> - needed to position the dropdown content */
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	/* Dropdown Content (Hidden by Default) */
+	.dropdown-content {
+		display: none;
+		position: absolute;
+		background-color: #f1f1f1;
+		min-width: 160px;
+		box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+		z-index: 1;
+	}
+
+	/* Links inside the dropdown */
+	.dropdown-content a {
+		color: black;
+		padding: 12px 16px;
+		text-decoration: none;
+		display: block;
+	}
+
+	/* Change color of dropdown links on hover */
+	.dropdown-content a:hover {
+		background-color: #ddd;
+	}
+
+	/* Show the dropdown menu on hover */
+	.dropdown:hover .dropdown-content {
+		display: block;
+	}
+</style>
+
 @if (HttpContextAccessor.HttpContext.Session.GetString("username") != null)
 {
-<ul class="nav navbar-nav navbar-right">
-	<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">@HttpContextAccessor.HttpContext.Session.GetString("username")</a></li>
-	<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Logout">Logout</a></li>
-</ul>
+	<ul class="nav navbar-nav navbar-right">
+		<div class="dropdown">
+			<button class="dropbtn">@HttpContextAccessor.HttpContext.Session.GetString("username")</button>
+			<div class="dropdown-content">
+				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Account Details</a>
+				<a class="dropdown-item" asp-area="" asp-controller="" asp-action="">View Rewards</a>
+				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Logout">Logout</a>
+			</div>
+		</div>
+	</ul>
 }
 else
 {
 	<ul class="nav navbar-nav navbar-right">
-		<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Create">Create Account</a></li>
-		<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Login">Login</a></li>
+		<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Login">Sign in / Register</a></li>
 	</ul>
 }
