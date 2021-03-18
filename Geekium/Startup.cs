@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Geekium.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +30,20 @@ namespace Geekium
 
 			// Add support for session variables
 			services.AddDistributedMemoryCache();
-			services.AddSession();
+
+			services.Configure<CookiePolicyOptions>(options =>
+			{
+				// This lambda determines whether user consent for non-essential cookies is needed for a given request.
+				options.CheckConsentNeeded = context => false;
+				options.MinimumSameSitePolicy = SameSiteMode.None;
+			});
+
+			services.AddSession(opts =>
+			{
+				opts.Cookie.IsEssential = true; // make the session cookie Essential
+			});
+
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			// **context - enable dependency injection for context of Geekium database
 			services.AddDbContext<GeekiumContext>(options =>

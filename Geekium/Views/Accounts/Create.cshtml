@@ -1,58 +1,36 @@
-﻿@model Geekium.Models.Account
-
+﻿@model AccountViewModel
 @{
-    ViewData["Title"] = "Create";
+	ViewBag.Title = "Create";
 }
+<h4>Please enter your account details below:</h4>
 
-<h1>Create</h1>
-
-<h4>Account</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserPassword" class="control-label"></label>
-                <input asp-for="UserPassword" class="form-control" />
-                <span asp-validation-for="UserPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PointBalance" class="control-label"></label>
-                <input asp-for="PointBalance" class="form-control" />
-                <span asp-validation-for="PointBalance" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+	<div class="col-md-4">
+		<form method="post" asp-controller="Accounts" asp-action="Create" asp-route-returnurl="@Model.ReturnUrl">
+			<div class="form-group">
+				<label asp-for="Username" class="control-label">Username:</label>
+				<input asp-for="Username" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label asp-for="Password" class="control-label">Password:</label>
+				<input asp-for="Password" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label asp-for="FirstName" class="control-label">First Name:</label>
+				<input asp-for="FirstName" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label asp-for="LastName" class="control-label">Last Name:</label>
+				<input asp-for="LastName" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label asp-for="Email" class="control-label">Email:</label>
+				<input asp-for="Email" class="form-control" />
+			</div>
+			<div class="text-danger">
+				@Html.ValidationSummary()
+			</div>
+			<input type="submit" value="Create" />
+		</form>
+	</div>
+</div>   
