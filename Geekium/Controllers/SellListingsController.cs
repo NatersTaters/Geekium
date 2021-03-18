@@ -21,121 +21,11 @@ namespace Geekium.Controllers
         // GET: SellListings
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller);
-            return View(await geekiumContext.ToListAsync());
+            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller).Include(s => s.Seller.Account);
+            SetViewBag(null, 0, 0);
+            var model = await geekiumContext.ToListAsync();
+            return View(model);
         }
-
-        // GET: SellListings/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var sellListing = await _context.SellListings
-                .Include(s => s.PriceTrend)
-                .Include(s => s.Seller)
-                .FirstOrDefaultAsync(m => m.SellListingId == id);
-            if (sellListing == null)
-            {
-                return NotFound();
-            }
-
-            return View(sellListing);
-        }
-
-        // GET: SellListings/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var sellListing = await _context.SellListings.FindAsync(id);
-            if (sellListing == null)
-            {
-                return NotFound();
-            }
-            ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
-            ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
-            return View(sellListing);
-        }
-
-        // POST: SellListings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity")] SellListing sellListing)
-        {
-            if (id != sellListing.SellListingId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(sellListing);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SellListingExists(sellListing.SellListingId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
-            ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
-            return View(sellListing);
-        }
-
-        // GET: SellListings/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var sellListing = await _context.SellListings
-                .Include(s => s.PriceTrend)
-                .Include(s => s.Seller)
-                .FirstOrDefaultAsync(m => m.SellListingId == id);
-            if (sellListing == null)
-            {
-                return NotFound();
-            }
-
-            return View(sellListing);
-        }
-
-        // POST: SellListings/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var sellListing = await _context.SellListings.FindAsync(id);
-            _context.SellListings.Remove(sellListing);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool SellListingExists(int id)
-        {
-            return _context.SellListings.Any(e => e.SellListingId == id);
-        }
-
 
         // When they hit the "edit listings"
         // They will be redirected to a page with only their own listings
@@ -143,6 +33,90 @@ namespace Geekium.Controllers
         {
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller);
             return View(await geekiumContext.ToListAsync());
+        }
+
+        // When the user tries to search for an item, we will query it 
+        [HttpPost]
+        public async Task<IActionResult> FilterProducts(string searchProduct, float minPrice, float maxPrice)
+        {
+            if (minPrice > maxPrice)
+            {
+                float holdMinimum = maxPrice;
+                maxPrice = minPrice;
+                minPrice = holdMinimum;
+            }
+
+            if (searchProduct != null && searchProduct != "")
+            {
+                if (minPrice != 0 && maxPrice != 0)
+                {
+                    var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller)
+                        .Where(s => s.SellPrice >= minPrice && s.SellPrice <= maxPrice && s.SellTitle.Contains(searchProduct));
+                    SetViewBag(searchProduct, minPrice, maxPrice);
+                    return View("Index", await geekiumContext.ToListAsync());
+                }
+                else
+                {
+                    var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller)
+                        .Where(s => s.SellTitle.Contains(searchProduct));
+                    SetViewBag(searchProduct, 0, 0);
+                    return View("Index", await geekiumContext.ToListAsync());
+                }
+            }
+            else if (minPrice != 0 && maxPrice != 0)
+            {
+                var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller)
+                    .Where(s => s.SellPrice >= minPrice && s.SellPrice <= maxPrice);
+                SetViewBag(null, minPrice, maxPrice);
+                return View("Index", await geekiumContext.ToListAsync());
+            }
+            else
+            {
+                SetViewBag(null, 0, 0);
+                return RedirectToAction("Index");
+            }
+
+
+        }
+
+        // When the user clicks on any item, the details will be returned
+        public async Task<IActionResult> Details(int ? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var sellListing = await _context.SellListings
+                .Include(s => s.PriceTrend)
+                .Include(s => s.Seller)
+                .FirstOrDefaultAsync(m => m.SellListingId == id);
+            if (sellListing == null)
+            {
+                return NotFound();
+            }
+
+            return View(sellListing);
+        }
+        void SetViewBag(string search, float min, float max)
+        {
+            if (search != null && search != "")
+                ViewBag.Search = search;
+            else
+                ViewBag.Search = null;
+
+            if (min == 0 && max == 0)
+            {
+                ViewBag.Collapse = "collapse";
+                ViewBag.MinPrice = null;
+                ViewBag.MaxPrice = null;
+            }
+            else
+            {
+                ViewBag.Collapse = "collapse in show";
+                ViewBag.MinPrice = min;
+                ViewBag.MaxPrice = max;
+            }
         }
     }
 }

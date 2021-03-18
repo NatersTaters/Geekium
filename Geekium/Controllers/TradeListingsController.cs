@@ -21,7 +21,8 @@ namespace Geekium.Controllers
         // GET: TradeListings
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.TradeListings.Include(t => t.Seller);
+            var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account);
+            SetViewBag(null);
             return View(await geekiumContext.ToListAsync());
         }
 
@@ -44,92 +45,33 @@ namespace Geekium.Controllers
             return View(tradeListing);
         }
 
-        // GET: TradeListings/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tradeListing = await _context.TradeListings.FindAsync(id);
-            if (tradeListing == null)
-            {
-                return NotFound();
-            }
-            ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", tradeListing.SellerId);
-            return View(tradeListing);
-        }
-
-        // POST: TradeListings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // When the user tries to search for an item, we will query it 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity")] TradeListing tradeListing)
+        public async Task<IActionResult> FilterTrades(string searchTrade)
         {
-            if (id != tradeListing.TradeListingId)
+            if (searchTrade != null && searchTrade != "")
             {
-                return NotFound();
-            }
+                var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account)
+                    .Where(s => s.TradeTitle.ToLower().Contains(searchTrade.ToLower()));
+                SetViewBag(searchTrade);
+                return View("Index", await geekiumContext.ToListAsync());
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(tradeListing);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TradeListingExists(tradeListing.TradeListingId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", tradeListing.SellerId);
-            return View(tradeListing);
+            else
+            {
+                SetViewBag(null);
+                return RedirectToAction("Index");
+            }
         }
 
-        // GET: TradeListings/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        void SetViewBag(string search)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            ViewBag.Collapse = "collapse";
 
-            var tradeListing = await _context.TradeListings
-                .Include(t => t.Seller)
-                .FirstOrDefaultAsync(m => m.TradeListingId == id);
-            if (tradeListing == null)
-            {
-                return NotFound();
-            }
-
-            return View(tradeListing);
-        }
-
-        // POST: TradeListings/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var tradeListing = await _context.TradeListings.FindAsync(id);
-            _context.TradeListings.Remove(tradeListing);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool TradeListingExists(int id)
-        {
-            return _context.TradeListings.Any(e => e.TradeListingId == id);
+            if (search != null && search != "")
+                ViewBag.Search = search;
+            else
+                ViewBag.Search = null;
         }
     }
 }
