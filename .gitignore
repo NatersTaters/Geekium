@@ -28,3 +28,4 @@ Geekium/obj/Debug/netcoreapp3.1/Geekium.assets.cache
 *.cache
 *.json
 *.props
+*.dll
