@@ -23,7 +23,7 @@ namespace Geekium.Models
         public DateTime SellDate { get; set; }
         public string SellItemType { get; set; }
         public int SellQuantity { get; set; }
-        public byte[] SellImage { get; set; }
+        public string SellImage { get; set; }
 
         public virtual PriceTrend PriceTrend { get; set; }
         public virtual SellerAccount Seller { get; set; }

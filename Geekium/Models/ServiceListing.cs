@@ -14,7 +14,7 @@ namespace Geekium.Models
         public string ServiceTitle { get; set; }
         public string ServiceDescription { get; set; }
         public DateTime ListingDate { get; set; }
-        public byte[] ServiceImage { get; set; }
+        public string ServiceImage { get; set; }
 
         public virtual Account Account { get; set; }
     }

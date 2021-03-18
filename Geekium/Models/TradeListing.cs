@@ -17,7 +17,7 @@ namespace Geekium.Models
         public DateTime TradeDate { get; set; }
         public string TradeItemType { get; set; }
         public int TradeQuantity { get; set; }
-        public byte[] TradeImage { get; set; }
+        public string TradeImage { get; set; }
 
         public virtual SellerAccount Seller { get; set; }
     }
