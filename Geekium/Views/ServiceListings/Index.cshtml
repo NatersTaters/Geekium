@@ -6,73 +6,70 @@
 
 <h1>Service Listings</h1>
 
-<a class="btn btn-primary" role="button" asp-controller="MyListings" asp-action="Index">View My Listings</a>
-<hr />
-<input type="text" id="filterInput" onkeyup="FilterTable()" placeholder="Search for names..">
-<hr />
+<body>
+    <form method="post" asp-action="FilterServices">
+        <input id="searchBox" type="text" name="searchService" placeholder="Search for Services" value="@ViewBag.Search" />
+        <a class="btn btn-primary" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
+            Add Filter
+        </a>
+        <button class="btn btn-primary" type="submit" title="searchButton">Search Service</button>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ServiceTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ServiceDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ListingDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Account)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ServiceTitle)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ServiceDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ListingDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Account.Email)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ServiceListingId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ServiceListingId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ServiceListingId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <div class="@ViewBag.Collapse" id="filter">
+            <div class="card card-body">
+                <div class="form-group">
+                    TBD
+                </div>
+            </div>
+        </div>
+    </form>
 
-<script>
-    function FilterTable() {
-        var inputId, filterString, tableId, tableRow, tableData, textValue;
+    <div class="py-2">
+        <div class="container">
+            @{ var count = 0;}
+            @{ var items = 0;}
+            @foreach (var item in Model)
+            {
+                if (count == 0)
+                {
+                    @:<div class="row">
+                    }
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-block">
+                                <div class="card-header">
+                                    @Html.DisplayFor(modelItem => item.ServiceTitle)
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Account.UserName)</h5>
+                                    <p class="card-text">Description: @Html.DisplayFor(modelItem => item.ServiceDescription)</p>
+                                    <p class="card-text">Date Listed: @Html.DisplayFor(modelItem => item.ListingDate)</p>
+                                    <a href="#" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        tableId = document.getElementById("memberTable");
-        inputId = document.getElementById("filterInput");
-        filterString = inputId.value.toUpperCase();
-        tableRow = tableId.getElementsByTagName("tr");
+                    items++;
 
-        for (i = 0; i < tableRow.length; i++) {
-            tableData = tableRow[i].getElementsByTagName("td")[0];
-            if (tableData) {
-                textValue = tableData.textContent || tableData.innerText;
-                if (textValue.toUpperCase().indexOf(filterString) > -1)
-                    tableRow[i].style.display = "";
+                    if (count == 2)
+                    {
+                        count = 0;
+                    @:</div><br />
+                }
                 else
-                    tableRow[i].style.display = "none";
+                {
+                    count++;
+                }
             }
-        }
-    }
-</script>
+
+            @if (items == 0)
+            {
+                <div>
+                    <br />
+                    <h2>Nothing matches the search/filter</h2>
+                </div>
+            }
+
+        </div>
+    </div>
+</body>

@@ -6,90 +6,67 @@
 
 <h1>Trade Listings</h1>
 
-<a class="btn btn-primary" role="button" asp-controller="MyListings" asp-action="Index">View My Listings</a>
-<hr />
-<input type="text" id="filterInput" onkeyup="FilterTable()" placeholder="Search for names..">
-<hr />
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TradeTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TradeDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TradeFor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TradeDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TradeItemType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TradeQuantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Seller)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeTitle)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeFor)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeItemType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeQuantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Seller.SellerId)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.TradeListingId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.TradeListingId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.TradeListingId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<body>
+    <form method="post" asp-action="FilterTrades">
+        <input id="searchBox" type="text" name="searchTrade" placeholder="Search for Trades" value="@ViewBag.Search" />
+        <a class="btn btn-primary" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
+            Add Filter
+        </a>
+        <button class="btn btn-primary" type="submit" title="searchButton">Search Trade</button>
 
-<script>
-    function FilterTable() {
-        var inputId, filterString, tableId, tableRow, tableData, textValue;
+        <div class="@ViewBag.Collapse" id="filter">
+            <div class="card card-body">
+                <div class="form-group">
+                  TBD
+                </div>
+            </div>
+        </div>
+    </form>
 
-        tableId = document.getElementById("memberTable");
-        inputId = document.getElementById("filterInput");
-        filterString = inputId.value.toUpperCase();
-        tableRow = tableId.getElementsByTagName("tr");
+    <div class="py-2">
+        <div class="container">
+            @{ var count = 0;}
+            @{ var items = 0;}
+            @foreach (var item in Model)
+            {
+                if (count == 0)
+                {
+                    @:<div class="row">
+                    }
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-block">
+                                <div class="card-header">
+                                    @Html.DisplayFor(modelItem => item.TradeTitle)
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
+                                    <p class="card-text">Trade For: @Html.DisplayFor(modelItem => item.TradeFor)</p>
+                                    <a class="stretched-link" asp-action="Details" asp-route-id="@item.TradeListingId"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    items++;
 
-        for (i = 0; i < tableRow.length; i++) {
-            tableData = tableRow[i].getElementsByTagName("td")[0];
-            if (tableData) {
-                textValue = tableData.textContent || tableData.innerText;
-                if (textValue.toUpperCase().indexOf(filterString) > -1)
-                    tableRow[i].style.display = "";
+                    if (count == 2)
+                    {
+                        count = 0;
+                    @:</div><br />
+                }
                 else
-                    tableRow[i].style.display = "none";
+                {
+                    count++;
+                }
             }
-        }
-    }
-</script>
+
+            @if (items == 0)
+            {
+                <div>
+                    <br />
+                    <h2>Nothing matches the search/filter</h2>
+                </div>
+            }
+        </div>
+    </div>
+</body>
