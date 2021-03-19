@@ -4,51 +4,52 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Cart</h1>
+<div class="text-center">
+    <h1 class="display-4">Cart</h1>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfProducts)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PointsGained)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Account)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<body>
+    @if (ViewBag.cart != null && ViewBag.cart.Count > 0)
+    {
+        <h3>Your Cart</h3>
+        <table class="cartTable">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NumberOfProducts)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PointsGained)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Account.Email)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.CartId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.CartId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.CartId">Delete</a>
-                </td>
+                <th>Product</th>
+                <th>Images appear below</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+            @foreach (var ItemsForCart in ViewBag.cart)
+            {
+                <tr>
+                    <td>@ItemsForCart.SellListing.SellTitle</td>
+                    <td>@ItemsForCart.SellListing.SellImage</td>
+                    <td>@ItemsForCart.SellListing.SellDescription</td>
+                    <td>@ItemsForCart.SellListing.SellPrice</td>
+                    <td>@ItemsForCart.Quantity</td>
+                    <td>@(ItemsForCart.SellListing.SellPrice * ItemsForCart.Quantity) </td>
+                    <td><a asp-controller="Carts" asp-action="Remove" asp-route-id="ItemsForCart.SellListing.SellListingId">Remove Item</a></td>
+                </tr>
+            }
+            <tr>
+                <td align="right" colspan="3">HST</td>
+                <td>@ViewBag.tax</td>
+            </tr>
+            <tr>
+                <td align="right" colspan="3">Total</td>
+                <td>@ViewBag.total</td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <h4 style="text-align:center">Your cart seems to be empty!</h4>
+    }
+    <a class="btn btn-success" role="button" asp-controller="Carts" asp-action="Checkout" style="float: right;">Proceed to Checkout</a>
+    <a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
 
-<a class="btn btn-success" role="button" asp-controller="Carts" asp-action="Checkout" style="float: right;">Proceed to Checkout</a>
-<a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
+</body>
+

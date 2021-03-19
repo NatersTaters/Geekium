@@ -993,8 +993,6 @@ C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\bin\Debug\netcoreapp3.1
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.csprojAssemblyReference.cache
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.AssemblyInfoInputs.cache
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.AssemblyInfo.cs
-C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.csproj.CoreCompileInputs.cache
-C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.RazorAssemblyInfo.cache
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.RazorAssemblyInfo.cs
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.TagHelpers.input.cache
@@ -1065,3 +1063,5 @@ C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.pdb
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.genruntimeconfig.cache
 C:\Users\saunn\Desktop\Geekium\Geekium\obj\Debug\netcoreapp3.1\Razor\Views\Home\Credit.cshtml.g.cs
+C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.csproj.CoreCompileInputs.cache
+C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.MvcApplicationPartsAssemblyInfo.cache
