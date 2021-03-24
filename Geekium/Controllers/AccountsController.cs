@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
+using System.Net.Mail;
+using System.Net;
 
 namespace Geekium.Controllers
 {
@@ -151,7 +153,9 @@ namespace Geekium.Controllers
         [HttpGet]
         public IActionResult Upgrade(string returnUrl = "")
         {
-            var model = new UpgradeViewModel { ReturnUrl = returnUrl };
+            SendEmail();
+
+			var model = new UpgradeViewModel { ReturnUrl = returnUrl };
             return View(model);
         }
 
@@ -330,6 +334,32 @@ namespace Geekium.Controllers
 
                     return result;
                 }
+            }
+        }
+
+        public void SendEmail()
+		{
+            var senderEmail = new MailAddress("geekium1234@gmail.com");
+            var receiverEmail = new MailAddress("saunn1118@gmail.com");
+            var password = "geekiumaccount1234";
+            var sub = "Account Verification";
+            var body = "12345";
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(senderEmail.Address, password)
+            };
+            using (var mess = new MailMessage(senderEmail, receiverEmail)
+            {
+                Subject = sub,
+                Body = body
+            })
+            {
+                smtp.Send(mess);
             }
         }
     }
