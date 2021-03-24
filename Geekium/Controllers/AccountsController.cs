@@ -19,6 +19,8 @@ namespace Geekium.Controllers
 
         private static Random random = new Random();
 
+        private string emailCode;
+
         public AccountsController(GeekiumContext context)
         {
             _context = context;
@@ -128,6 +130,7 @@ namespace Geekium.Controllers
 					{
 						HttpContext.Session.SetString("username", account.UserName);
 						HttpContext.Session.SetString("userId", account.AccountId.ToString());
+                        HttpContext.Session.SetString("userEmail", account.Email);
 
 						var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
 						if (sellerAccount != null)
@@ -166,6 +169,7 @@ namespace Geekium.Controllers
 			{
                 SellerAccount sellerAccount = new SellerAccount();
                 sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
+                HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
 
                 SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
                 await sellerAccountsController.Create(sellerAccount);
@@ -340,7 +344,7 @@ namespace Geekium.Controllers
         public void SendEmail()
 		{
             var senderEmail = new MailAddress("geekium1234@gmail.com");
-            var receiverEmail = new MailAddress("saunn1118@gmail.com");
+            var receiverEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
             var password = "geekiumaccount1234";
             var sub = "Account Verification";
             var body = "12345";

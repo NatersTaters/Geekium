@@ -63,7 +63,6 @@ namespace Geekium.Controllers
             {
                 _context.Add(sellerAccount);
                 await _context.SaveChangesAsync();
-                HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email", sellerAccount.AccountId);
