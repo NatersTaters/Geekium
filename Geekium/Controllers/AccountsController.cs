@@ -127,8 +127,7 @@ namespace Geekium.Controllers
 						HttpContext.Session.SetString("username", account.UserName);
 						HttpContext.Session.SetString("userId", account.AccountId.ToString());
 
-						GeekiumContext sellerContext = new GeekiumContext();
-						var sellerAccount = await sellerContext.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+						var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
 						if (sellerAccount != null)
 						{
                             HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
