@@ -1,0 +1,24 @@
+﻿@model UpgradeViewModel
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+	ViewData["Title"] = "Upgrade";
+}
+
+<h4>A one time use code has been emailed to you for authentication purposes, please enter it below:</h4>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form method="post" asp-controller="Accounts" asp-action="Upgrade" asp-route-returnurl="@Model.ReturnUrl">
+			<div class="form-group">
+				<label asp-for="Code" class="control-label">Code:</label>
+				<input asp-for="Code" class="form-control" />
+			</div>
+			<div class="text-danger">
+				@Html.ValidationSummary()
+			</div>
+			<input type="submit" value="Upgrade" />
+		</form>
+	</div>
+</div>
