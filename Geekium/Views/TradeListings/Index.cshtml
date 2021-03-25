@@ -4,20 +4,21 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Trade Listings</h1>
-
 <body>
-    <form method="post" asp-action="FilterTrades">
-        <input id="searchBox" type="text" name="searchTrade" placeholder="Search for Trades" value="@ViewBag.Search" />
-        <a class="btn btn-primary" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
-            Add Filter
-        </a>
-        <button class="btn btn-primary" type="submit" title="searchButton">Search Trade</button>
+    <h2>Trade Listings</h2>
 
-        <div class="@ViewBag.Collapse" id="filter">
+    <form method="post" asp-action="FilterTrades">
+        <div class="form-inline">
+            <input class="form-control mr-sm-2" id="searchBox" type="text" name="searchTrade" placeholder="Search for Trades" value="@ViewBag.Search" />
+            <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
+                Add Filter
+            </a>&nbsp;
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Trade</button>
+        </div>
+        <div class="@ViewBag.Collapse form-inline" id="filter">
             <div class="card card-body">
-                <div class="form-group">
-                  TBD
+                <div class="form-group form-inline">
+                    TBD
                 </div>
             </div>
         </div>
@@ -36,10 +37,11 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-block">
-                                <div class="card-header">
+                                <div class="card-header truncate">
                                     @Html.DisplayFor(modelItem => item.TradeTitle)
                                 </div>
                                 <div class="card-body">
+                                    <img class="displayImage" src="~/images/buy-icon.png" />
                                     <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
                                     <p class="card-text">Trade For: @Html.DisplayFor(modelItem => item.TradeFor)</p>
                                     <a class="stretched-link" asp-action="Details" asp-route-id="@item.TradeListingId"></a>

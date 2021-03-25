@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Geekium.Controllers
 {
@@ -19,9 +20,12 @@ namespace Geekium.Controllers
         }
 
         // GET: SellListings
+        // Display all sell listings available
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller).Include(s => s.Seller.Account);
+            string userId = HttpContext.Session.GetString("userId");
+            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller)
+                .Include(s => s.Seller.Account);
             SetViewBag(null, 0, 0);
             var model = await geekiumContext.ToListAsync();
             return View(model);
@@ -29,11 +33,11 @@ namespace Geekium.Controllers
 
         // When they hit the "edit listings"
         // They will be redirected to a page with only their own listings
-        public async Task<IActionResult> UserSellListings()
-        {
-            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller);
-            return View(await geekiumContext.ToListAsync());
-        }
+        //public async Task<IActionResult> UserSellListings()
+        //{
+        //    var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller);
+        //    return View(await geekiumContext.ToListAsync());
+        //}
 
         // When the user tries to search for an item, we will query it 
         [HttpPost]
@@ -90,12 +94,18 @@ namespace Geekium.Controllers
             var sellListing = await _context.SellListings
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
                 .FirstOrDefaultAsync(m => m.SellListingId == id);
             if (sellListing == null)
             {
                 return NotFound();
             }
-
+            string userId = HttpContext.Session.GetString("userId");
+            if (sellListing.Seller.AccountId.ToString() == userId)
+                ViewBag.ShowCart = false;
+            else
+                ViewBag.ShowCart = true;
+                    
             return View(sellListing);
         }
         void SetViewBag(string search, float min, float max)

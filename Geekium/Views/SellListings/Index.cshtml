@@ -4,23 +4,23 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Sell Listings</h1>
-
 <body>
+    <h2>Sell Listings</h2>
 
     <form method="post" asp-action="FilterProducts">
-        <input id="searchBox" type="text" name="searchProduct" placeholder="Search for Products" value="@ViewBag.Search" />
-        <a class="btn btn-primary" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
-            Add Filter
-        </a>
-        <button class="btn btn-primary" type="submit" title="searchButton">Search Item</button>
-
-        <div class="@ViewBag.Collapse" id="filter">
+        <div class="form-inline">
+            <input class="form-control mr-sm-2" id="searchBox" type="text" name="searchProduct" placeholder="Search for Products" value="@ViewBag.Search" />
+            <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
+                Add Filter
+            </a>&nbsp;
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Item</button>
+        </div>
+        <div class="@ViewBag.Collapse form-inline" id="filter">
             <div class="card card-body">
-                <div class="form-group">
-                    Price:
-                    <input style="width:25%;" name="minPrice" id="minPrice" type="text" placeholder="From" value="@ViewBag.MinPrice"/> -
-                    <input style="width:25%;" name="maxPrice" id="maxPrice" type="text" placeholder="To" value="@ViewBag.MaxPrice" />
+                <div class="form-group form-inline">
+                    Price:&nbsp;
+                    <input class="form-control" style="width:25%;" name="minPrice" id="minPrice" type="text" placeholder="From" value="@ViewBag.MinPrice" /> -&nbsp;
+                    <input class="form-control" style="width:25%;" name="maxPrice" id="maxPrice" type="text" placeholder="To" value="@ViewBag.MaxPrice" />
                 </div>
             </div>
         </div>
@@ -35,27 +35,28 @@
                 if (count == 0)
                 {
                     @:<div class="row">
-                }
+                    }
 
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-block">
-                            <div class="card-header">
-                                @Html.DisplayFor(modelItem => item.SellTitle)
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
-                                <p class="card-text">Price: @Html.DisplayFor(modelItem => item.SellPrice)</p>
-                                <a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-block">
+                                <div class="card-header truncate">
+                                    @Html.DisplayFor(modelItem => item.SellTitle)
+                                </div>
+                                <div class="card-body">
+                                    <img class="displayImage" src="~/images/buy-icon.png" />
+                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
+                                    <p class="card-text">Price: $@Html.DisplayFor(modelItem => item.SellPrice)</p>
+                                    <a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                items++;
+                    items++;
 
-                if (count == 2)
-                {
-                    count = 0;
+                    if (count == 2)
+                    {
+                        count = 0;
                     @:</div><br />
                 }
                 else
@@ -66,7 +67,8 @@
 
             @if (items == 0)
             {
-                <div><br />
+                <div>
+                    <br />
                     <h2>Nothing matches the search/filter</h2>
                 </div>
             }

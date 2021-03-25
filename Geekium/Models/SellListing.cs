@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 // Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
 // If you have enabled NRTs for your project, then un-comment the following line:
@@ -20,6 +21,7 @@ namespace Geekium.Models
         public string SellTitle { get; set; }
         public string SellDescription { get; set; }
         public int SellPrice { get; set; }
+        [DataType(DataType.Date)]
         public DateTime SellDate { get; set; }
         public string SellItemType { get; set; }
         public int SellQuantity { get; set; }

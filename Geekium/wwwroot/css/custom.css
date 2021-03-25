@@ -1,0 +1,22 @@
+﻿.displayImage {
+    max-width: 100%;
+    max-height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.displayDetailImage {
+    max-width: 100%;
+    max-height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
