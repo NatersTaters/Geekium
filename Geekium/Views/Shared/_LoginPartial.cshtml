@@ -47,9 +47,9 @@
 
 @if (HttpContextAccessor.HttpContext.Session.GetString("username") != null)
 {
-	<ul class="nav navbar-nav navbar-right">
+	<ul class="nav navbar-nav navbar-right text-light">
 		<div class="dropdown">
-			<button class="dropbtn">@HttpContextAccessor.HttpContext.Session.GetString("username")</button>
+			<button class="dropbtn text-light">@HttpContextAccessor.HttpContext.Session.GetString("username")</button>
 			<div class="dropdown-content">
 				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Account Details</a>
 				<a class="dropdown-item" asp-area="" asp-controller="" asp-action="">View Rewards</a>
@@ -61,6 +61,6 @@
 else
 {
 	<ul class="nav navbar-nav navbar-right">
-		<li class="nav-item truncate"><a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="Login">Sign in / Register</a></li>
+		<li class="nav-item truncate"><a class="nav-link text-light" asp-area="" asp-controller="Accounts" asp-action="Login">Sign in / Register</a></li>
 	</ul>
 }

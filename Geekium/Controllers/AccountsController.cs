@@ -213,6 +213,7 @@ namespace Geekium.Controllers
                     await _context.SaveChangesAsync();
 
                     HttpContext.Session.SetString("username", account.UserName);
+                    HttpContext.Session.SetString("userEmail", account.Email);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -253,8 +254,12 @@ namespace Geekium.Controllers
         {
             var account = await _context.Accounts.FindAsync(id);
             _context.Accounts.Remove(account);
-            await _context.SaveChangesAsync();
 
+            // look at this later
+            SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
+            await sellerAccountsController.Delete(HttpContext.Session.GetInt32("sellerId"));
+            
+            await _context.SaveChangesAsync();
             await Logout();
 
             return RedirectToAction("Index", "Home");
