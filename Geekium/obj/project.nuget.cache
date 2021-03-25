@@ -2,7 +2,7 @@
   "version": 2,
   "dgSpecHash": "jKoGkFeEO9y/5iPa8VN6+37WO8r1tYOmswmB2yA8KDPHYmtHCoNcw9aNe9cZtdiwEd6wpMUTqNbF9DDArn8TNw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\saunn\\Desktop\\Geekium\\Geekium\\Geekium.csproj",
+  "projectFilePath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\saunn\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\saunn\\.nuget\\packages\\microsoft.aspnetcore.razor\\2.2.0\\microsoft.aspnetcore.razor.2.2.0.nupkg.sha512",

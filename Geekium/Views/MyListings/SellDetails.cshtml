@@ -1,70 +1,54 @@
 ﻿@model Geekium.Models.SellListing
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = @Html.DisplayFor(model => model.SellTitle) + " Details";
 }
 
-<h1>Details</h1>
+<body>
+    <div>
+        <a class="btn btn-primary" type="button" asp-action="Index">Back to List</a>
+    </div>
+    <img class="displayDetailImage" src="~/images/sell-icon.png" alt="Sell Image" />
 
-<div>
-    <h4>SellListing</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellTitle)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellTitle)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellDescription)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellDescription)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellPrice)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellPrice)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellItemType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellItemType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellQuantity)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellQuantity)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PriceTrend)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PriceTrend.PriceTrendId)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Seller)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Seller.SellerId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="EditSell">Edit Item</a> |
-    <form asp-action="SellDetails">
-        <input type="hidden" asp-for="SellListingId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-    </form>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+    <h1>@Html.DisplayFor(model => model.SellTitle)</h1>
+    <p>
+        Category: @Html.DisplayFor(model => model.SellItemType) <br />
+        Seller: @Html.DisplayFor(model => model.Seller.Account.UserName) <br />
+        Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
+    </p>
+    <hr />
+    <p>
+        Listing Date: @Html.DisplayFor(model => model.SellDate)<br />
+        Current Stock: @Html.DisplayFor(model => model.SellQuantity)<br />
+        Price: $@Html.DisplayFor(model => model.SellPrice)
+    </p>
+    <br />
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="sellDescriptionHeading">
+                <h5 class="mb-0">
+                    <a class="stretched-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Product Description
+                    </a>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="sellDescriptionHeading" data-parent="#accordion">
+                <div class="card-body">
+                    @Html.DisplayFor(model => model.SellDescription)
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div>
+        <a type="button" class="btn btn-primary btn-lg btn-block" asp-action="EditSell" asp-route-id="@Model.SellListingId">Edit Item</a><br />
+        <form asp-action="SellDetails">
+            <input type="hidden" asp-for="SellListingId" />
+            <input class="btn-danger btn-lg btn-block" type="submit" value="Delete" />
+        </form>
+    </div>
+
+</body>

@@ -1,4 +1,5 @@
 ﻿using Geekium.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace Geekium.Controllers
         // GET: TradeListings/Create
         public IActionResult CreateTrade()
         {
+            ViewBag.TradeDate = DateTime.Now.ToString("yyyy-MM-dd");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
             return View();
         }
@@ -31,6 +33,15 @@ namespace Geekium.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTrade([Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity")] TradeListing tradeListing)
         {
+            tradeListing.TradeDate = DateTime.Now;
+            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
+            // We need the seller ID associated with this account ID
+            var sellerAccountId = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
+
+            tradeListing.SellerId = sellerAccountId.SellerId;
+
             if (ModelState.IsValid)
             {
                 _context.Add(tradeListing);
@@ -51,6 +62,7 @@ namespace Geekium.Controllers
 
             var tradeListing = await _context.TradeListings
                 .Include(t => t.Seller)
+                .Include(t => t.Seller.Account)
                 .FirstOrDefaultAsync(m => m.TradeListingId == id);
             if (tradeListing == null)
             {
@@ -86,6 +98,7 @@ namespace Geekium.Controllers
             {
                 return NotFound();
             }
+            ViewBag.TradeDate = DateTime.Now.ToString("yyyy-MM-dd");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", tradeListing.SellerId);
             return View(tradeListing);
         }
@@ -95,12 +108,21 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity")] TradeListing tradeListing)
+        public async Task<IActionResult> EditTrade(int id, [Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity")] TradeListing tradeListing)
         {
             if (id != tradeListing.TradeListingId)
             {
                 return NotFound();
             }
+
+            tradeListing.TradeDate = DateTime.Now;
+            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
+            // We need the seller ID associated with this account ID
+            var sellerAccountId = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
+
+            tradeListing.SellerId = sellerAccountId.SellerId;
 
             if (ModelState.IsValid)
             {
@@ -142,10 +164,14 @@ namespace Geekium.Controllers
         // GET: SellListings/Create
         public IActionResult CreateSell()
         {
+            ViewBag.SellDate = DateTime.Now.ToString("yyyy-MM-dd");
+            //ViewData["SellItemType"] = new SelectList()
             ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
             return View();
         }
+
+        
 
         // POST: SellListings/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
@@ -154,8 +180,24 @@ namespace Geekium.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSell([Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity")] SellListing sellListing)
         {
+            sellListing.SellDate = DateTime.Now;
+            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
+            // We need the seller ID associated with this account ID
+            var sellerAccountId = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
+
+            var priceTrendExists = PriceTrendExists(sellListing.PriceTrendId);
+
+            sellListing.SellerId = sellerAccountId.SellerId;
+
             if (ModelState.IsValid)
             {
+                if (priceTrendExists == null)
+                {
+                    // Create a new price trend 
+                }
+
                 _context.Add(sellListing);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -176,6 +218,7 @@ namespace Geekium.Controllers
             var sellListing = await _context.SellListings
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
                 .FirstOrDefaultAsync(m => m.SellListingId == id);
             if (sellListing == null)
             {
@@ -211,6 +254,8 @@ namespace Geekium.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.SellDate = DateTime.Now.ToString("yyyy-MM-dd");
             ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
             return View(sellListing);
@@ -221,12 +266,24 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity")] SellListing sellListing)
+        public async Task<IActionResult> EditSell(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity")] SellListing sellListing)
         {
             if (id != sellListing.SellListingId)
             {
                 return NotFound();
             }
+
+            sellListing.SellDate = DateTime.Now;
+            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
+            // We need the seller ID associated with this account ID
+            var sellerAccountId = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
+
+            var priceTrendExists = PriceTrendExists(sellListing.PriceTrendId);
+
+            sellListing.SellerId = sellerAccountId.SellerId;
+
 
             if (ModelState.IsValid)
             {
@@ -269,6 +326,7 @@ namespace Geekium.Controllers
         // GET: ServiceListings/Create
         public IActionResult CreateService()
         {
+            ViewBag.ServiceDate = DateTime.Now.ToString("yyyy-MM-dd");
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email");
             return View();
         }
@@ -280,6 +338,14 @@ namespace Geekium.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateService([Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate")] ServiceListing serviceListing)
         {
+            serviceListing.ListingDate = DateTime.Now;
+            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
+            // For service, we do not need a seller id (any account can make a service)
+            var sellerAccountId = await _context.Accounts
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
+            serviceListing.AccountId = sellerAccountId.AccountId;
+
             if (ModelState.IsValid)
             {
                 _context.Add(serviceListing);
@@ -338,6 +404,7 @@ namespace Geekium.Controllers
             {
                 return NotFound();
             }
+            ViewBag.ServiceDate = DateTime.Now.ToString("yyyy-MM-dd");
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email", serviceListing.AccountId);
             return View(serviceListing);
         }
@@ -347,12 +414,20 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate")] ServiceListing serviceListing)
+        public async Task<IActionResult> EditService(int id, [Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate")] ServiceListing serviceListing)
         {
             if (id != serviceListing.ServiceListingId)
             {
                 return NotFound();
             }
+
+            serviceListing.ListingDate = DateTime.Now;
+            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
+            // For service, we do not need a seller id (any account can make a service)
+            var sellerAccountId = await _context.Accounts
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
+            serviceListing.AccountId = sellerAccountId.AccountId;
 
             if (ModelState.IsValid)
             {
@@ -374,6 +449,7 @@ namespace Geekium.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email", serviceListing.AccountId);
             return View(serviceListing);
         }
@@ -388,6 +464,35 @@ namespace Geekium.Controllers
 
         #endregion
 
+        #region Price Trend
+        // GET: PriceTrends/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: PriceTrends/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("PriceTrendId,ItemName,DateOfUpdate,AveragePrice,LowestPrice,HighestPrice")] PriceTrend priceTrend)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(priceTrend);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(priceTrend);
+        }
+
+        private bool PriceTrendExists(int id)
+        {
+            return _context.PriceTrends.Any(e => e.PriceTrendId == id);
+        }
+        #endregion
+
         public MyListingsController(GeekiumContext context)
         {
             _context = context;
@@ -396,8 +501,15 @@ namespace Geekium.Controllers
         // GET: SellListings
         public async Task<IActionResult> Index()
         {
+            string userId = HttpContext.Session.GetString("userId");
+            string url = "/Accounts/Login";
+            if (userId == null)
+            {
+                return LocalRedirect(url);
+            }
+
             var context = _context.SellerAccounts.Include(s => s.SellListings).Include(s => s.TradeListings)
-                .Include(s => s.Account.ServiceListings);
+                .Include(s => s.Account.ServiceListings).Where(s => s.AccountId.ToString() == userId);
 
             return View(await context.ToListAsync());
         }
