@@ -36,6 +36,7 @@ namespace Geekium.Controllers
 
             var tradeListing = await _context.TradeListings
                 .Include(t => t.Seller)
+                .Include(t => t.Seller.Account)
                 .FirstOrDefaultAsync(m => m.TradeListingId == id);
             if (tradeListing == null)
             {

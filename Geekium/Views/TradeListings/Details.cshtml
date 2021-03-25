@@ -1,59 +1,60 @@
 ﻿@model Geekium.Models.TradeListing
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = @Html.DisplayFor(model => model.TradeTitle) + "Details";
 }
 
-<h1>Details</h1>
+<body>
+    <div>
+        <a class="btn btn-primary" type="button" asp-action="Index">Back to List</a>
+    </div>
+    <img class="displayDetailImage"  src="~/images/sell-icon.png" alt="Trade Image" />
 
-<div>
-    <h4>TradeListing</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TradeTitle)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TradeTitle)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TradeDescription)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TradeDescription)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TradeFor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TradeFor)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TradeDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TradeDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TradeItemType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TradeItemType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TradeQuantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TradeQuantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Seller)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Seller.SellerId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+    <h1>@Html.DisplayFor(model => model.TradeTitle)</h1>
+    <p>
+        Category: @Html.DisplayFor(model => model.TradeItemType) <br />
+        Seller: @Html.DisplayFor(model => model.Seller.Account.UserName) <br />
+        Rating: @Html.DisplayFor(model => model.Seller.AverageRating)<br />
+    </p>
+    <hr />
+    <p>
+        Listing Date: @Html.DisplayFor(model => model.TradeDate)<br />
+        Trade For: @Html.DisplayFor(model => model.TradeFor)<br />
+        Quantity: @Html.DisplayFor(model => model.TradeQuantity)<br />
+    </p>
+    <br />
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="tradeDescriptionHeading">
+                <h5 class="mb-0">
+                    <a class="stretched-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Trade Description
+                    </a>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse multi-collapse show" >
+                <div class="card-body">
+                    @Html.DisplayFor(model => model.TradeDescription)
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="contactInformationHeading">
+                <h5 class="mb-0">
+                    <a class="stretched-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                        Contact Information
+                    </a>
+                </h5>
+            </div>
+
+            <div id="collapseTwo" class="collapse multi-collapse show" >
+                <div class="card-body">
+                    Email Address: @Html.DisplayFor(model => model.Seller.Account.Email)
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

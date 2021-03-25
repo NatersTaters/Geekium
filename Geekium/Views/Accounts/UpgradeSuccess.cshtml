@@ -1,0 +1,9 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+	ViewData["Title"] = "Upgrade Success";
+}
+
+<h4>Your account has been successfully upgraded to a seller account!</h4>
+<hr />
+<p>You can begin selling items <a asp-action="" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("sellerId")">here</a></p>

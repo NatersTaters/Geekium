@@ -4,30 +4,29 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Create a New Sell Listing</h1>
 
-<h4>SellListing</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="CreateSell">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" hidden>
                 <label asp-for="SellerId" class="control-label"></label>
-                <select asp-for="SellerId" class ="form-control" asp-items="ViewBag.SellerId"></select>
+                <select asp-for="SellerId" class="form-control" asp-items="ViewBag.SellerId"></select>
             </div>
             <div class="form-group" hidden>
                 <label asp-for="PriceTrendId" class="control-label"></label>
-                <select asp-for="PriceTrendId" class ="form-control" asp-items="ViewBag.PriceTrendId"></select>
+                <select asp-for="PriceTrendId" class="form-control" asp-items="ViewBag.PriceTrendId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="SellTitle" class="control-label"></label>
-                <input asp-for="SellTitle" class="form-control" />
+                <textarea asp-for="SellTitle" class="form-control" maxlength="100"></textarea>
                 <span asp-validation-for="SellTitle" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SellDescription" class="control-label"></label>
-                <input asp-for="SellDescription" class="form-control" />
+                <textarea asp-for="SellDescription" class="form-control" rows="3" maxlength="255"></textarea>
                 <span asp-validation-for="SellDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -36,19 +35,19 @@
                 <span asp-validation-for="SellPrice" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SellDate" class="control-label"></label>
-                <input asp-for="SellDate" class="form-control" />
-                <span asp-validation-for="SellDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="SellItemType" class="control-label"></label>
-                <input asp-for="SellItemType" class="form-control" />
+                <select asp-for="SellItemType" class="form-control" asp-items="ViewBag.SellItemType" />
                 <span asp-validation-for="SellItemType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SellQuantity" class="control-label"></label>
                 <input asp-for="SellQuantity" class="form-control" />
                 <span asp-validation-for="SellQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SellDate" class="control-label"></label>
+                <input readonly value="@ViewBag.SellDate" class="form-control" />
+                <span asp-validation-for="SellDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

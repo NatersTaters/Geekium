@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj": {}
+    "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj": {}
   },
   "projects": {
-    "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj": {
+    "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
+        "projectUniqueName": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
         "projectName": "Geekium",
-        "projectPath": "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
-        "packagesPath": "C:\\Users\\leuna\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\obj\\",
+        "projectPath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
+        "packagesPath": "C:\\Users\\antru\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\leuna\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\antru\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,6 +26,7 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -37,20 +38,21 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "dependencies": {
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[3.1.12, )"
+              "version": "[3.1.13, )"
             },
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
-              "version": "[3.1.12, )"
+              "version": "[3.1.13, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[3.1.12, )"
+              "version": "[3.1.13, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
@@ -79,7 +81,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -4,19 +4,20 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Service Listings</h1>
-
 <body>
-    <form method="post" asp-action="FilterServices">
-        <input id="searchBox" type="text" name="searchService" placeholder="Search for Services" value="@ViewBag.Search" />
-        <a class="btn btn-primary" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
-            Add Filter
-        </a>
-        <button class="btn btn-primary" type="submit" title="searchButton">Search Service</button>
+    <h2>Service Listings</h2>
 
-        <div class="@ViewBag.Collapse" id="filter">
+    <form method="post" asp-action="FilterServices">
+        <div class="form-inline">
+            <input class="form-control mr-sm-2" id="searchBox" type="text" name="searchService" placeholder="Search for Services" value="@ViewBag.Search" />
+            <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
+                Add Filter
+            </a>&nbsp;
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Service</button>
+        </div>
+        <div class="@ViewBag.Collapse form-inline" id="filter">
             <div class="card card-body">
-                <div class="form-group">
+                <div class="form-group form-inline">
                     TBD
                 </div>
             </div>
@@ -36,14 +37,15 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-block">
-                                <div class="card-header">
+                                <div class="card-header truncate">
                                     @Html.DisplayFor(modelItem => item.ServiceTitle)
                                 </div>
                                 <div class="card-body">
+                                    <img class="displayImage" src="~/images/buy-icon.png" />
                                     <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Account.UserName)</h5>
-                                    <p class="card-text">Description: @Html.DisplayFor(modelItem => item.ServiceDescription)</p>
+                                    <p class="card-text truncate">Description: @Html.DisplayFor(modelItem => item.ServiceDescription)</p>
                                     <p class="card-text">Date Listed: @Html.DisplayFor(modelItem => item.ListingDate)</p>
-                                    <a href="#" class="stretched-link"></a>
+                                    <a asp-action="Details" asp-route-id="@item.ServiceListingId" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>

@@ -2,122 +2,131 @@
 @{
     ViewData["Title"] = "Index";
 }
-<a class="btn btn-primary" role="button" asp-action="CreateSell">Create a Sell Listing</a>
-<a class="btn btn-primary" role="button" asp-action="CreateTrade">Create a Trade Listing</a>
-<a class="btn btn-primary" role="button" asp-action="CreateService">Create a Service Listing</a>
-<br />
-<br />
 
-@foreach (var item in Model)
-{
-    <h2>Current Sell Listings</h2>
-    <div class="py-2">
-        <div class="container">
-            @{ var count = 0;}
-            @foreach (var sell in item.SellListings)
-            {
-                if (count == 0)
+<body>
+    <div style="align-content: center; align-items: center;">
+        <div class="form-inline">
+            <a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="CreateSell">Create a Sell Listing</a>
+            <a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="CreateTrade">Create a Trade Listing</a>
+            <a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="CreateService">Create a Service Listing</a>
+        </div>
+    </div>
+
+    @foreach (var item in Model)
+    {
+        <br />
+        <h2>Current Sell Listings</h2>
+        <div class="py-2">
+            <div class="container">
+                @{ var count = 0;}
+                @foreach (var sell in item.SellListings)
                 {
-                    @:<div class="row">
-                    }
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-block">
-                                <div class="card-header">
-                                    @Html.DisplayFor(modelItem => sell.SellTitle)
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => sell.Seller.Account.UserName)</h5>
-                                    <p class="card-text">Price: @Html.DisplayFor(modelItem => sell.SellPrice)</p>
-                                    <a class="stretched-link" asp-action="SellDetails" asp-route-id="@sell.SellListingId"></a>
+                    if (count == 0)
+                    {
+                        @:<div class="row">
+                        }
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-block">
+                                    <div class="card-header truncate">
+                                        @Html.DisplayFor(modelItem => sell.SellTitle)
+                                    </div>
+                                    <div class="card-body">
+                                        <img class="displayImage" src="~/images/buy-icon.png" />
+                                        <h5 class="card-title truncate">Seller: @Html.DisplayFor(modelItem => sell.Seller.Account.UserName)</h5>
+                                        <p class="card-text">Price: $@Html.DisplayFor(modelItem => sell.SellPrice)</p>
+                                        <a class="stretched-link" asp-action="SellDetails" asp-route-id="@sell.SellListingId"></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    if (count == 2)
-                    {
-                        count = 0;
-                    @:</div><br />
-                }
-                else
-                {
-                    count++;
-                }
-            }
-        </div>
-    </div>
-    <br />
-    <h2>Current Trade Listings</h2>
-    <div class="py-2">
-        <div class="container">
-            @{ count = 0;}
-            @foreach (var trade in item.TradeListings)
-            {
-                if (count == 0)
-                {
-                    @:<div class="row">
+                        if (count == 2)
+                        {
+                            count = 0;
+                        @:</div><br />
                     }
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-block">
-                                <div class="card-header">
-                                    @Html.DisplayFor(modelItem => trade.TradeTitle)
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => trade.Seller.Account.UserName)</h5>
-                                    <p class="card-text">Trade For: @Html.DisplayFor(modelItem => trade.TradeFor)</p>
-                                    <a class="stretched-link" asp-action="TradeDetails" asp-route-id="@trade.TradeListingId"></a>
+                    else
+                    {
+                        count++;
+                    }
+                }
+            </div>
+        </div>
+        <hr />
+        <h2>Current Trade Listings</h2>
+        <div class="py-2">
+            <div class="container">
+                @{ count = 0;}
+                @foreach (var trade in item.TradeListings)
+                {
+                    if (count == 0)
+                    {
+                        @:<div class="row">
+                        }
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-block">
+                                    <div class="card-header truncate">
+                                        @Html.DisplayFor(modelItem => trade.TradeTitle)
+                                    </div>
+                                    <div class="card-body">
+                                        <img class="displayImage" src="~/images/buy-icon.png" />
+                                        <h5 class="card-title truncate">Seller: @Html.DisplayFor(modelItem => trade.Seller.Account.UserName)</h5>
+                                        <p class="card-text">Trade For: @Html.DisplayFor(modelItem => trade.TradeFor)</p>
+                                        <a class="stretched-link" asp-action="TradeDetails" asp-route-id="@trade.TradeListingId"></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    if (count == 2)
-                    {
-                        count = 0;
-                    @:</div><br />
-                }
-                else
-                {
-                    count++;
-                }
-            }
-        </div>
-    </div>
-    <br />
-    <h2>Current Service Listings</h2>
-    <div class="py-2">
-        <div class="container">
-            @{ count = 0;}
-            @foreach (var service in item.Account.ServiceListings)
-            {
-                if (count == 0)
-                {
-                    @:<div class="row">
+                        if (count == 2)
+                        {
+                            count = 0;
+                        @:</div><br />
                     }
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-block">
-                                <div class="card-header">
-                                    @Html.DisplayFor(modelItem => service.ServiceTitle)
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Service Provider: @Html.DisplayFor(modelItem => service.Account.UserName)</h5>
-                                    <p class="card-text">Listing Date: @Html.DisplayFor(modelItem => service.ListingDate)</p>
-                                    <a class="stretched-link" asp-action="ServiceDetails" asp-route-id="@service.ServiceListingId"></a>
+                    else
+                    {
+                        count++;
+                    }
+                }
+            </div>
+        </div>
+        <hr />
+        <h2>Current Service Listings</h2>
+        <div class="py-2">
+            <div class="container">
+                @{ count = 0;}
+                @foreach (var service in item.Account.ServiceListings)
+                {
+                    if (count == 0)
+                    {
+                        @:<div class="row">
+                        }
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-block">
+                                    <div class="card-header truncate">
+                                        @Html.DisplayFor(modelItem => service.ServiceTitle)
+                                    </div>
+                                    <div class="card-body">
+                                        <img class="displayImage" src="~/images/buy-icon.png" />
+                                        <h5 class="card-title truncate">Service Provider: @Html.DisplayFor(modelItem => service.Account.UserName)</h5>
+                                        <p class="card-text truncate">Details: @Html.DisplayFor(modelItem => service.ServiceDescription)</p>
+                                        <a class="stretched-link" asp-action="ServiceDetails" asp-route-id="@service.ServiceListingId"></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    if (count == 2)
+                        if (count == 2)
+                        {
+                            count = 0;
+                        @:</div><br />
+                    }
+                    else
                     {
-                        count = 0;
-                    @:</div><br />
+                        count++;
+                    }
                 }
-                else
-                {
-                    count++;
-                }
-            }
+            </div>
         </div>
-    </div>
-}
+    }
+</body>
