@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Text;
 using System.IO;
+using System.Net.Mail;
+using System.Net;
 
 namespace Geekium.Controllers
 {
@@ -65,8 +62,22 @@ namespace Geekium.Controllers
         {
             if (ModelState.IsValid)
             {
+                foreach (var dbItem in _context.Accounts)
+                {
+                    if (dbItem.UserName == model.Username)
+                    {
+                        ModelState.AddModelError("", "Username already taken");
+                        return View(model);
+                    }
+                    else if (dbItem.Email == model.Email)
+					{
+                        ModelState.AddModelError("", "Email already taken");
+                        return View(model);
+                    }
+                }
+
                 var originalPassword = model.Password;
-                string key = RandomString(32);
+                string key = RandomString();
 
                 var encryptedPassword = EncryptString(originalPassword, key);
 
@@ -108,20 +119,26 @@ namespace Geekium.Controllers
         {
             if (ModelState.IsValid)
             {
-                foreach (var dbItem in _context.Accounts)
-                {
-                    if (dbItem.UserName == model.Username)
-                    {
-                        var decryptedPassword = DecryptString(dbItem.UserPassword, dbItem.PaswordHash);
+                var account = await _context.Accounts.FirstOrDefaultAsync(m => m.UserName == model.Username);
+                if (account != null)
+				{
+					var decryptedPassword = DecryptString(account.UserPassword, account.PaswordHash);
 
-                        if (decryptedPassword == model.Password)
+					if (decryptedPassword == model.Password)
+					{
+						HttpContext.Session.SetString("username", account.UserName);
+						HttpContext.Session.SetString("userId", account.AccountId.ToString());
+                        HttpContext.Session.SetString("userEmail", account.Email);
+
+						var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+						if (sellerAccount != null)
 						{
-                            HttpContext.Session.SetString("username", dbItem.UserName);
-                            HttpContext.Session.SetString("userId", dbItem.AccountId.ToString());
-                            return RedirectToAction("Index", "Home");
+                            HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
                         }
-                    }
-                }
+
+						return RedirectToAction("Index", "Home");
+					}
+				}
             }
             ModelState.AddModelError("", "Invalid attempt");
             return View(model);
@@ -132,6 +149,36 @@ namespace Geekium.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
+        }
+
+        //Will direct user to the Upgrade page and set the returnUrl variable if an error has occured
+        [HttpGet]
+        public IActionResult Upgrade(string returnUrl = "")
+        {
+            SendEmail();
+
+			var model = new UpgradeViewModel { ReturnUrl = returnUrl };
+            return View(model);
+        }
+
+        //Will check if the code sent by email matches the code generated in the application, and will create a new SellerAccount
+        //object using the account credidentials
+        [HttpPost]
+        public async Task<IActionResult> Upgrade(UpgradeViewModel model)
+        {
+            if (model.Code == HttpContext.Session.GetString("emailCode"))
+			{
+                SellerAccount sellerAccount = new SellerAccount();
+                sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
+                HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
+
+                SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
+                await sellerAccountsController.Create(sellerAccount);
+
+                return View("UpgradeSuccess");
+            }
+            ModelState.AddModelError("", "Code is invalid");
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -220,10 +267,10 @@ namespace Geekium.Controllers
 
         //Will return a random string 32 characters in length to be used as a key for password encryption
         //and decryption
-        public static string RandomString(int length)
+        public static string RandomString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
+            return new string(Enumerable.Repeat(chars, 32)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
@@ -289,6 +336,39 @@ namespace Geekium.Controllers
 
                     return result;
                 }
+            }
+        }
+
+        //Will generate a random code and connect to the SMTP server provided by Gmail, and will use a email account to
+        //send the random code to the user with email
+        public void SendEmail()
+		{
+            Random r = new Random();
+            int randNum = r.Next(1000000);
+            string emailCode = randNum.ToString("D6");
+            HttpContext.Session.SetString("emailCode", emailCode);
+
+            var senderEmail = new MailAddress("geekium1234@gmail.com");
+            var receiverEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
+            var password = "geekiumaccount1234";
+            var sub = "Account Verification";
+            var body = "Your one time is code is: " + emailCode + ", please enter it where prompted on the website";
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(senderEmail.Address, password)
+            };
+            using (var mess = new MailMessage(senderEmail, receiverEmail)
+            {
+                Subject = sub,
+                Body = body
+            })
+            {
+                smtp.Send(mess);
             }
         }
     }

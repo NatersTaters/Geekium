@@ -49,6 +49,12 @@
 			<div class="form-group">
 				<a asp-action="Delete" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-danger">Delete</a>
 			</div>
+			@if (HttpContextAccessor.HttpContext.Session.GetInt32("sellerId") == null)
+			{
+				<div class="form-group">
+					<a asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-outline-secondary">Upgrade to Seller</a>
+				</div>
+			}
 		</form>
 	</div>
 </div>
