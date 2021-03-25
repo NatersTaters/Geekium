@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Geekium.Data;
 using Geekium.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 
 namespace Geekium
 {
@@ -44,6 +46,7 @@ namespace Geekium
 			});
 
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));  // This line was added, remove if not working!!!!!!!
 
 			// **context - enable dependency injection for context of Geekium database
 			services.AddDbContext<GeekiumContext>(options =>
@@ -53,6 +56,7 @@ namespace Geekium
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]); ///This line was also added for stripe, also remove it if not working
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
