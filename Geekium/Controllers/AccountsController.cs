@@ -19,8 +19,6 @@ namespace Geekium.Controllers
 
         private static Random random = new Random();
 
-        private string emailCode;
-
         public AccountsController(GeekiumContext context)
         {
             _context = context;
@@ -153,6 +151,7 @@ namespace Geekium.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        //Will direct user to the Upgrade page and set the returnUrl variable if an error has occured
         [HttpGet]
         public IActionResult Upgrade(string returnUrl = "")
         {
@@ -162,10 +161,12 @@ namespace Geekium.Controllers
             return View(model);
         }
 
+        //Will check if the code sent by email matches the code generated in the application, and will create a new SellerAccount
+        //object using the account credidentials
         [HttpPost]
         public async Task<IActionResult> Upgrade(UpgradeViewModel model)
         {
-            if (model.Code == "12345")
+            if (model.Code == HttpContext.Session.GetString("emailCode"))
 			{
                 SellerAccount sellerAccount = new SellerAccount();
                 sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
@@ -174,13 +175,10 @@ namespace Geekium.Controllers
                 SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
                 await sellerAccountsController.Create(sellerAccount);
 
-                return RedirectToAction("Index", "Home");
+                return View("UpgradeSuccess");
             }
-            else
-			{
-                ModelState.AddModelError("", "Code is invalid");
-                return View();
-            }
+            ModelState.AddModelError("", "Code is invalid");
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -341,13 +339,20 @@ namespace Geekium.Controllers
             }
         }
 
+        //Will generate a random code and connect to the SMTP server provided by Gmail, and will use a email account to
+        //send the random code to the user with email
         public void SendEmail()
 		{
+            Random r = new Random();
+            int randNum = r.Next(1000000);
+            string emailCode = randNum.ToString("D6");
+            HttpContext.Session.SetString("emailCode", emailCode);
+
             var senderEmail = new MailAddress("geekium1234@gmail.com");
             var receiverEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
             var password = "geekiumaccount1234";
             var sub = "Account Verification";
-            var body = "12345";
+            var body = "Your one time is code is: " + emailCode + ", please enter it where prompted on the website";
             var smtp = new SmtpClient
             {
                 Host = "smtp.gmail.com",
