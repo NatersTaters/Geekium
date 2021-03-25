@@ -20,6 +20,7 @@ namespace Geekium.Models
         public string TradeItemType { get; set; }
         public int TradeQuantity { get; set; }
         public string TradeImage { get; set; }
+        public string TradeLocation { get; set; }
 
         public virtual SellerAccount Seller { get; set; }
     }

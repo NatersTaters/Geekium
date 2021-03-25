@@ -26,6 +26,7 @@ namespace Geekium.Models
         public string SellItemType { get; set; }
         public int SellQuantity { get; set; }
         public string SellImage { get; set; }
+        public string PriceTrendKeywords { get; set; }
 
         public virtual PriceTrend PriceTrend { get; set; }
         public virtual SellerAccount Seller { get; set; }
