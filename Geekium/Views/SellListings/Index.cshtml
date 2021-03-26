@@ -43,12 +43,12 @@
                                 <div class="card-header truncate">
                                     @Html.DisplayFor(modelItem => item.SellTitle)
                                 </div>
-                                <div class="card-body">
-                                    <img class="displayImage" src="~/images/buy-icon.png" />
-                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
-                                    <p class="card-text">Price: $@Html.DisplayFor(modelItem => item.SellPrice)</p>
-                                    <a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
-                                </div>
+								<div class="card-body">
+									<img class="displayImage" src="@Html.DisplayFor(modelItem => item.SellImage)" />
+									<h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
+									<p class="card-text">Price: $@Html.DisplayFor(modelItem => item.SellPrice)</p>
+									<a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
+								</div>
                             </div>
                         </div>
                     </div>
