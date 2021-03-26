@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
 using Microsoft.AspNetCore.Http;
 using Geekium.Helpers;
+using Stripe;
 
 namespace Geekium.Controllers
 {
@@ -23,7 +24,7 @@ namespace Geekium.Controllers
         // GET: Carts
         public IActionResult Index()
         {
-            string accountId = HttpContext.Session.GetString("AccountId"); //TODO: AccountId is returning always null
+            string accountId = HttpContext.Session.GetString("userId"); 
             string url = "/Accounts/Login";
             if(accountId == null)
             {
@@ -78,14 +79,39 @@ namespace Geekium.Controllers
 
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
-        public IActionResult CheckOut()
+        public IActionResult CheckOut(string stripeEmail, string stripeToken)
         {
-            //TODO:
-            /*
-             * Figure out a solution for the paypal api
-             * 
-             */
-            return View();
+            var customers = new CustomerService();
+            var charges = new ChargeService();
+
+            var customer = customers.Create(new CustomerCreateOptions{ 
+                Email=stripeEmail,
+                Source=stripeToken
+            });
+
+            var charge = charges.Create(new ChargeCreateOptions
+            {
+                Amount = 500,
+                Description = "Purchase off of Geekium",
+                Currency = "cad",
+                Customer = customer.Id,
+                ReceiptEmail = stripeEmail,
+                Metadata=new Dictionary<string, string>()
+                {
+                    {"OrderId","111" },
+                    {"OrderFrom", "Geekium" }
+                }
+            });
+
+            if(charge.Status == "succeeded")
+            {
+                string BalanceTransactionId = charge.BalanceTransactionId;
+                return View("succeeded");
+            }
+            else
+            {
+                return View("Unsuccessful");
+            }
         }
 
         /*Cost Calculations for: Price, Tax, and total*/
