@@ -239,6 +239,7 @@ namespace Geekium.Controllers
             }
 
             var account = await _context.Accounts
+                .Include(g => g.SellerAccounts)
                 .FirstOrDefaultAsync(m => m.AccountId == id);
             if (account == null)
             {
@@ -255,9 +256,8 @@ namespace Geekium.Controllers
             var account = await _context.Accounts.FindAsync(id);
             _context.Accounts.Remove(account);
 
-            // look at this later
-            SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
-            await sellerAccountsController.Delete(HttpContext.Session.GetInt32("sellerId"));
+            var sellerAccount = await _context.SellerAccounts.FindAsync(HttpContext.Session.GetInt32("sellerId"));
+            _context.SellerAccounts.Remove(sellerAccount);
             
             await _context.SaveChangesAsync();
             await Logout();
