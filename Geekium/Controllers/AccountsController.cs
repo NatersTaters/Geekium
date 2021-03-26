@@ -166,18 +166,22 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> Upgrade(UpgradeViewModel model)
         {
-            if (model.Code == HttpContext.Session.GetString("emailCode"))
+            if(ModelState.IsValid)
 			{
-                SellerAccount sellerAccount = new SellerAccount();
-                sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
-                HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
+                if (model.Code == HttpContext.Session.GetString("emailCode"))
+                {
+                    SellerAccount sellerAccount = new SellerAccount();
+                    sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
+                    HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
 
-                SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
-                await sellerAccountsController.Create(sellerAccount);
+                    SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
+                    await sellerAccountsController.Create(sellerAccount);
 
-                return View("UpgradeSuccess");
+                    return View("UpgradeSuccess");
+                }
+                ModelState.AddModelError("", "Code is invalid");
             }
-            ModelState.AddModelError("", "Code is invalid");
+            ModelState.AddModelError("", "Invalid Attempt");
             return View(model);
         }
 
