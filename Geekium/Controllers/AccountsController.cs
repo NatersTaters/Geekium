@@ -55,8 +55,9 @@ namespace Geekium.Controllers
             return View(model);
         }
 
-        //Will retrieve the AccountViewModel data given by the user, create a new account object with that data, add that account
-        //object to the Dbcontext, and perform a login with the supplied username and password
+        //Will retrieve the AccountViewModel data given by the user, check if the supplied user name and email are already taken,
+        //create a new account object with that data, add that account object to the database, 
+        //and perform a login with the supplied username and password
         [HttpPost]
         public async Task<IActionResult> Create(AccountViewModel model)
         {
@@ -216,6 +217,7 @@ namespace Geekium.Controllers
                     _context.Update(account);
                     await _context.SaveChangesAsync();
 
+                    //Set Session objects for the User Name and Email to be used throughout the web application
                     HttpContext.Session.SetString("username", account.UserName);
                     HttpContext.Session.SetString("userEmail", account.Email);
                 }
@@ -348,8 +350,8 @@ namespace Geekium.Controllers
             }
         }
 
-        //Will generate a random code and connect to the SMTP server provided by Gmail, and will use a email account to
-        //send the random code to the user with email
+        //Will generate a random code and connect to the SMTP server provided by Gmail, and will use an email account to
+        //send the random code to the user provided email
         public void SendEmail()
 		{
             Random r = new Random();
