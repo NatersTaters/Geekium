@@ -19,8 +19,7 @@ namespace Geekium.Controllers
             _context = context;
         }
 
-        // GET: SellListings
-        // Display all sell listings available
+        // Display the current sell listings
         public async Task<IActionResult> Index()
         {
             string userId = HttpContext.Session.GetString("userId");
@@ -31,15 +30,7 @@ namespace Geekium.Controllers
             return View(model);
         }
 
-        // When they hit the "edit listings"
-        // They will be redirected to a page with only their own listings
-        //public async Task<IActionResult> UserSellListings()
-        //{
-        //    var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller);
-        //    return View(await geekiumContext.ToListAsync());
-        //}
-
-        // When the user tries to search for an item, we will query it 
+        // Filter products with any search/filter parameters available
         [HttpPost]
         public async Task<IActionResult> FilterProducts(string searchProduct, float minPrice, float maxPrice)
         {
@@ -79,27 +70,23 @@ namespace Geekium.Controllers
                 SetViewBag(null, 0, 0);
                 return RedirectToAction("Index");
             }
-
-
         }
 
         // When the user clicks on any item, the details will be returned
         public async Task<IActionResult> Details(int ? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var sellListing = await _context.SellListings
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
                 .FirstOrDefaultAsync(m => m.SellListingId == id);
+
             if (sellListing == null)
-            {
                 return NotFound();
-            }
+
             string userId = HttpContext.Session.GetString("userId");
             if (sellListing.Seller.AccountId.ToString() == userId)
                 ViewBag.ShowCart = false;
@@ -108,6 +95,8 @@ namespace Geekium.Controllers
                     
             return View(sellListing);
         }
+
+        // Sets view bag based on filter
         void SetViewBag(string search, float min, float max)
         {
             if (search != null && search != "")
