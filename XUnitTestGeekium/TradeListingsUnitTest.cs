@@ -17,7 +17,7 @@ namespace XUnitTestGeekium
         // Pass in null
         // No result found error should be returned
         [Fact]
-        public void SellDetails_PassInNull_ReturnNotFound()
+        public void TradeDetails_PassInNull_ReturnNotFound()
         {
             // Arrange
             TradeListingsController controller = new TradeListingsController(context);

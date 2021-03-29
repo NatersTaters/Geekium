@@ -226,7 +226,7 @@ namespace XUnitTestGeekium
 
         #region Trade Listings
         // Call CreateTrade()
-        // Pass the initialized sell listing
+        // Pass the initialized trade listing
         // Model returns okay
         [Fact]
         public void CreateTrade_InputViableTradeData_ModelReturnsValid()
@@ -279,10 +279,10 @@ namespace XUnitTestGeekium
 
         #region Service Listings
         // Call CreateService()
-        // Pass the initialized sell listing
+        // Pass the initialized service listing
         // Model returns okay
         [Fact]
-        public void CreateService_InputViableSellData_ModelReturnsValid()
+        public void CreateService_InputViableServiceData_ModelReturnsValid()
         {
             // Arrange
             MyListingsController controller = new MyListingsController(context);
