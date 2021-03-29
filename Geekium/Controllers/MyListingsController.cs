@@ -171,6 +171,8 @@ namespace Geekium.Controllers
             return View();
         }
 
+        
+
         // POST: SellListings/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -502,18 +504,12 @@ namespace Geekium.Controllers
             string userId = HttpContext.Session.GetString("userId");
             string url = "/Accounts/Login";
             if (userId == null)
+            {
                 return LocalRedirect(url);
-
-            var sellerAccountId = await _context.SellerAccounts
-                .Include(s => s.Account)
-                .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
-
-            if (sellerAccountId == null)
-                return LocalRedirect(url);
+            }
 
             var context = _context.SellerAccounts.Include(s => s.SellListings).Include(s => s.TradeListings)
                 .Include(s => s.Account.ServiceListings).Where(s => s.AccountId.ToString() == userId);
-
 
             return View(await context.ToListAsync());
         }

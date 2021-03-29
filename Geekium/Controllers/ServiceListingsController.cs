@@ -18,7 +18,7 @@ namespace Geekium.Controllers
             _context = context;
         }
 
-        // Display all service listings
+        // GET: ServiceListings
         public async Task<IActionResult> Index()
         {
             var geekiumContext = _context.ServiceListings.Include(s => s.Account);
@@ -26,7 +26,7 @@ namespace Geekium.Controllers
             return View(await geekiumContext.ToListAsync());
         }
 
-        // Get the details of the passed in service id
+        // GET: ServiceListings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,7 +45,6 @@ namespace Geekium.Controllers
             return View(serviceListing);
         }
 
-        // Filter the service listings based on filter and search parameters
         [HttpPost]
         public async Task<IActionResult> FilterServices(string searchService)
         {
@@ -63,7 +62,6 @@ namespace Geekium.Controllers
             }
         }
 
-        // Set view bag based on filter
         void SetViewBag(string search)
         {
             ViewBag.Collapse = "collapse";

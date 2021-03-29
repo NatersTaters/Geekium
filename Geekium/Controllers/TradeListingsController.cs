@@ -18,7 +18,7 @@ namespace Geekium.Controllers
             _context = context;
         }
 
-        // Get all trade listings
+        // GET: TradeListings
         public async Task<IActionResult> Index()
         {
             var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account);
@@ -26,7 +26,7 @@ namespace Geekium.Controllers
             return View(await geekiumContext.ToListAsync());
         }
 
-        // Display the details page for the given trade id
+        // GET: TradeListings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,7 +46,7 @@ namespace Geekium.Controllers
             return View(tradeListing);
         }
 
-        // Filter the listings page based on filter and search parameters
+        // When the user tries to search for an item, we will query it 
         [HttpPost]
         public async Task<IActionResult> FilterTrades(string searchTrade)
         {
@@ -65,7 +65,6 @@ namespace Geekium.Controllers
             }
         }
 
-        // Set view bag based on filter
         void SetViewBag(string search)
         {
             ViewBag.Collapse = "collapse";
