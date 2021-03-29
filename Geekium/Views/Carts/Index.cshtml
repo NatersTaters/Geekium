@@ -19,7 +19,7 @@
                 <th>Description</th>
                 <th>Price</th>
                 <th>Quantity</th>
-                <th>Price</th>
+                <th></th>
                 <th></th>
             </tr>
             @foreach (var ItemsForCart in ViewBag.cart)
@@ -30,18 +30,14 @@
                     <td>@ItemsForCart.SellListing.SellDescription</td>
                     <td>@ItemsForCart.SellListing.SellPrice</td>
                     <td>@ItemsForCart.Quantity</td>
-                    <td>@(ItemsForCart.SellListing.SellPrice * ItemsForCart.Quantity) </td>
+                    <td></td>
                     <td><a asp-controller="Carts" asp-action="Remove" asp-route-id="ItemsForCart.SellListing.SellListingId">Remove Item</a></td>
                 </tr>
             }
-            <tr>
-                <td align="right" colspan="3">HST</td>
-                <td>@ViewBag.tax</td>
-            </tr>
-            <tr>
-                <td align="right" colspan="3">Total</td>
-                <td>@ViewBag.total</td>
-            </tr>
+        <tr>
+            <td align="right" colspan="3">HST</td>
+            <td>@ViewBag.tax</td>
+        </tr>
         </table>
     }
     else
@@ -51,14 +47,14 @@
     <div class="text-center">
         <form asp-action="CheckOut" asp-controller="Carts" method="POST">
             <article>
-                <label>Amount: $0.00</label>
+                <label>Sum: @ViewBag.total</label>
             </article>
             <script src="//checkout.stripe.com/v2/checkout.js"
                     class="stripe-button"
                     data-key="@Stripe.Value.PublishableKey"
                     data-locale="auto"
                     data-description="Product Checkout"
-                    data-amount="500"
+                    data-amount= "@ViewBag.stripeTotal"
                     data-currency="cad">
             </script>
         </form>
