@@ -8858,19 +8858,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\antru\\.nuget\\packages\\": {}
+    "C:\\Users\\leuna\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
+      "projectUniqueName": "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
       "projectName": "Geekium",
-      "projectPath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
-      "packagesPath": "C:\\Users\\antru\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\antru\\Documents\\GitHub\\Geekium\\Geekium\\obj\\",
+      "projectPath": "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\Geekium.csproj",
+      "packagesPath": "C:\\Users\\leuna\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\leuna\\OneDrive\\Documents\\GitHub\\Geekium\\Geekium\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\antru\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\leuna\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -8882,7 +8882,6 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "projectReferences": {}
         }
       },
@@ -8894,7 +8893,6 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
-        "targetAlias": "netcoreapp3.1",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.SqlServer": {
             "target": "Package",
@@ -8937,7 +8935,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
       }
     }
   }
