@@ -55,8 +55,9 @@ namespace Geekium.Controllers
             return View(model);
         }
 
-        //Will retrieve the AccountViewModel data given by the user, create a new account object with that data, add that account
-        //object to the Dbcontext, and perform a login with the supplied username and password
+        //Will retrieve the AccountViewModel data given by the user, check if the supplied user name and email are already taken,
+        //create a new account object with that data, add that account object to the database, 
+        //and perform a login with the supplied username and password
         [HttpPost]
         public async Task<IActionResult> Create(AccountViewModel model)
         {
@@ -166,18 +167,22 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> Upgrade(UpgradeViewModel model)
         {
-            if (model.Code == HttpContext.Session.GetString("emailCode"))
+            if(ModelState.IsValid)
 			{
-                SellerAccount sellerAccount = new SellerAccount();
-                sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
-                HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
+                if (model.Code == HttpContext.Session.GetString("emailCode"))
+                {
+                    SellerAccount sellerAccount = new SellerAccount();
+                    sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
+                    HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
 
-                SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
-                await sellerAccountsController.Create(sellerAccount);
+                    SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
+                    await sellerAccountsController.Create(sellerAccount);
 
-                return View("UpgradeSuccess");
+                    return View("UpgradeSuccess");
+                }
+                ModelState.AddModelError("", "Code is invalid");
             }
-            ModelState.AddModelError("", "Code is invalid");
+            ModelState.AddModelError("", "Invalid Attempt");
             return View(model);
         }
 
@@ -212,6 +217,7 @@ namespace Geekium.Controllers
                     _context.Update(account);
                     await _context.SaveChangesAsync();
 
+                    //Set Session objects for the User Name and Email to be used throughout the web application
                     HttpContext.Session.SetString("username", account.UserName);
                     HttpContext.Session.SetString("userEmail", account.Email);
                 }
@@ -239,6 +245,7 @@ namespace Geekium.Controllers
             }
 
             var account = await _context.Accounts
+                .Include(g => g.SellerAccounts)
                 .FirstOrDefaultAsync(m => m.AccountId == id);
             if (account == null)
             {
@@ -255,9 +262,8 @@ namespace Geekium.Controllers
             var account = await _context.Accounts.FindAsync(id);
             _context.Accounts.Remove(account);
 
-            // look at this later
-            SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
-            await sellerAccountsController.Delete(HttpContext.Session.GetInt32("sellerId"));
+            var sellerAccount = await _context.SellerAccounts.FindAsync(HttpContext.Session.GetInt32("sellerId"));
+            _context.SellerAccounts.Remove(sellerAccount);
             
             await _context.SaveChangesAsync();
             await Logout();
@@ -344,8 +350,8 @@ namespace Geekium.Controllers
             }
         }
 
-        //Will generate a random code and connect to the SMTP server provided by Gmail, and will use a email account to
-        //send the random code to the user with email
+        //Will generate a random code and connect to the SMTP server provided by Gmail, and will use an email account to
+        //send the random code to the user provided email
         public void SendEmail()
 		{
             Random r = new Random();

@@ -21,6 +21,10 @@ namespace Geekium.Controllers
             _context = context;
         }
 
+        public CartsController()
+        {
+        }
+
         // GET: Carts
         public IActionResult Index()
         {
@@ -39,6 +43,7 @@ namespace Geekium.Controllers
                     ViewBag.price = FirstTotalPrice(cart);
                     ViewBag.tax = Tax(ViewBag.price);
                     ViewBag.total = TotalCost(ViewBag.price, ViewBag.tax);
+                    ViewBag.stripeTotal = ViewBag.total * 100;
                 }
                 return View();
             }
@@ -91,7 +96,7 @@ namespace Geekium.Controllers
 
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = 500,
+                Amount = ViewBag.total * 1000,
                 Description = "Purchase off of Geekium",
                 Currency = "cad",
                 Customer = customer.Id,
@@ -117,7 +122,7 @@ namespace Geekium.Controllers
         /*Cost Calculations for: Price, Tax, and total*/
         public double FirstTotalPrice(List<ItemsForCart> cart)
         {
-            var totalPrice = cart.Sum(ItemsForCart => ItemsForCart.SellListing.SellPrice * ItemsForCart.SellListing.SellPrice);
+            var totalPrice = cart.Sum(ItemsForCart => ItemsForCart.SellListing.SellPrice * ItemsForCart.Quantity);
             try
             {
                 return (double)totalPrice;
@@ -189,13 +194,13 @@ namespace Geekium.Controllers
             return newCart;
             
         }
-
+  
         public List<ItemsForCart> RemoveProduct(int id, List<ItemsForCart> cart)
         {
             var index = FindIndex(id, cart);
             cart.RemoveAt(index);
             return cart;
         }
-        
+
     }
 }
