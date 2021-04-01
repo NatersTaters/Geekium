@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+	ViewData["Title"] = "Get Rewards";
+}
+
+<h1>Rewards</h1>
+<h3>Your Points Balance: @HttpContextAccessor.HttpContext.Session.GetInt32("pointsBalance")</h3>
+<br />
+<p>Please choose which reward you would like to redeem your points for below:</p>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Type</th>
+			<th>Cost</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			@if (HttpContextAccessor.HttpContext.Session.GetInt32("pointsBalance") >= 50)
+			{
+				<td>
+					-25% Discount Code
+				</td>
+				<td>
+					50 Points
+				</td>
+				<td>
+					<a class="btn-outline-primary" asp-area="" asp-controller="Rewards" asp-action="GetReward" asp-route-id="1">Redeem</a>
+				</td>
+			}
+		</tr>
+		<tr>
+			@if (HttpContextAccessor.HttpContext.Session.GetInt32("pointsBalance") >= 100)
+			{
+				<td>
+					-50% Discount Code
+				</td>
+				<td>
+					100 Points
+				</td>
+				<td>
+					<a class="btn-outline-primary" asp-area="" asp-controller="Rewards" asp-action="GetReward" asp-route-id="2">Redeem</a>
+				</td>
+			}
+		</tr>
+		<tr>
+			@if (HttpContextAccessor.HttpContext.Session.GetInt32("pointsBalance") >= 150)
+			{
+				<td>
+					Free Website Merch
+				</td>
+				<td>
+					150 Points
+				</td>
+				<td>
+					<a class="btn-outline-primary" asp-area="" asp-controller="Rewards" asp-action="GetReward" asp-route-id="3">Redeem</a>
+				</td>
+			}
+		</tr>	
+	</tbody>
+</table>

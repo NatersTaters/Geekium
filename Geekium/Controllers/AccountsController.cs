@@ -130,8 +130,18 @@ namespace Geekium.Controllers
 						HttpContext.Session.SetString("username", account.UserName);
 						HttpContext.Session.SetString("userId", account.AccountId.ToString());
                         HttpContext.Session.SetString("userEmail", account.Email);
+                        HttpContext.Session.SetInt32("pointsBalance", (int)account.PointBalance);
 
-						var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+                        if(account.PointBalance == null)
+						{
+                            HttpContext.Session.SetInt32("pointsBalance", 0);
+                        }
+                        else
+						{
+                            HttpContext.Session.SetInt32("pointsBalance", (int)account.PointBalance);
+                        }
+
+                        var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
 						if (sellerAccount != null)
 						{
                             HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
@@ -217,9 +227,8 @@ namespace Geekium.Controllers
                     _context.Update(account);
                     await _context.SaveChangesAsync();
 
-                    //Set Session objects for the User Name and Email to be used throughout the web application
+                    //Set Session objects for the User Name to be used throughout the web application
                     HttpContext.Session.SetString("username", account.UserName);
-                    HttpContext.Session.SetString("userEmail", account.Email);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -232,6 +241,25 @@ namespace Geekium.Controllers
                         throw;
                     }
                 }
+                return RedirectToAction("Index", "Home");
+            }
+            return View(account);
+        }
+
+        public async Task<IActionResult> EditPoints(Account account, int pointBalance)
+        {
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                account.PointBalance = pointBalance;
+
+                _context.Update(account);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction("Index", "Home");
             }
             return View(account);

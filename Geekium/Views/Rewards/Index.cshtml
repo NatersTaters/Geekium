@@ -1,59 +1,35 @@
 ﻿@model IEnumerable<Geekium.Models.Reward>
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Rewards";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Rewards</h1>
+<h3>Your Points Balance: @HttpContextAccessor.HttpContext.Session.GetInt32("pointsBalance")</h3>
+<br />
+<div style="align-content: center; align-items: center;">
+	<div class="form-inline">
+		<a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="RedeemRewards">Use Your Points</a>
+	</div>
+</div>
+<br />
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.RewardType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RewardCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PointCost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateReceived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Account)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RewardType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RewardCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PointCost)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateReceived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Account.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RewardId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RewardId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.RewardId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.RewardType)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.DateReceived)
+				</td>
+				<td>
+					<a class="btn-outline-primary" asp-area="" asp-controller="Rewards" asp-action="UseReward" asp-route-id="@item.RewardId">Redeem</a>
+				</td>
+			</tr>
+			}
+		</tbody>
+	</table>
