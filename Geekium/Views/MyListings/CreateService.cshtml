@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Createa New Service Listing</h1>
+<h1>Create a New Service Listing</h1>
 
 <hr />
 <div class="row">
@@ -17,12 +17,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="ServiceTitle" class="control-label"></label>
-                <textarea asp-for="ServiceTitle" class="form-control" maxlength="100"></textarea>
+                <textarea required asp-for="ServiceTitle" class="form-control" maxlength="100"></textarea>
                 <span asp-validation-for="ServiceTitle" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ServiceDescription" class="control-label"></label>
-                <textarea asp-for="ServiceDescription" class="form-control" rows="3" maxlength="255"></textarea>
+                <textarea required asp-for="ServiceDescription" class="form-control" rows="3" maxlength="255"></textarea>
                 <span asp-validation-for="ServiceDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
