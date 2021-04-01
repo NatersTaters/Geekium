@@ -21,28 +21,27 @@
             </div>
             <div class="form-group">
                 <label asp-for="SellTitle" class="control-label"></label>
-                <textarea asp-for="SellTitle" class="form-control" maxlength="100"></textarea>
+                <textarea required asp-for="SellTitle" class="form-control" maxlength="100"></textarea>
                 <span asp-validation-for="SellTitle" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SellDescription" class="control-label"></label>
-                <textarea asp-for="SellDescription" class="form-control" rows="3" maxlength="255"></textarea>
+                <textarea required asp-for="SellDescription" class="form-control" rows="3" maxlength="255"></textarea>
                 <span asp-validation-for="SellDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SellPrice" class="control-label"></label>
-                <input asp-for="SellPrice" class="form-control" />
+                <input required asp-for="SellPrice" class="form-control" />
                 <span asp-validation-for="SellPrice" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SellItemType" class="control-label"></label>
-                <input asp-for="SellItemType" class="form-control"/>
-                <span asp-validation-for="SellItemType" class="text-danger"></span>
+                <label asp-for="SellQuantity" class="control-label"></label>
+                <input required asp-for="SellQuantity" class="form-control" />
+                <span asp-validation-for="SellQuantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SellQuantity" class="control-label"></label>
-                <input asp-for="SellQuantity" class="form-control" />
-                <span asp-validation-for="SellQuantity" class="text-danger"></span>
+                <label asp-for="SellItemType" class="control-label"></label>
+                <select asp-for="SellItemType" class="form-control" asp-items="ViewBag.SellItemType"></select>
             </div>
             <div class="form-group">
                 <label asp-for="SellDate" class="control-label"></label>

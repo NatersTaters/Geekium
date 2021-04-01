@@ -12,7 +12,29 @@ namespace Geekium.Controllers
 {
     public class MyListingsController : Controller
     {
-
+        private List<string> dropdownValues = new List<string>
+        {
+            "Video Games",
+            "Trading Cards",
+            "Books",
+            "Computers",
+            "Toys",
+            "Consoles",
+            "Desk",
+            "Chairs",
+            "Smart Phones",
+            "Smart Watches",
+            "TV",
+            "Headphones",
+            "Speakers",
+            "Boardgames",
+            "Operating Systems",
+            "Anti-virus",
+            "Apparel",
+            "Monitor",
+            "Mouse",
+            "Keyboard"
+        };
         private readonly GeekiumContext _context;
 
         #region Trade
@@ -22,6 +44,8 @@ namespace Geekium.Controllers
         public IActionResult CreateTrade()
         {
             ViewBag.TradeDate = DateTime.Now.ToString("yyyy-MM-dd");
+            List<SelectListItem> dropdownList = PopulateDropdown();
+            ViewData["TradeItemType"] = new SelectList(dropdownList, "Value", "Text");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
             return View();
         }
@@ -98,6 +122,10 @@ namespace Geekium.Controllers
             {
                 return NotFound();
             }
+
+            List<SelectListItem> dropdownList = PopulateDropdown();
+            ViewData["TradeItemType"] = new SelectList(dropdownList, "Value", "Text");
+
             ViewBag.TradeDate = DateTime.Now.ToString("yyyy-MM-dd");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", tradeListing.SellerId);
             return View(tradeListing);
@@ -165,7 +193,8 @@ namespace Geekium.Controllers
         public IActionResult CreateSell()
         {
             ViewBag.SellDate = DateTime.Now.ToString("yyyy-MM-dd");
-            //ViewData["SellItemType"] = new SelectList()
+            List<SelectListItem> dropdownList = PopulateDropdown();
+            ViewData["SellItemType"] = new SelectList(dropdownList, "Value", "Text");
             ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
             return View();
@@ -254,6 +283,8 @@ namespace Geekium.Controllers
             }
 
             ViewBag.SellDate = DateTime.Now.ToString("yyyy-MM-dd");
+            List<SelectListItem> dropdownList = PopulateDropdown();
+            ViewData["SellItemType"] = new SelectList(dropdownList, "Value", "Text");
             ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
             return View(sellListing);
@@ -509,13 +540,36 @@ namespace Geekium.Controllers
                 .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
 
             if (sellerAccountId == null)
-                return LocalRedirect(url);
+                ViewBag.SellerAccount = false;
+            else
+                ViewBag.SellerAccount = true;
 
-            var context = _context.SellerAccounts.Include(s => s.SellListings).Include(s => s.TradeListings)
-                .Include(s => s.Account.ServiceListings).Where(s => s.AccountId.ToString() == userId);
-
+            var context = _context.Accounts
+                .Include(s => s.SellerAccounts).ThenInclude(s => s.SellListings)
+                .Include(s => s.SellerAccounts).ThenInclude (s => s.TradeListings)
+                .Include(s => s.ServiceListings).Where(s => s.AccountId.ToString() == userId);
 
             return View(await context.ToListAsync());
         }
+
+        #region Helper Functions
+        private List<SelectListItem> PopulateDropdown()
+        {
+            List<SelectListItem> drop = new List<SelectListItem>();
+
+            foreach (var item in dropdownValues)
+            {
+                SelectListItem select = new SelectListItem
+                {
+                    Selected = false,
+                    Text = item,
+                    Value = item
+                };
+                drop.Add(select);
+            }
+
+            return drop;
+        }
+        #endregion
     }
 }
