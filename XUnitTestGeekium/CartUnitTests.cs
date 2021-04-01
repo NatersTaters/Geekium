@@ -6,9 +6,8 @@ using Xunit;
 
 namespace XUnitTestGeekium
 {
-    public class LGUnitTests
+    public class CartUnitTests
     {
-        //CartsController context;
 
         public SellListing Product()
         {   //Initializing a sample selllisting to use in use cases 

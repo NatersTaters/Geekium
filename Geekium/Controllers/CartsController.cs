@@ -21,9 +21,9 @@ namespace Geekium.Controllers
             _context = context;
         }
 
-        public CartsController()
-        {
-        }
+        //public CartsController()
+        //{
+        //}
 
         // GET: Carts
         public IActionResult Index()
@@ -44,6 +44,7 @@ namespace Geekium.Controllers
                     ViewBag.tax = Tax(ViewBag.price);
                     ViewBag.total = TotalCost(ViewBag.price, ViewBag.tax);
                     ViewBag.stripeTotal = ViewBag.total * 100;
+                    ViewBag.points = PointsEarned(ViewBag.total);
                 }
                 return View();
             }
@@ -84,19 +85,21 @@ namespace Geekium.Controllers
 
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
-        public IActionResult CheckOut(string stripeEmail, string stripeToken)
+        public IActionResult CheckOut(string stripeEmail, string stripeToken, bool charged)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
+
+            int stripeAmount = Convert.ToInt32(ViewBag.stripeTotal * -1); // These lines are added
+            var amount = (int)(stripeAmount); /// These lines are added
 
             var customer = customers.Create(new CustomerCreateOptions{ 
                 Email=stripeEmail,
                 Source=stripeToken
             });
-
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = ViewBag.total * 1000,
+                Amount = amount, //ViewBag.stripeTotal, //500, //ViewBag.total * 1000, //Convert.ToInt32(ViewBag.total * 1000),
                 Description = "Purchase off of Geekium",
                 Currency = "cad",
                 Customer = customer.Id,
@@ -108,10 +111,10 @@ namespace Geekium.Controllers
                 }
             });
 
-            if(charge.Status == "succeeded")
+            if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
-                return View("succeeded");
+                return View("CheckOut");
             }
             else
             {
@@ -145,6 +148,12 @@ namespace Geekium.Controllers
             return totalWithoutTax + tax;
         }
 
+        //Points are calculated by totalPoints(total cost of items) times the point rate of 10 and is rounded to the nearest whole number away from zero 
+        public double PointsEarned(double totalPoints)
+        {
+            double pRate = 10;
+            return Math.Round(totalPoints * pRate, 0, MidpointRounding.AwayFromZero);
+        }
         /*Cart actions calculations: Remove Product, Add Product, finding Product */
 
         public List<ItemsForCart> AddToCart(SellListing sellListing, List<ItemsForCart> existingCart)
