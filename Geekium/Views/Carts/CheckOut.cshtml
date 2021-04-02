@@ -1,18 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "succeeded";
 }
 <!DOCTYPE html>
 
 
-<h2 style="text-align:center">Cart Checkout</h2>
+<h2 style="text-align:center">Transaction complete</h2>
 
 <body>
-    @if (ViewBag.cart != null && ViewBag.cart.Count > 0) 
-    {
-        <p align="center">Transaction Complete!</p>
-    }
-    else
-    {
-        <h4 style="text-align:center">Under Construction!</h4>
-    }
+        <p align="center">Payment has been completed!</p>
 </body>
