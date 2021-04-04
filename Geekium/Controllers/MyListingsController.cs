@@ -71,15 +71,22 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
-                //Save image to wwwroot/images
-                string wwwRootPath = _hostEnvironment.WebRootPath;
-                string fileName = Path.GetFileNameWithoutExtension(tradeListing.ImageFile.FileName);
-                string extension = Path.GetExtension(tradeListing.ImageFile.FileName);
-                tradeListing.TradeImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
-                {
-                    await tradeListing.ImageFile.CopyToAsync(fileStream);
+                if (tradeListing.ImageFile != null)
+				{
+                    //Save image to wwwroot/images
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(tradeListing.ImageFile.FileName);
+                    string extension = Path.GetExtension(tradeListing.ImageFile.FileName);
+                    tradeListing.TradeImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await tradeListing.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
+                else
+				{
+                    tradeListing.TradeImage = "trade-icon.png";
                 }
 
                 _context.Add(tradeListing);
@@ -118,10 +125,16 @@ namespace Geekium.Controllers
         {
             var tradeListing = await _context.TradeListings.FindAsync(id);
 
-            //Delete the image from wwwroot/images
-            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", tradeListing.TradeImage);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
+            if (tradeListing.TradeImage != null)
+            {
+                //Delete the image from wwwroot/images
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "images", tradeListing.TradeImage);
+                if(imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "trade-icon.png"))
+				{
+                    if (System.IO.File.Exists(imagePath))
+                        System.IO.File.Delete(imagePath);
+                }
+            }
 
             _context.TradeListings.Remove(tradeListing);
             await _context.SaveChangesAsync();
@@ -245,16 +258,23 @@ namespace Geekium.Controllers
                     // Create a new price trend 
                 }
 
-                //Save image to wwwroot/images
-                string wwwRootPath = _hostEnvironment.WebRootPath;
-                string fileName = Path.GetFileNameWithoutExtension(sellListing.ImageFile.FileName);
-                string extension = Path.GetExtension(sellListing.ImageFile.FileName);
-                sellListing.SellImage=fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
+                if (sellListing.ImageFile != null)
 				{
-                    await sellListing.ImageFile.CopyToAsync(fileStream);
-				}
+                    //Save image to wwwroot/images
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(sellListing.ImageFile.FileName);
+                    string extension = Path.GetExtension(sellListing.ImageFile.FileName);
+                    sellListing.SellImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await sellListing.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
+                else
+				{
+                    sellListing.SellImage = "sell-icon.png";
+                }
 
                 _context.Add(sellListing);
                 await _context.SaveChangesAsync();
@@ -294,10 +314,16 @@ namespace Geekium.Controllers
         {
             var sellListing = await _context.SellListings.FindAsync(id);
 
-            //Delete the image from wwwroot/images
-            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", sellListing.SellImage);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
+            if(sellListing.SellImage != null)
+			{
+                //Delete the image from wwwroot/images
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "images", sellListing.SellImage);
+                if (imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "sell-icon.png"))
+                {
+                    if (System.IO.File.Exists(imagePath))
+                        System.IO.File.Delete(imagePath);
+                }
+            }
 
             _context.SellListings.Remove(sellListing);
             await _context.SaveChangesAsync();
@@ -413,15 +439,22 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
-                //Save image to wwwroot/images
-                string wwwRootPath = _hostEnvironment.WebRootPath;
-                string fileName = Path.GetFileNameWithoutExtension(serviceListing.ImageFile.FileName);
-                string extension = Path.GetExtension(serviceListing.ImageFile.FileName);
-                serviceListing.ServiceImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
+                if (serviceListing.ImageFile != null)
                 {
-                    await serviceListing.ImageFile.CopyToAsync(fileStream);
+                    //Save image to wwwroot/images
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(serviceListing.ImageFile.FileName);
+                    string extension = Path.GetExtension(serviceListing.ImageFile.FileName);
+                    serviceListing.ServiceImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await serviceListing.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
+                else
+				{
+                    serviceListing.ServiceImage = "geekium_symbol.png";
                 }
 
                 _context.Add(serviceListing);
@@ -460,10 +493,16 @@ namespace Geekium.Controllers
         {
             var serviceListing = await _context.ServiceListings.FindAsync(id);
 
-            //Delete the image from wwwroot/images
-            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", serviceListing.ServiceImage);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
+            if (serviceListing.ServiceImage != null)
+            {
+                //Delete the image from wwwroot/images
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "images", serviceListing.ServiceImage);
+                if (imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "geekium_symbol.png"))
+                {
+                    if (System.IO.File.Exists(imagePath))
+                        System.IO.File.Delete(imagePath);
+                }
+            }
 
             _context.ServiceListings.Remove(serviceListing);
             await _context.SaveChangesAsync();

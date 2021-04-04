@@ -8,7 +8,7 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-6">
+	<div class="col-md-6">
 		<form asp-action="EditSell" enctype="multipart/form-data">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<input type="hidden" asp-for="SellListingId" />
@@ -48,16 +48,6 @@
 				<span asp-validation-for="SellItemType" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				@if (Model.SellImage != null)
-				{
-					<img class="displayDetailImage" src="@("~/images/"+Model.SellImage)" asp-append-version="true" width="250" height="250" />
-					<p>Current Image</p>
-				}
-				<label asp-for="ImageFile" class="control-label"></label>
-				<input asp-for="ImageFile" accept="image/*" />
-				<span asp-validation-for="ImageFile" class="text-danger"></span>
-			</div>
-			<div class="form-group">
 				<label asp-for="SellDate" class="control-label"></label>
 				<input readonly value="@ViewBag.SellDate" class="form-control" />
 				<span asp-validation-for="SellDate" class="text-danger"></span>
@@ -66,7 +56,14 @@
 				<input type="submit" value="Save" class="btn btn-primary" />
 			</div>
 		</form>
-    </div>
+	</div>
+	<div style="width:50%;text-align:center">
+		@if (Model.SellImage != null)
+		{
+			<img class="displayDetailImage" src="@("~/images/"+Model.SellImage)" asp-append-version="true" width="250" height="250" />
+			<p>Current Image</p>
+		}
+	</div>
 </div>
 
 <div>
