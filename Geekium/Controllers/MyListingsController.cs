@@ -117,6 +117,12 @@ namespace Geekium.Controllers
         public async Task<IActionResult> DeleteConfirmedTrade(int id)
         {
             var tradeListing = await _context.TradeListings.FindAsync(id);
+
+            //Delete the image from wwwroot/images
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", tradeListing.TradeImage);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
+
             _context.TradeListings.Remove(tradeListing);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -287,6 +293,12 @@ namespace Geekium.Controllers
         public async Task<IActionResult> DeleteConfirmedSelling(int id)
         {
             var sellListing = await _context.SellListings.FindAsync(id);
+
+            //Delete the image from wwwroot/images
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", sellListing.SellImage);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
+
             _context.SellListings.Remove(sellListing);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -337,7 +349,6 @@ namespace Geekium.Controllers
             var priceTrendExists = PriceTrendExists(sellListing.PriceTrendId);
 
             sellListing.SellerId = sellerAccountId.SellerId;
-
 
             if (ModelState.IsValid)
             {
@@ -448,6 +459,12 @@ namespace Geekium.Controllers
         public async Task<IActionResult> DeleteConfirmedService(int id)
         {
             var serviceListing = await _context.ServiceListings.FindAsync(id);
+
+            //Delete the image from wwwroot/images
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", serviceListing.ServiceImage);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
+
             _context.ServiceListings.Remove(serviceListing);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -9,53 +9,63 @@
 <hr />
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="EditSell">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="SellListingId" />
-            <div class="form-group" hidden>
-                <label asp-for="SellerId" class="control-label"></label>
-                <select asp-for="SellerId" class="form-control" asp-items="ViewBag.SellerId"></select>
-                <span asp-validation-for="SellerId" class="text-danger"></span>
-            </div>
-            <div class="form-group" hidden>
-                <label asp-for="PriceTrendId" class="control-label"></label>
-                <select asp-for="PriceTrendId" class="form-control" asp-items="ViewBag.PriceTrendId"></select>
-                <span asp-validation-for="PriceTrendId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellTitle" class="control-label"></label>
-                <textarea required asp-for="SellTitle" class="form-control" maxlength="100"></textarea>
-                <span asp-validation-for="SellTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellDescription" class="control-label"></label>
-                <textarea required asp-for="SellDescription" class="form-control" rows="3" maxlength="255"></textarea>
-                <span asp-validation-for="SellDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellPrice" class="control-label"></label>
-                <input required asp-for="SellPrice" class="form-control" />
-                <span asp-validation-for="SellPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellQuantity" class="control-label"></label>
-                <input required asp-for="SellQuantity" class="form-control" />
-                <span asp-validation-for="SellQuantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellItemType" class="control-label"></label>
-                <select asp-for="SellItemType" class="form-control" asp-items="ViewBag.SellItemType"></select>
-                <span asp-validation-for="SellItemType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellDate" class="control-label"></label>
-                <input readonly value="@ViewBag.SellDate" class="form-control" />
-                <span asp-validation-for="SellDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+		<form asp-action="EditSell" enctype="multipart/form-data">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="SellListingId" />
+			<div class="form-group" hidden>
+				<label asp-for="SellerId" class="control-label"></label>
+				<select asp-for="SellerId" class="form-control" asp-items="ViewBag.SellerId"></select>
+				<span asp-validation-for="SellerId" class="text-danger"></span>
+			</div>
+			<div class="form-group" hidden>
+				<label asp-for="PriceTrendId" class="control-label"></label>
+				<select asp-for="PriceTrendId" class="form-control" asp-items="ViewBag.PriceTrendId"></select>
+				<span asp-validation-for="PriceTrendId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="SellTitle" class="control-label"></label>
+				<textarea required asp-for="SellTitle" class="form-control" maxlength="100"></textarea>
+				<span asp-validation-for="SellTitle" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="SellDescription" class="control-label"></label>
+				<textarea required asp-for="SellDescription" class="form-control" rows="3" maxlength="255"></textarea>
+				<span asp-validation-for="SellDescription" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="SellPrice" class="control-label"></label>
+				<input required asp-for="SellPrice" class="form-control" />
+				<span asp-validation-for="SellPrice" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="SellQuantity" class="control-label"></label>
+				<input required asp-for="SellQuantity" class="form-control" />
+				<span asp-validation-for="SellQuantity" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="SellItemType" class="control-label"></label>
+				<select asp-for="SellItemType" class="form-control" asp-items="ViewBag.SellItemType"></select>
+				<span asp-validation-for="SellItemType" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				@if (Model.SellImage != null)
+				{
+					<img class="displayDetailImage" src="@("~/images/"+Model.SellImage)" asp-append-version="true" width="250" height="250" />
+					<p>Current Image</p>
+				}
+				<label asp-for="ImageFile" class="control-label"></label>
+				<input asp-for="ImageFile" accept="image/*" />
+				<span asp-validation-for="ImageFile" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="SellDate" class="control-label"></label>
+				<input readonly value="@ViewBag.SellDate" class="form-control" />
+				<span asp-validation-for="SellDate" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Save" class="btn btn-primary" />
+			</div>
+		</form>
     </div>
 </div>
 
