@@ -37,12 +37,13 @@ namespace Geekium.Controllers
             }
         }
 
-        public IActionResult RedeemRewards()
+        [HttpPost]
+        public IActionResult SpendPoints()
         {
             return View();
         }
 
-        public async Task<IActionResult> GetReward(int? id)
+        public async Task<IActionResult> SpendPoints(int? id)
         {
             AccountsController accountsController = new AccountsController(_context);
             var account = await _context.Accounts.FindAsync(int.Parse(HttpContext.Session.GetString("userId")));
@@ -90,6 +91,11 @@ namespace Geekium.Controllers
 
             await accountsController.EditPoints(account, newPointBalance);
             return RedirectToAction("Index");
+        }
+
+        public IActionResult UseReward()
+        {
+            return RedirectToAction("Index", "Carts", new { area = "" });
         }
 
         // GET: Rewards/Details/5

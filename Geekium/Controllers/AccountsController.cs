@@ -229,6 +229,7 @@ namespace Geekium.Controllers
 
                     //Set Session objects for the User Name to be used throughout the web application
                     HttpContext.Session.SetString("username", account.UserName);
+                    HttpContext.Session.SetString("userEmail", account.Email);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
