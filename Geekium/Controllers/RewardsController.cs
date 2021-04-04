@@ -37,20 +37,25 @@ namespace Geekium.Controllers
             }
         }
 
+        //Will return the page that will display all available rewards the user can redeem points for
         [HttpPost]
         public IActionResult SpendPoints()
         {
             return View();
         }
 
+        //Will take in an id value that specifies which reward type is being claimed, edit the account
+        //point balance to reflect the purchase, and add the new reward to the database
         public async Task<IActionResult> SpendPoints(int? id)
         {
             AccountsController accountsController = new AccountsController(_context);
+
             var account = await _context.Accounts.FindAsync(int.Parse(HttpContext.Session.GetString("userId")));
 
             Reward newReward = new Reward();
             newReward.AccountId = account.AccountId;
             newReward.DateReceived = DateTime.Now;
+            newReward.RewardCode = RandomString();
 
             int oldPointBalance = (int)account.PointBalance;
             int newPointBalance = 0;
@@ -62,7 +67,6 @@ namespace Geekium.Controllers
             else if(id == 1)
 			{
                 newReward.RewardType = "-25% Discount Code";
-                newReward.RewardCode = RandomString();
                 newReward.PointCost = 50;
 
                 newPointBalance = oldPointBalance - 50;
@@ -70,7 +74,6 @@ namespace Geekium.Controllers
             else if(id == 2)
 			{
                 newReward.RewardType = "-50% Discount Code";
-                newReward.RewardCode = RandomString();
                 newReward.PointCost = 100;
 
                 newPointBalance = oldPointBalance - 100;
@@ -78,7 +81,6 @@ namespace Geekium.Controllers
             else if(id == 3)
 			{
                 newReward.RewardType = "Free Website Merch";
-                newReward.RewardCode = RandomString();
                 newReward.PointCost = 150;
 
                 newPointBalance = oldPointBalance - 150;
@@ -93,6 +95,9 @@ namespace Geekium.Controllers
             return RedirectToAction("Index");
         }
 
+        //Will take the reward id and set session objects for the reward code and reward type to be
+        //used at checkout and delete the reward from the database to prevent the user from using the
+        //reward multiple times
         public async Task<IActionResult> UseReward(int? id)
         {
             var reward = await _context.Rewards.FindAsync(id);
@@ -237,8 +242,7 @@ namespace Geekium.Controllers
             return _context.Rewards.Any(e => e.RewardId == id);
         }
 
-        //Will return a random string 32 characters in length to be used as a key for password encryption
-        //and decryption
+        //Will return a random string 8 characters in length to be used as a coupon code for the rewards
         public static string RandomString()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
