@@ -8,7 +8,7 @@
     <div>
         <a class="btn btn-primary" type="button" asp-action="Index">Back to List</a>
     </div>
-    <img class="displayDetailImage" src="~/images/sell-icon.png" alt="Trade Image" />
+    <img class="displayDetailImage" src="@("~/Images/"+Model.TradeImage)" asp-append-version="true" width="250px" height="250px" />
 
     <hr />
 

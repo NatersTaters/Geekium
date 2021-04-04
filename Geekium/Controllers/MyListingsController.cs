@@ -1,10 +1,12 @@
 ﻿using Geekium.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,6 +38,7 @@ namespace Geekium.Controllers
             "Keyboard"
         };
         private readonly GeekiumContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
         #region Trade
 
@@ -55,7 +58,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTrade([Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity")] TradeListing tradeListing)
+        public async Task<IActionResult> CreateTrade([Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity,ImageFile")] TradeListing tradeListing)
         {
             tradeListing.TradeDate = DateTime.Now;
             string userId = HttpContext.Session.GetString("userId"); // This is the account ID
@@ -68,6 +71,17 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
+                //Save image to wwwroot/images
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(tradeListing.ImageFile.FileName);
+                string extension = Path.GetExtension(tradeListing.ImageFile.FileName);
+                tradeListing.TradeImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await tradeListing.ImageFile.CopyToAsync(fileStream);
+                }
+
                 _context.Add(tradeListing);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -205,7 +219,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateSell([Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity")] SellListing sellListing)
+        public async Task<IActionResult> CreateSell([Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity,ImageFile")] SellListing sellListing)
         {
             sellListing.SellDate = DateTime.Now;
             string userId = HttpContext.Session.GetString("userId"); // This is the account ID
@@ -224,6 +238,17 @@ namespace Geekium.Controllers
                 {
                     // Create a new price trend 
                 }
+
+                //Save image to wwwroot/images
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(sellListing.ImageFile.FileName);
+                string extension = Path.GetExtension(sellListing.ImageFile.FileName);
+                sellListing.SellImage=fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+				{
+                    await sellListing.ImageFile.CopyToAsync(fileStream);
+				}
 
                 _context.Add(sellListing);
                 await _context.SaveChangesAsync();
@@ -365,7 +390,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateService([Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate")] ServiceListing serviceListing)
+        public async Task<IActionResult> CreateService([Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate,ImageFile")] ServiceListing serviceListing)
         {
             serviceListing.ListingDate = DateTime.Now;
             string userId = HttpContext.Session.GetString("userId"); // This is the account ID
@@ -377,6 +402,17 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
+                //Save image to wwwroot/images
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(serviceListing.ImageFile.FileName);
+                string extension = Path.GetExtension(serviceListing.ImageFile.FileName);
+                serviceListing.ServiceImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await serviceListing.ImageFile.CopyToAsync(fileStream);
+                }
+
                 _context.Add(serviceListing);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -522,9 +558,10 @@ namespace Geekium.Controllers
         }
         #endregion
 
-        public MyListingsController(GeekiumContext context)
+        public MyListingsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: SellListings
