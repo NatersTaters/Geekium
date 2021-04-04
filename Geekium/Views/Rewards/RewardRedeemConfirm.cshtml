@@ -1,0 +1,10 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+	ViewData["Title"] = "Reward Redeem";
+}
+
+<h1>Rewards</h1>
+<h3>Please use your reward code when prompted during the checkout process: @HttpContextAccessor.HttpContext.Session.GetString("rewardCode")</h3>
+<br />
+<p>Your reward code has also been emailed to your email account for your personal records</p>

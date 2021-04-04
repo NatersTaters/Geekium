@@ -93,8 +93,15 @@ namespace Geekium.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult UseReward()
+        public async Task<IActionResult> UseReward(int? id)
         {
+            var reward = await _context.Rewards.FindAsync(id);
+
+            HttpContext.Session.SetString("rewardCode", reward.RewardCode);
+            HttpContext.Session.SetString("rewardType", reward.RewardType);
+
+            await DeleteConfirmed((int)id);
+
             return RedirectToAction("Index", "Carts", new { area = "" });
         }
 
