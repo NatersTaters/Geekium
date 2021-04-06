@@ -229,6 +229,7 @@ namespace Geekium.Controllers
 
                     //Set Session objects for the User Name to be used throughout the web application
                     HttpContext.Session.SetString("username", account.UserName);
+                    HttpContext.Session.SetString("userEmail", account.Email);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -246,6 +247,7 @@ namespace Geekium.Controllers
             return View(account);
         }
 
+        //Will edit exising account object by adding new point balance to the account
         public async Task<IActionResult> EditPoints(Account account, int pointBalance)
         {
             if (account == null)

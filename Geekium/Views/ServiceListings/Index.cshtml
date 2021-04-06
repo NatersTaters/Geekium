@@ -41,7 +41,7 @@
                                     @Html.DisplayFor(modelItem => item.ServiceTitle)
                                 </div>
                                 <div class="card-body">
-                                    <img class="displayImage" src="~/images/buy-icon.png" />
+									<img class="displayDetailImage" src="@("~/Images/"+item.ServiceImage)" asp-append-version="true" width="250px" height="250px" />
                                     <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Account.UserName)</h5>
                                     <p class="card-text truncate">Description: @Html.DisplayFor(modelItem => item.ServiceDescription)</p>
                                     <p class="card-text">Date Listed: @Html.DisplayFor(modelItem => item.ListingDate)</p>
