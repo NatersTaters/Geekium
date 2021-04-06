@@ -673,3 +673,4 @@ C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.dll
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.pdb
 C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Geekium.genruntimeconfig.cache
+C:\Users\leuna\OneDrive\Documents\GitHub\Geekium\Geekium\obj\Debug\netcoreapp3.1\Razor\Views\Rewards\RedeemRewards.cshtml.g.cs

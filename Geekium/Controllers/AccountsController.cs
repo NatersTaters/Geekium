@@ -131,7 +131,7 @@ namespace Geekium.Controllers
 						HttpContext.Session.SetString("userId", account.AccountId.ToString());
                         HttpContext.Session.SetString("userEmail", account.Email);
                         HttpContext.Session.SetInt32("pointsBalance", (int)account.PointBalance);
-
+                        
                         if(account.PointBalance == null)
 						{
                             HttpContext.Session.SetInt32("pointsBalance", 0);
@@ -140,7 +140,7 @@ namespace Geekium.Controllers
 						{
                             HttpContext.Session.SetInt32("pointsBalance", (int)account.PointBalance);
                         }
-
+                        
                         var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
 						if (sellerAccount != null)
 						{
