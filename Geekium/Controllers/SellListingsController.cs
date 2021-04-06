@@ -23,8 +23,26 @@ namespace Geekium.Controllers
         public async Task<IActionResult> Index()
         {
             string userId = HttpContext.Session.GetString("userId");
-            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend).Include(s => s.Seller)
-                .Include(s => s.Seller.Account);
+            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .Where(s => s.Seller.AccountId != 1);
+
+            SetViewBag(null, 0, 0);
+            var model = await geekiumContext.ToListAsync();
+            return View(model);
+        }
+
+        // Display the merchandise sell listings
+        public async Task<IActionResult> MerchandiseIndex()
+        {
+            // Only display the sell listings of the administrator (accountId: 1 is admin)
+            string userId = HttpContext.Session.GetString("userId");
+            var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .Where(s => s.Seller.AccountId == 1);
+
             SetViewBag(null, 0, 0);
             var model = await geekiumContext.ToListAsync();
             return View(model);

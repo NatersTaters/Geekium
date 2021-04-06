@@ -28,7 +28,7 @@ namespace Geekium.Controllers
         //}
 
         // GET: Carts
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             string accountId = HttpContext.Session.GetString("userId"); 
             string url = "/Accounts/Login";
@@ -38,21 +38,58 @@ namespace Geekium.Controllers
             }
             else
             {
-                var cart = SessionHelper.GetObjectFromJson<List<ItemsForCart>>(HttpContext.Session, "cart");
-                if(cart != null)
-                {
-                    ViewBag.cart = cart;
-                    ViewBag.price = FirstTotalPrice(cart);
-                    ViewBag.tax = Tax(ViewBag.price);
-                    ViewBag.total = TotalCost(ViewBag.price, ViewBag.tax);
-                    ViewBag.stripeTotal = ViewBag.total * 100;
-                    ViewBag.points = PointsEarned(ViewBag.total);
-                }
-                return View();
+                // Find the cart associated with this account
+                var cartContext = _context.Cart
+                    .Include(s => s.ItemsForCart)
+                    .ThenInclude(s => s.SellListing)
+                    .Where(s => s.AccountId.ToString() == accountId)
+                    .Where(s => s.TransactionComplete == false);
+
+                // The account does not have a cart associated with them
+                if (cartContext == null)
+                    CreateCart();
+
+                // Once cart is found, populate the viewbag to display on the
+
+                //var cart = SessionHelper.GetObjectFromJson<List<ItemsForCart>>(HttpContext.Session, "cart");
+                //if(cart != null)
+                //{
+                //    ViewBag.cart = cart;
+                //    ViewBag.price = FirstTotalPrice(cart);
+                //    ViewBag.tax = Tax(ViewBag.price);
+                //    ViewBag.total = TotalCost(ViewBag.price, ViewBag.tax);
+                //    ViewBag.stripeTotal = ViewBag.total * 100;
+                //    ViewBag.points = PointsEarned(ViewBag.total);
+                //}
+
+                return View(await cartContext.ToListAsync());
             }
         }
 
-      
+        // POST: SellListings/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> CreateCart()
+        //{
+        //    string userId = HttpContext.Session.GetString("userId");
+        //    Cart cart = new Cart();
+        //    cart.AccountId = 
+
+        //    // We need the seller ID associated with this account ID
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(cart);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
+        //    ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
+        //    return View(sellListing);
+        //}
+
         private bool CartExists(int id)
         {
             return _context.Cart.Any(e => e.CartId == id);
