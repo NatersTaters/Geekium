@@ -89,6 +89,8 @@ namespace Geekium.Controllers
                 account.FirstName = model.FirstName;
                 account.LastName = model.LastName;
                 account.Email = model.Email;
+                account.PointBalance = 0;
+                
 
                 _context.Add(account);
                 await _context.SaveChangesAsync();
@@ -130,10 +132,10 @@ namespace Geekium.Controllers
 						HttpContext.Session.SetString("username", account.UserName);
 						HttpContext.Session.SetString("userId", account.AccountId.ToString());
                         HttpContext.Session.SetString("userEmail", account.Email);
-                        HttpContext.Session.SetInt32("pointsBalance", (int)account.PointBalance);
 
                         if(account.PointBalance == null)
 						{
+                            account.PointBalance = 0;
                             HttpContext.Session.SetInt32("pointsBalance", 0);
                         }
                         else

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Geekium.Models.SellListing>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<body>
+    <h2>Sell Listings</h2>
+
+    <form method="post" asp-action="FilterProducts">
+        <div class="form-inline">
+            <input class="form-control mr-sm-2" id="searchBox" type="text" name="searchProduct" placeholder="Search for Products" value="@ViewBag.Search" />
+            <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
+                Add Filter
+            </a>&nbsp;
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Item</button>
+        </div>
+        <div class="@ViewBag.Collapse form-inline" id="filter">
+            <div class="card card-body">
+                <div class="form-group form-inline">
+                    Price:&nbsp;
+                    <input class="form-control" style="width:25%;" name="minPrice" id="minPrice" type="text" placeholder="From" value="@ViewBag.MinPrice" /> -&nbsp;
+                    <input class="form-control" style="width:25%;" name="maxPrice" id="maxPrice" type="text" placeholder="To" value="@ViewBag.MaxPrice" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="py-2">
+        <div class="container">
+            @{ var count = 0;}
+            @{ var items = 0;}
+            @foreach (var item in Model)
+            {
+                if (count == 0)
+                {
+                    @:<div class="row">
+                    }
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-block">
+                                <div class="card-header truncate">
+                                    @Html.DisplayFor(modelItem => item.SellTitle)
+                                </div>
+                                <div class="card-body">
+                                    <img class="displayImage" src="@Html.DisplayFor(modelItem => item.SellImage)" />
+                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
+                                    <p class="card-text">Price: $@Html.DisplayFor(modelItem => item.SellPrice)</p>
+                                    <a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    items++;
+
+                    if (count == 2)
+                    {
+                        count = 0;
+                    @:</div><br />
+                }
+                else
+                {
+                    count++;
+                }
+            }
+
+            @if (items == 0)
+            {
+                <div>
+                    <br />
+                    <h2>Nothing matches the search/filter</h2>
+                </div>
+            }
+        </div>
+    </div>
+</body>
