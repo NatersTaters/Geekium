@@ -46,7 +46,7 @@ namespace Geekium.Models
             modelBuilder.Entity<AccountPurchase>(entity =>
             {
                 entity.HasKey(e => e.AccountPurchaseId)
-                    .HasName("PK__accountP__40A9D28D21A095CA");
+                    .HasName("PK__accountP__40A9D28D9A169BA3");
 
                 entity.ToTable("accountPurchases");
 
@@ -96,12 +96,12 @@ namespace Geekium.Models
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(e => e.AccountId)
-                    .HasName("PK__accounts__46A222CDF930773A");
+                    .HasName("PK__accounts__46A222CD3C4F137E");
 
                 entity.ToTable("accounts");
 
                 entity.HasIndex(e => e.UserName)
-                    .HasName("UQ__accounts__7C9273C4C1F4AD41")
+                    .HasName("UQ__accounts__7C9273C482CBFE49")
                     .IsUnique();
 
                 entity.Property(e => e.AccountId).HasColumnName("account_id");
@@ -195,7 +195,7 @@ namespace Geekium.Models
             modelBuilder.Entity<PriceTrend>(entity =>
             {
                 entity.HasKey(e => e.PriceTrendId)
-                    .HasName("PK__priceTre__A1354F707A32856C");
+                    .HasName("PK__priceTre__A1354F7027A935D4");
 
                 entity.ToTable("priceTrends");
 
@@ -235,7 +235,7 @@ namespace Geekium.Models
             modelBuilder.Entity<Reward>(entity =>
             {
                 entity.HasKey(e => e.RewardId)
-                    .HasName("PK__rewards__3DD599BC2C18DD02");
+                    .HasName("PK__rewards__3DD599BCB472D69A");
 
                 entity.ToTable("rewards");
 
@@ -271,7 +271,7 @@ namespace Geekium.Models
             modelBuilder.Entity<SellListing>(entity =>
             {
                 entity.HasKey(e => e.SellListingId)
-                    .HasName("PK__sellList__BC5EA2634197E407");
+                    .HasName("PK__sellList__BC5EA263E112CA88");
 
                 entity.ToTable("sellListings");
 
@@ -333,7 +333,7 @@ namespace Geekium.Models
             modelBuilder.Entity<SellerAccount>(entity =>
             {
                 entity.HasKey(e => e.SellerId)
-                    .HasName("PK__sellerAc__780A0A97AF533ED0");
+                    .HasName("PK__sellerAc__780A0A97A3EC8D99");
 
                 entity.ToTable("sellerAccounts");
 
@@ -353,7 +353,7 @@ namespace Geekium.Models
             modelBuilder.Entity<SellerReview>(entity =>
             {
                 entity.HasKey(e => e.SellerReviewId)
-                    .HasName("PK__sellerRe__E62B70AF55B02A69");
+                    .HasName("PK__sellerRe__E62B70AF3CC066A9");
 
                 entity.ToTable("sellerReviews");
 
@@ -378,7 +378,7 @@ namespace Geekium.Models
             modelBuilder.Entity<ServiceListing>(entity =>
             {
                 entity.HasKey(e => e.ServiceListingId)
-                    .HasName("PK__serviceL__6F79AD45C13CCD5D");
+                    .HasName("PK__serviceL__6F79AD45AB047C2D");
 
                 entity.ToTable("serviceListings");
 
@@ -417,7 +417,7 @@ namespace Geekium.Models
             modelBuilder.Entity<TradeListing>(entity =>
             {
                 entity.HasKey(e => e.TradeListingId)
-                    .HasName("PK__tradeLis__609C8CAE52134B9D");
+                    .HasName("PK__tradeLis__609C8CAEE860F261");
 
                 entity.ToTable("tradeListings");
 

@@ -17,9 +17,9 @@ namespace Geekium.Models
         public int PriceTrendId { get; set; }
         public string ItemName { get; set; }
         public DateTime DateOfUpdate { get; set; }
-        public int? AveragePrice { get; set; }
-        public int? LowestPrice { get; set; }
-        public int? HighestPrice { get; set; }
+        public double AveragePrice { get; set; }
+        public double LowestPrice { get; set; }
+        public double HighestPrice { get; set; }
 
         public virtual ICollection<SellListing> SellListings { get; set; }
     }

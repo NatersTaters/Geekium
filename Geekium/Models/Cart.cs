@@ -20,7 +20,7 @@ namespace Geekium.Models
         public int AccountId { get; set; }
         public bool? TransactionComplete { get; set; }
         public int? NumberOfProducts { get; set; }
-        public int? TotalPrice { get; set; }
+        public double? TotalPrice { get; set; }
         public int? PointsGained { get; set; }
 
         public virtual Account Account { get; set; }

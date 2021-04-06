@@ -23,7 +23,7 @@ namespace Geekium.Models
         public int PriceTrendId { get; set; }
         public string SellTitle { get; set; }
         public string SellDescription { get; set; }
-        public int SellPrice { get; set; }
+        public double SellPrice { get; set; }
         [DataType(DataType.Date)]
         public DateTime SellDate { get; set; }
         public string SellItemType { get; set; }

@@ -19,7 +19,7 @@ namespace Geekium.Models
 
         public int SellerId { get; set; }
         public int AccountId { get; set; }
-        public int? AverageRating { get; set; }
+        public double? AverageRating { get; set; }
 
         public virtual Account Account { get; set; }
         public virtual ICollection<AccountPurchase> AccountPurchases { get; set; }
