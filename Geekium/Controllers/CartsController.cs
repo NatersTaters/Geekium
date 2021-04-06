@@ -9,6 +9,8 @@ using Geekium.Models;
 using Microsoft.AspNetCore.Http;
 using Geekium.Helpers;
 using Stripe;
+using System.Net.Mail;
+using System.Net;
 
 namespace Geekium.Controllers
 {
@@ -127,8 +129,8 @@ namespace Geekium.Controllers
             var customers = new CustomerService();
             var charges = new ChargeService();
 
-            int stripeAmount = Convert.ToInt32(ViewBag.stripeTotal * -1); // These lines are added
-            var amount = (int)(stripeAmount); /// These lines are added
+            //int stripeAmount = Convert.ToInt32(ViewBag.stripeTotal * -1); // Test line
+            //var amount = (int)(stripeAmount); /// Test line
 
             var customer = customers.Create(new CustomerCreateOptions{ 
                 Email=stripeEmail,
@@ -136,7 +138,8 @@ namespace Geekium.Controllers
             });
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = amount, //ViewBag.stripeTotal, //500, //ViewBag.total * 1000, //Convert.ToInt32(ViewBag.total * 1000),
+                /*TODO: amount being set as negative, charge isn't made because of it */
+                Amount = 500,//amount, //ViewBag.stripeTotal, //500, //ViewBag.total * 1000, //Convert.ToInt32(ViewBag.total * 1000),
                 Description = "Purchase off of Geekium",
                 Currency = "cad",
                 Customer = customer.Id,
@@ -151,11 +154,59 @@ namespace Geekium.Controllers
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
+                customerNotifEmail(ViewBag.cart);
                 return View("CheckOut");
             }
             else
             {
                 return View("Unsuccessful");
+            }
+        }
+
+        /*TODO: Customer email, layout as:
+         *-----------------------------------
+         *
+         *Subject: Purchase Confirmation
+         *Sender: geekium1234@gmail.com
+         *
+         *Body:  
+         *Thank you for your recent purchase at Geekium of products: 
+         * Purchase of: Geekium T-shirt - 19
+         * Purchase of: Item 2 - 20
+         * Purchase of: Item 3 - 35 
+         *For a total of: 74 
+         *Has been processed
+         *
+         */
+        public void customerNotifEmail(List<ItemsForCart> cart)
+        {
+            var body = "";
+            for (int i = 0; i < cart.Count; i++)
+            {
+                var pBody = Console.Write("Purchase of: {0}", ViewBag.cart.SellTitle);
+                var price = Console.Write(" - {0}", ViewBag.cart.SellPrice);
+                body = pBody + price + "\n";
+            }
+            var sEmail = new MailAddress("geekium1234@gmail.com");
+            var rEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
+            var password = "geekiumaccount1234";
+            var sub = "Purchase Confirmation";
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(sEmail.Address, password)
+            };
+            using (var message = new MailMessage(sEmail, rEmail)
+            {
+                Subject = sub,
+                Body = body
+            })
+            {
+                smtp.Send(message);
             }
         }
 

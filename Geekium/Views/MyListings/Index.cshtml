@@ -48,7 +48,7 @@
                                                 @Html.DisplayFor(modelItem => product.SellTitle)
                                             </div>
                                             <div class="card-body">
-                                                <img class="displayImage" src="~/images/buy-icon.png" />
+												<img class="displayDetailImage" src="@("~/images/"+product.SellImage)" asp-append-version="true" width="250" height="250" />
                                                 <h5 class="card-title truncate">Seller: @Html.DisplayFor(modelItem => product.Seller.Account.UserName)</h5>
                                                 <p class="card-text">Price: $@Html.DisplayFor(modelItem => product.SellPrice)</p>
                                                 <a class="stretched-link" asp-action="SellDetails" asp-route-id="@product.SellListingId"></a>
@@ -89,7 +89,7 @@
                                                 @Html.DisplayFor(modelItem => product.TradeTitle)
                                             </div>
                                             <div class="card-body">
-                                                <img class="displayImage" src="~/images/buy-icon.png" />
+												<img class="displayDetailImage" src="@("~/images/"+product.TradeImage)" asp-append-version="true" width="250" height="250" />
                                                 <h5 class="card-title truncate">Seller: @Html.DisplayFor(modelItem => product.Seller.Account.UserName)</h5>
                                                 <p class="card-text">Trade For: @Html.DisplayFor(modelItem => product.TradeFor)</p>
                                                 <a class="stretched-link" asp-action="TradeDetails" asp-route-id="@product.TradeListingId"></a>
@@ -130,7 +130,7 @@
                                         @Html.DisplayFor(modelItem => service.ServiceTitle)
                                     </div>
                                     <div class="card-body">
-                                        <img class="displayImage" src="~/images/buy-icon.png" />
+										<img class="displayDetailImage" src="@("~/images/"+service.ServiceImage)" asp-append-version="true" width="250" height="250" />
                                         <h5 class="card-title truncate">Service Provider: @Html.DisplayFor(modelItem => service.Account.UserName)</h5>
                                         <p class="card-text truncate">Details: @Html.DisplayFor(modelItem => service.ServiceDescription)</p>
                                         <a class="stretched-link" asp-action="ServiceDetails" asp-route-id="@service.ServiceListingId"></a>

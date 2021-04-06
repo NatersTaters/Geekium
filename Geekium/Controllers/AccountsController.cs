@@ -132,7 +132,6 @@ namespace Geekium.Controllers
 						HttpContext.Session.SetString("username", account.UserName);
 						HttpContext.Session.SetString("userId", account.AccountId.ToString());
                         HttpContext.Session.SetString("userEmail", account.Email);
-
                         if(account.PointBalance == null)
 						{
                             account.PointBalance = 0;
@@ -142,7 +141,7 @@ namespace Geekium.Controllers
 						{
                             HttpContext.Session.SetInt32("pointsBalance", (int)account.PointBalance);
                         }
-
+                        
                         var sellerAccount = await _context.SellerAccounts.FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
 						if (sellerAccount != null)
 						{
@@ -231,6 +230,7 @@ namespace Geekium.Controllers
 
                     //Set Session objects for the User Name to be used throughout the web application
                     HttpContext.Session.SetString("username", account.UserName);
+                    HttpContext.Session.SetString("userEmail", account.Email);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -248,6 +248,7 @@ namespace Geekium.Controllers
             return View(account);
         }
 
+        //Will edit exising account object by adding new point balance to the account
         public async Task<IActionResult> EditPoints(Account account, int pointBalance)
         {
             if (account == null)

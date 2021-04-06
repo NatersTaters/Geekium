@@ -41,7 +41,7 @@
                                     @Html.DisplayFor(modelItem => item.TradeTitle)
                                 </div>
                                 <div class="card-body">
-                                    <img class="displayImage" src="~/images/buy-icon.png" />
+									<img class="displayDetailImage" src="@("~/Images/"+item.TradeImage)" asp-append-version="true" width="250px" height="250px" />
                                     <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
                                     <p class="card-text">Trade For: @Html.DisplayFor(modelItem => item.TradeFor)</p>
                                     <a class="stretched-link" asp-action="Details" asp-route-id="@item.TradeListingId"></a>
