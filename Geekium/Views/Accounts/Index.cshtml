@@ -1,68 +1,53 @@
-﻿@model IEnumerable<Geekium.Models.Account>
+﻿@model Geekium.Models.Account
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-@{
-    ViewData["Title"] = "Index";
-}
+<h1>Manage your account</h1>
 
-<h1>Index</h1>
-
-<p>
-	<a asp-action="Create">Create New</a>
-	<a asp-area="" asp-controller="AccountPurchases" asp-action="Index">View Purchases</a>
-	<a asp-area="" asp-controller="Rewards" asp-action="Index">View Rewards</a>
-	<a asp-area="" asp-controller="SellerReviews" asp-action="Index">View Seller Reviews</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserPassword)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PointBalance)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserPassword)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PointBalance)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AccountId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AccountId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AccountId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div>
+	<ul class="">
+		<li><a class="btn" asp-area="" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Account Details</a></li>
+		<li><a class="btn" asp-area="" asp-controller="Accounts" asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Upgrade to Seller</a></li>
+		<li><a class="btn" asp-area="" asp-controller="Accounts" asp-action="Delete" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Delete Account</a></li>
+	</ul>
+</div>
+<div style="width:50%;text-align:center">
+	<dl class="row">
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.UserName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.UserName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.UserPassword)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.UserPassword)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.FirstName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.FirstName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.LastName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.LastName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Email)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Email)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.PointBalance)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.PointBalance)
+		</dd>
+	</dl>
+</div>

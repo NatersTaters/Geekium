@@ -1,23 +1,109 @@
 ﻿@{
-    ViewData["Title"] = "FAQ";
+	ViewData["Title"] = "FAQ";
 }
 
+<style>
+	.accordion {
+		background-color: #eee;
+		color: #444;
+		cursor: pointer;
+		padding: 18px;
+		width: 100%;
+		border: none;
+		text-align: left;
+		outline: none;
+		font-size: 15px;
+		transition: 0.4s;
+	}
+
+	.active, .accordion:hover {
+		background-color: #ccc;
+	}
+
+	.panel {
+		padding: 0px 18px;
+		background-color: white;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.2s ease-out;
+	}
+
+</style>
+
 <div class="text-center">
-    <h1 class="display-4">Frequently Asked Questions answered by Geeks!</h1>
+	<h1 class="display-4">Frequently Asked Questions answered by Geeks!</h1>
 </div>
 
 <br />
 <input type="text" id="searchFAQ" onkeyup="filterListing()" placeholder="Search for your question here!">
 
-<ul id="listFAQ">
-    <li><a href="#">What is Geekium?</a></li>
-    <li><a href="#">Who made Geekium?</a></li>
-    <li><a href="#">What can I do on Geekium?</a></li>
-    <li><a href="#">How do I report someone?</a></li>
-    <li><a href="#">How do I upgrade to a seller account?</a></li>
-    <li><a href="#">What do I do if my product has not shipped?</a></li>
-</ul><br />
+<button class="accordion">What is Geekium?</button>
+<div class="panel">
+	<p>
+		Geekium is an online local classified advertising service made by geeks, for geeks! We specialize in offering our users
+		a safe space to buy, sell or trade anything a geek could ever want. Some of our most common items on our website include
+		Video Games, Trading Cards, Books, Computers, Toys, Consoles, Electronics, and even Software! It's free to use, and with a
+		support team that's online 24/7 we're here for you if you have any concerns!
+	</p>
+</div>
+<button class="accordion">Who made Geekium?</button>
+<div class="panel">
+	<p>
+		Geekium was originally developed by a team of CPA students at Conestoga College for their Capstone Project, this team includes
+		Nathaniel Saunders, Andrew Truong and Leunard Gervalla.
+	</p>
+</div>
+<button class="accordion">What can I do on Geekium?</button>
+<div class="panel">
+	<p>
+		Geekium is a website that allows you to buy, sell and trade your nerdy stuff locally. It even allows you to browse and create your
+		own service listings, whether they be console repairs, upcoming tournaments or LAN parties looking for another player, it's free to
+		use, and only requires an account to start buying!
+	</p>
+</div>
+<button class="accordion">How do I report someone?</button>
+<div class="panel">
+	<p>
+		We understand that buying, selling and trading locally can come with it's fair share of problems, that's why our support team is online
+		24/7 to help you with any issues you may encounter! All you have to do is navigate to our support section and you're set!
+	</p>
+</div>
+<button class="accordion">How do I upgrade to a seller account?</button>
+<div class="panel">
+	<p>
+		In order to start creating listings for yourself, all you've gotta do is start off with a basic account, once you've got that under your
+		account details page you'll see a link that says "upgrade to seller account", click that and you'll be directed to a page that'll ask for
+		a six digit code that was just sent to your email, type that in and submit, and you're ready to start listing!
+	</p>
+</div>
+<button class="accordion">What do I do if my product has not shipped?</button>
+<div class="panel">
+	<p>
+		Due to the fact that all buyers are dealing with local individuals, and not wholesale outlets, sometimes packages may not be shipped in a
+		timeley manner, because of this we ask our buyers to exercise some patience when waiting for a purchased item to arrive. However, if you have
+		been waiting longer than our grace period for our sellers to ship their item, which is one month, we ask that you navigate to our support page
+		and submit and support ticket for assistance!
+	</p>
+</div>
+<br />
 
-     <p>
-         Not seeing your question? Get in contact with our <a asp-area="" asp-controller="Home" asp-action="Support">Support</a> team!
-     </p>
+<p>
+	Not seeing your question? Get in contact with our <a asp-area="" asp-controller="Home" asp-action="Support">Support</a> team!
+</p>
+
+<script>
+	var acc = document.getElementsByClassName("accordion");
+	var i;
+
+	for (i = 0; i < acc.length; i++) {
+		acc[i].addEventListener("click", function () {
+			this.classList.toggle("active");
+			var panel = this.nextElementSibling;
+			if (panel.style.maxHeight) {
+				panel.style.maxHeight = null;
+			} else {
+				panel.style.maxHeight = panel.scrollHeight + "px";
+			}
+		});
+	}
+</script>

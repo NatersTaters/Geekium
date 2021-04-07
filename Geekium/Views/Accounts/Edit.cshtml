@@ -7,6 +7,7 @@
 }
 
 <h4>Please enter your updated account details below:</h4>
+<p>Only your username and email will be displayed on the website for other users</p>
 <hr />
 <div class="row">
 	<div class="col-md-4">
@@ -57,7 +58,7 @@
 			@if (HttpContextAccessor.HttpContext.Session.GetInt32("sellerId") == null)
 			{
 				<div class="form-group">
-					<a asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-outline-secondary">Upgrade to Seller</a>
+					<a asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-block">Upgrade to Seller</a>
 				</div>
 			}
 		</form>

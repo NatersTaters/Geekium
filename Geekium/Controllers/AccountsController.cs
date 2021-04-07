@@ -27,7 +27,7 @@ namespace Geekium.Controllers
         // GET: Accounts
         public async Task<IActionResult> Index()
         {
-            return RedirectToAction("Index", "Home");
+            return View();
         }
 
         // GET: Accounts/Details/5

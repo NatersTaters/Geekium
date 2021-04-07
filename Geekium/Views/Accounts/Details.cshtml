@@ -1,54 +1,65 @@
 ﻿@model Geekium.Models.Account
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "Details";
+	ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div style="align-content: center; align-items: center;">
+	<div class="form-inline">
+		<a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Edit Account</a>
+
+		@if (HttpContextAccessor.HttpContext.Session.GetString("sellerId") == null)
+		{
+			<a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Upgrade to Seller</a>
+		}
+
+		<a class="btn btn-outline-info form-control col-md-4" role="button" asp-action="Delete" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Delete Account</a>
+	</div>
+</div>
+
+@if (HttpContextAccessor.HttpContext.Session.GetString("sellerId") == null)
+{
+	<h4>Seller Account</h4>
+}
+else
+{
+	<h4>Buyer Account</h4>
+}
 
 <div>
-    <h4>Account</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserPassword)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserPassword)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PointBalance)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PointBalance)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.AccountId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+	<p>Your Account Details</p>
+	<dl class="row">
+		<dt class="col-sm-2">
+			Username:
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.UserName)
+		</dd>
+		<dt class="col-sm-2">
+			First Name:
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.FirstName)
+		</dd>
+		<dt class="col-sm-2">
+			Last Name:
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.LastName)
+		</dd>
+		<dt class="col-sm-2">
+			Email Address:
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Email)
+		</dd>
+		<dt class="col-sm-2">
+			Point Balance:
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.PointBalance)
+		</dd>
+	</dl>
 </div>
