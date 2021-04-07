@@ -7,18 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Geekium.Controllers
 {
     public class RewardsController : Controller
     {
         private readonly GeekiumContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
         private static Random random = new Random();
 
-        public RewardsController(GeekiumContext context)
+        public RewardsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Rewards
@@ -48,7 +51,7 @@ namespace Geekium.Controllers
         //point balance to reflect the purchase, and add the new reward to the database
         public async Task<IActionResult> SpendPoints(int? id)
         {
-            AccountsController accountsController = new AccountsController(_context);
+            AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
 
             var account = await _context.Accounts.FindAsync(int.Parse(HttpContext.Session.GetString("userId")));
 

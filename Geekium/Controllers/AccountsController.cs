@@ -10,18 +10,21 @@ using System.Text;
 using System.IO;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Geekium.Controllers
 {
     public class AccountsController : Controller
     {
         private readonly GeekiumContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
         private static Random random = new Random();
 
-        public AccountsController(GeekiumContext context)
+        public AccountsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Accounts
@@ -291,11 +294,44 @@ namespace Geekium.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var account = await _context.Accounts.FindAsync(id);
-            _context.Accounts.Remove(account);
-
             var sellerAccount = await _context.SellerAccounts.FindAsync(HttpContext.Session.GetInt32("sellerId"));
-            _context.SellerAccounts.Remove(sellerAccount);
+
+            var sellListing = await _context.SellListings
+                   .Include(s => s.PriceTrend)
+                   .Include(s => s.Seller)
+                   .Include(s => s.Seller.Account)
+                   .FirstOrDefaultAsync(m => m.SellerId == sellerAccount.SellerId);
+
+            var tradeListing = await _context.TradeListings
+                .Include(t => t.Seller)
+                .Include(t => t.Seller.Account)
+                .FirstOrDefaultAsync(m => m.SellerId == sellerAccount.SellerId);
+
+            var serviceListing = await _context.ServiceListings
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+
+            if(sellListing != null)
+			{
+                _context.SellListings.Remove(sellListing);
+            }
             
+            if(serviceListing != null)
+			{
+                _context.ServiceListings.Remove(serviceListing);
+            }
+            
+            if(tradeListing != null)
+			{
+                _context.TradeListings.Remove(tradeListing);
+            }
+            
+            if(sellerAccount != null)
+			{
+                _context.SellerAccounts.Remove(sellerAccount);
+            }
+
+            _context.Accounts.Remove(account);
             await _context.SaveChangesAsync();
             await Logout();
 
