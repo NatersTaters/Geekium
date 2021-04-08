@@ -26,7 +26,7 @@ namespace Geekium.Controllers
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId != 1);
+                .Where(s => s.Seller.AccountId != 2);
 
             SetViewBag(null, 0, 0);
             var model = await geekiumContext.ToListAsync();
@@ -41,7 +41,7 @@ namespace Geekium.Controllers
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId == 1);
+                .Where(s => s.Seller.AccountId == 2);
 
             SetViewBag(null, 0, 0);
             var model = await geekiumContext.ToListAsync();

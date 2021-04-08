@@ -53,6 +53,10 @@
 			<div class="dropdown-content">
 				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Details" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Account Settings</a>
 				<a class="dropdown-item" asp-area="" asp-controller="Rewards" asp-action="Index">View Rewards</a>
+				@if (HttpContextAccessor.HttpContext.Session.GetInt32("sellerId") != null)
+				{
+					<a class="dropdown-item" asp-area="" asp-controller="MyListings" asp-action="Index">My Listings</a>
+				}
 				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Logout">Logout</a>
 			</div>
 		</div>

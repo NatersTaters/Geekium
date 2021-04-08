@@ -19,7 +19,9 @@
 	</div>
 </div>
 
-@if (HttpContextAccessor.HttpContext.Session.GetString("sellerId") == null)
+<br />
+
+@if (HttpContextAccessor.HttpContext.Session.GetString("sellerId") != null)
 {
 	<h4>Seller Account</h4>
 }
@@ -27,6 +29,8 @@ else
 {
 	<h4>Buyer Account</h4>
 }
+
+<hr />
 
 <div>
 	<p>Your Account Details</p>
