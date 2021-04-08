@@ -188,7 +188,7 @@ namespace Geekium.Controllers
         #region Checkout Functions
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
-        public IActionResult CheckOut(string stripeEmail, string stripeToken, bool charged)
+        public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
@@ -215,11 +215,25 @@ namespace Geekium.Controllers
                 }
             });
 
+            string accountId = HttpContext.Session.GetString("userId");
+
+            // Find the cart associated with this account
+            var cartContext = await _context.Cart
+                .Where(s => s.TransactionComplete == false)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+
+            // Find all the items associated with this cart
+            var cartItems = _context.ItemsForCart
+                .Include(s => s.SellListing)
+                .Include(s => s.Cart)
+                .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                .Where(s => s.CartId == cartContext.CartId).ToList();
+
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
-                customerNotifEmail(cart, charge);
-                sellerNotifEmail(cart, charge);
+                customerNotifEmail(cartItems, charge);
+                //sellerNotifEmail(cartItems, charge);
                 return View("CheckOut");
             }
             else
@@ -250,8 +264,8 @@ namespace Geekium.Controllers
             var price = "";
             for (int i = 0; i < cart.Count; i++)
             {
-                pBody = "Purchase of: " + cart.SellTitle;
-                price = " - {0}" + cart.SellPrice;
+                pBody = "Purchase of: " + cart[i].SellListing.SellTitle;
+                price = " - {0}" + cart[i].SellListing.SellPrice;
             }
 
             var body = "Thank you for your recent purchase at Geekium of products: \n" + pBody + price + "\n" + "For a total of: " + charge.Amount;
