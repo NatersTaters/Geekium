@@ -7,6 +7,7 @@ using Geekium.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -57,15 +58,14 @@ namespace Geekium
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
 			StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]); ///This line was also added for stripe, also remove it if not working
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
 			}
 			else
 			{
-				app.UseExceptionHandler("/Home/Error");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-				app.UseHsts();
+				app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
 			}
 
 			//Initialize Session
@@ -83,6 +83,12 @@ namespace Geekium
 				endpoints.MapControllerRoute(
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
+			});
+
+			app.UseForwardedHeaders(new ForwardedHeadersOptions
+			{
+				ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+				ForwardedHeaders.XForwardedProto
 			});
 		}
 	}

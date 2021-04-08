@@ -23,11 +23,7 @@ namespace Geekium.Controllers
             _context = context;
         }
 
-        //public CartsController()
-        //{
-        //}
-
-        // GET: Carts
+        // Get contents of cart and return index page
         public async Task<IActionResult> Index()
         {
             string accountId = HttpContext.Session.GetString("userId"); 
@@ -39,89 +35,157 @@ namespace Geekium.Controllers
             else
             {
                 // Find the cart associated with this account
-                var cartContext = _context.Cart
-                    .Include(s => s.ItemsForCart)
-                    .ThenInclude(s => s.SellListing)
-                    .Where(s => s.AccountId.ToString() == accountId)
-                    .Where(s => s.TransactionComplete == false);
+                var cartContext = await _context.Cart
+                    .Where(s => s.TransactionComplete == false)
+                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
 
-                // The account does not have a cart associated with them
+                // If the account does not have a cart associated with them, create one
                 if (cartContext == null)
-                    //CreateCart();
+                    await CreateCart();
 
-                // Once cart is found, populate the viewbag to display on the
+                // Find all the items associated with this cart
+                var cartItems = _context.ItemsForCart
+                    .Include(s => s.SellListing)
+                    .Include(s => s.Cart)
+                    .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                    .Where(s => s.CartId == cartContext.CartId);
 
-                //var cart = SessionHelper.GetObjectFromJson<List<ItemsForCart>>(HttpContext.Session, "cart");
-                //if(cart != null)
-                //{
-                //    ViewBag.cart = cart;
-                //    ViewBag.price = FirstTotalPrice(cart);
-                //    ViewBag.tax = Tax(ViewBag.price);
-                //    ViewBag.total = TotalCost(ViewBag.price, ViewBag.tax);
-                //    ViewBag.stripeTotal = ViewBag.total * 100;
-                //    ViewBag.points = PointsEarned(ViewBag.total);
-                //}
+                // Calculate subtotal
+                var model = await cartItems.ToListAsync();
+                ViewBag.subTotal = SubTotal(model); // This is not updating properly
 
-                return View(await cartContext.ToListAsync());
+                return View(model);
             }
         }
 
-        // POST: SellListings/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> CreateCart()
-        //{
-        //    string userId = HttpContext.Session.GetString("userId");
-        //    Cart cart = new Cart();
-        //    cart.AccountId = 
+        #region Cart Functions
+        // Creates the cart
+        public async Task<IActionResult> CreateCart()
+        {
+            string userId = HttpContext.Session.GetString("userId");
+            Cart cart = new Cart();
+            cart.AccountId = int.Parse(userId);
+            cart.TransactionComplete = false;
+            cart.NumberOfProducts = 0;
+            cart.TotalPrice = 0;
+            cart.PointsGained = 0;
 
-        //    // We need the seller ID associated with this account ID
+            // We need the seller ID associated with this account ID
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(cart);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
-        //    ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
-        //    return View(sellListing);
-        //}
+            if (ModelState.IsValid)
+            {
+                _context.Add(cart);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            
+            return RedirectToAction("Index");
+        }
 
+        // Check if cart exists
         private bool CartExists(int id)
         {
             return _context.Cart.Any(e => e.CartId == id);
         }
 
-        /*Cart actions: Remove Product, Add Product, finding Product */
-        public IActionResult Remove(int id)
+        // Removing item from cart
+        public async Task<IActionResult> Remove(int id)
         {
-            List<ItemsForCart> cart = SessionHelper.GetObjectFromJson<List<ItemsForCart>>(HttpContext.Session, "cart");
-            cart = RemoveProduct(id, cart);
-            SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", cart);
+            // Find the corresponding item to remove from cart
+            var itemToRemove = await _context.ItemsForCart.FindAsync(id);
+            _context.ItemsForCart.Remove(itemToRemove);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction("Index");
         }
 
-        public IActionResult Buy(int id)
+        // Adding the item to cart
+        public async Task<IActionResult> Add(int id)
         {
-            var product = _context.SellListings.FirstOrDefault(m => m.SellListingId == id);
-            List<ItemsForCart> cart = SessionHelper.GetObjectFromJson<List<ItemsForCart>>(HttpContext.Session, "cart");
+            string accountId = HttpContext.Session.GetString("userId");
 
-            if(cart == null)
+            // Find the cart associated with this account
+            var cartContext = await _context.Cart
+                .Where(s => s.TransactionComplete == false)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+
+            // Does this item already exist in this cart?
+            var itemContext = await _context.ItemsForCart
+                .Where(s => s.CartId == cartContext.CartId)
+                .FirstOrDefaultAsync(s => s.SellListingId == id);
+
+            if (itemContext == null)
             {
-                cart = AddToCart(product, null);
-                SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", cart);
+                ItemsForCart item = new ItemsForCart();
+                item.CartId = cartContext.CartId;
+                item.SellListingId = id;
+                item.Quantity = 1;
+
+                if (ModelState.IsValid)
+                {
+                    _context.Add(item);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
             else
             {
-                cart = BuyProduct(id, cart, product);
-                SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", cart);
+                // Find the associated cart item
+                itemContext.Quantity++;
+                _context.Update(itemContext);
+                await _context.SaveChangesAsync();
             }
+
             return RedirectToAction("Index");
         }
 
+        // Updating quantity of item from cart page
+        public async Task<IActionResult> UpdateQuantity(int id, int quantity)
+        {
+            string accountId = HttpContext.Session.GetString("userId");
+
+            // Find the cart associated with this account
+            var cartContext = await _context.Cart
+                .Where(s => s.TransactionComplete == false)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+
+            // Find the associated cart item
+            var itemContext = await _context.ItemsForCart
+                .Where(s => s.CartId == cartContext.CartId)
+                .FirstOrDefaultAsync(s => s.ItemsForCartId == id);
+
+            // Find all the items associated with this cart
+            var cartItems = _context.ItemsForCart
+                .Include(s => s.SellListing)
+                .Include(s => s.Cart)
+                .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                .Where(s => s.CartId == cartContext.CartId);
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    itemContext.Quantity = quantity;
+                    _context.Update(itemContext);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // I probably should do this for itemforcart instead of cart itself
+                    if (!CartExists(cartContext.CartId))
+                        return NotFound();
+                    else
+                        throw;
+                }
+
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
+        }
+        #endregion
+
+        #region Checkout Functions
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
         public IActionResult CheckOut(string stripeEmail, string stripeToken, bool charged)
@@ -222,10 +286,14 @@ namespace Geekium.Controllers
 
             }
         }
+        #endregion
+
+        #region Helper Functions
         /*Cost Calculations for: Price, Tax, and total*/
-        public double FirstTotalPrice(List<ItemsForCart> cart)
+        public double SubTotal(List<ItemsForCart> cart)
         {
-            var totalPrice = cart.Sum(ItemsForCart => ItemsForCart.SellListing.SellPrice * ItemsForCart.Quantity);
+            var totalPrice = cart.Sum(s => s.SellListing.SellPrice * s.Quantity);
+            Math.Round(totalPrice, 2);
             try
             {
                 return (double)totalPrice;
@@ -254,62 +322,6 @@ namespace Geekium.Controllers
             double pRate = 10;
             return Math.Round(totalPoints * pRate, 0, MidpointRounding.AwayFromZero);
         }
-        /*Cart actions calculations: Remove Product, Add Product, finding Product */
-
-        public List<ItemsForCart> AddToCart(SellListing sellListing, List<ItemsForCart> existingCart)
-        {
-            List<ItemsForCart> cart = new List<ItemsForCart>();
-            if (existingCart != null)
-                cart = existingCart;
-
-            cart.Add(new ItemsForCart
-            {
-                SellListing = sellListing,
-                Quantity = 1
-            });
-            return cart;
-        }
-
-        public int FindIndex (int id, List<ItemsForCart> cart)
-        {
-            try
-            {
-                for (int i = 0; i < cart.Count; i++)
-                {
-                    if (cart[i].SellListing.SellListingId.Equals(id))
-                        return i;
-                }
-                return -1;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception caught {0}", e);
-                throw e;
-            }
-        }
-        public List<ItemsForCart> BuyProduct(int id, List<ItemsForCart> cart, SellListing sellListing)
-        {
-            var index = FindIndex(id, cart);
-            List<ItemsForCart> newCart;
-
-            if (index != -1)
-            {
-                cart[index].Quantity++;
-                newCart = cart;
-            }
-            else
-                newCart = AddToCart(sellListing, cart);
-
-            return newCart;
-            
-        }
-  
-        public List<ItemsForCart> RemoveProduct(int id, List<ItemsForCart> cart)
-        {
-            var index = FindIndex(id, cart);
-            cart.RemoveAt(index);
-            return cart;
-        }
-
+        #endregion
     }
 }

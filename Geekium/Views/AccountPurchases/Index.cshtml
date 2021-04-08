@@ -4,68 +4,33 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Purchase History</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PurchaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PurchasePrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TrackingNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SellerName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PointsGained)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Account)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Seller)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PurchaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PurchasePrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TrackingNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SellerName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PointsGained)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Account.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Seller.SellerId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AccountPurchaseId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AccountPurchaseId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AccountPurchaseId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="py-2">
+    <div class="container">
+        @{ var count = 0;}
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-block">
+                            <div class="card-body">
+                                <p class="card-text">Seller: @Html.DisplayFor(model => item.SellerName)</p>
+                                <p class="card-text">Purchase Date: @Html.DisplayFor(model => item.PurchaseDate)</p>
+                                <p class="card-text">Total Price: $@Html.DisplayFor(model => item.PurchasePrice)</p>
+                                <a class="stretched-link" asp-action="Details" asp-route-id="@item.AccountPurchaseId"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><br />
+            count++;
+        }
+
+        @if (count <= 0)
+        {
+            <h4 style="text-align:center">You have not purchased anything!</h4>
+        }
+    </div>
+</div>
