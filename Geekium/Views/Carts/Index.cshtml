@@ -1,5 +1,5 @@
-﻿@model IEnumerable<Geekium.Models.Cart>
-@using Microsoft.Extensions.Options 
+﻿@model IEnumerable<Geekium.Models.ItemsForCart>
+@using Microsoft.Extensions.Options
 @inject IOptions<Geekium.Data.StripeSettings> Stripe
 @{
     ViewData["Title"] = "Index";
@@ -8,19 +8,10 @@
     <h1 class="display-4">Cart</h1>
 </div>
 
-<body>
-    @foreach (var item in Model)
+<body onload="recalculateSubtotal(null)">
+    @if (Model.Count() > 0)
     {
-        
-    }
-
-
-
-
-    @if (ViewBag.cart != null && ViewBag.cart.Count > 0)
-    {
-        <h3>Your Cart</h3>
-        <table class="cartTable">
+        <table class="table">
             <tr>
                 <th>Product</th>
                 <th>Images appear below</th>
@@ -28,34 +19,37 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th></th>
-                <th></th>
             </tr>
-            @foreach (var ItemsForCart in ViewBag.cart)
+            @{ var count = 0; }
+            @foreach (var item in Model)
             {
                 <tr>
-                    <td>@ItemsForCart.SellListing.SellTitle</td>
-                    <td>@ItemsForCart.SellListing.SellImage</td>
-                    <td>@ItemsForCart.SellListing.SellDescription</td>
-                    <td>@ItemsForCart.SellListing.SellPrice</td>
-                    <td>@ItemsForCart.Quantity</td>
-                    <td></td>
-                    <td><a asp-controller="Carts" asp-action="Remove" asp-route-id="ItemsForCart.SellListing.SellListingId">Remove Item</a></td>
+                    <td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellTitle)</td>
+                    <td><!-- Image --></td>
+                    <td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellDescription)</td>
+                    <td>$@Html.DisplayFor(modelItem => item.SellListing.SellPrice) </td>
+                    <td>
+                        <input id="quantity(@count)" onchange="recalculateSubtotal(@item.ItemsForCartId, this.id)" type="number" max="999" min="1" value="@Html.DisplayFor(modelItem => item.Quantity)" />
+                    </td>
+                    <td><a asp-controller="Carts" asp-action="Remove" asp-route-id="@item.ItemsForCartId">Remove Item</a></td>
                 </tr>
+                count++;
             }
-        <tr>
-            <td align="right" colspan="3">HST</td>
-            <td>@ViewBag.tax</td>
-        </tr>
-        <tr>
-            <td align="right" colspan="3">Points</td>
-            <td>@ViewBag.points</td>
-        </tr>
+            <tr>
+                <td align="right" colspan="4">Subtotal</td>
+                <td>$@ViewBag.subTotal</td>
+            </tr>
+            <tr>
+                <td align="right" colspan="4">Points</td>
+                <td id="price">@ViewBag.points</td>
+            </tr>
         </table>
     }
     else
     {
         <h4 style="text-align:center">Your cart seems to be empty!</h4>
     }
+
     <div class="text-center">
         <form asp-action="CheckOut" asp-controller="Carts" method="POST">
             <article>
@@ -66,7 +60,7 @@
                     data-key="@Stripe.Value.PublishableKey"
                     data-locale="auto"
                     data-description="Product Checkout"
-                    data-amount= "@ViewBag.stripeTotal"
+                    data-amount="@ViewBag.stripeTotal"
                     data-currency="cad">
             </script>
         </form>
@@ -76,3 +70,34 @@
 
 </body>
 
+<script>
+    function recalculateSubtotal(id, inputId) {
+        console.log(id);
+        console.log(inputId);
+
+        if (id != null) {
+
+            var y = document.getElementById(inputId).value;
+            if (y < 0) {
+                y = 0
+                document.getElementById(inputId).value = 0;
+            }
+            else if (y > 999) {
+                y = 999
+                document.getElementById(inputId).value = 999;
+            }
+
+            UpdateCart(id, y);
+        }
+    }
+
+    function UpdateCart(id, quantity) {
+        $.ajax({
+            url: 'Carts/UpdateQuantity',
+            data: { id: id, quantity: quantity },
+            success: function () {
+                window.location.reload(); //Implement partial refreshing.
+            }
+        });
+    }
+</script>

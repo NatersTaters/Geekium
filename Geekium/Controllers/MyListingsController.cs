@@ -1,14 +1,19 @@
 ﻿using Geekium.Models;
+using IpData;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Geekium.Controllers
 {
@@ -642,6 +647,10 @@ namespace Geekium.Controllers
                 .Include(s => s.SellerAccounts).ThenInclude (s => s.TradeListings)
                 .Include(s => s.ServiceListings).Where(s => s.AccountId.ToString() == userId);
 
+            // TEST
+            string ip = GetLocalIPAddress();
+            await CityStateCountByIp(ip);
+
             return View(await context.ToListAsync());
         }
 
@@ -662,6 +671,27 @@ namespace Geekium.Controllers
             }
 
             return drop;
+        }
+        #endregion
+
+        #region GeoLocation
+        public string GetLocalIPAddress()
+        {
+            // Right now the returned ip address is ::1
+            // We're running our application on local host and using local host up to connect
+            // We'll have to test this after publishing
+            var ipAddress = Request.HttpContext.Connection.RemoteIpAddress;
+            return ipAddress.ToString();
+        }
+
+        public async Task CityStateCountByIp(string IP)
+        {
+            string api = "819abd64317b51bd13415be1dfec3c0faa3175184b4634e9fad779fe";
+            var client = new IpDataClient(api);
+
+            // My personal IP address "2607:fea8:9640:5000:1c55:5539:a0f4:201f"
+            var ipInfo = await client.Lookup(IP);
+            Console.WriteLine($"Country name for {ipInfo.Ip} is {ipInfo.CountryName}");
         }
         #endregion
     }

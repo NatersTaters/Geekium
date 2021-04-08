@@ -36,7 +36,7 @@ namespace Geekium.Controllers
         // Display the merchandise sell listings
         public async Task<IActionResult> MerchandiseIndex()
         {
-            // Only display the sell listings of the administrator (accountId: 1 is admin)
+            // Only display the sell listings of the administrator (accountId: 2 is admin)
             string userId = HttpContext.Session.GetString("userId");
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
