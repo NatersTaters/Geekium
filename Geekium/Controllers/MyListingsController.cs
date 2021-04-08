@@ -278,7 +278,7 @@ namespace Geekium.Controllers
                 }
                 else
 				{
-                    sellListing.SellImage = "sell-icon.png";
+                    sellListing.SellImage = "buy-icon.png";
                 }
 
                 _context.Add(sellListing);
@@ -323,7 +323,7 @@ namespace Geekium.Controllers
 			{
                 //Delete the image from wwwroot/images
                 var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "images", sellListing.SellImage);
-                if (imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "sell-icon.png"))
+                if (imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "buy-icon.png"))
                 {
                     if (System.IO.File.Exists(imagePath))
                         System.IO.File.Delete(imagePath);
