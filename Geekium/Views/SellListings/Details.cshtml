@@ -27,11 +27,11 @@
 
     @if (@ViewBag.ShowCart)
     {
-        <a type="button" class="btn btn-primary btn-lg btn-block" asp-controller="Carts" asp-action="Buy" asp-route-id="@Model.SellListingId">Add to Cart</a>
+        <a type="button" class="btn btn-primary btn-lg btn-block" asp-controller="Carts" asp-action="Add" asp-route-id="@Model.SellListingId">Add to Cart</a>
     }
     else
     {
-        <a type="button" class="btn btn-primary btn-lg btn-block disabled" asp-controller="Carts" asp-action="Buy" asp-route-id="@Model.SellListingId">Cannot Add Own Listing to Cart</a>
+        <a type="button" class="btn btn-primary btn-lg btn-block disabled" asp-controller="Carts" asp-action="Add0" asp-route-id="@Model.SellListingId">Cannot Add Own Listing to Cart</a>
     }
     <br />
     <div id="accordion">

@@ -4,57 +4,31 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Purchase History</h1>
 
-<div>
-    <h4>AccountPurchase</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchaseDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchasePrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchasePrice)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrackingNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrackingNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SellerName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SellerName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PointsGained)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PointsGained)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Account)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Account.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Seller)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Seller.SellerId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.AccountPurchaseId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<body>
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Images appear below</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        @{ var count = 0; }
+        @foreach (var item in Model.Cart.ItemsForCart)
+        {
+            <tr>
+                <td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellTitle)</td>
+                <td><!-- Image --></td>
+                <td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellDescription)</td>
+                <td> $@Html.DisplayFor(modelItem => item.SellListing.SellPrice) </td>
+                <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+            </tr>
+            count++;
+        }
+    </table>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</body>

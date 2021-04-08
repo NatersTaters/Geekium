@@ -52,6 +52,7 @@
 			<button class="dropbtn text-light">@HttpContextAccessor.HttpContext.Session.GetString("username")</button>
 			<div class="dropdown-content">
 				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Account Details</a>
+				<a class="dropdown-item" asp-area="" asp-controller="AccountPurchases" asp-action="Index" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Purchase History</a>
 				<a class="dropdown-item" asp-area="" asp-controller="Rewards" asp-action="Index">View Rewards</a>
 				<a class="dropdown-item" asp-area="" asp-controller="Accounts" asp-action="Logout">Logout</a>
 			</div>
