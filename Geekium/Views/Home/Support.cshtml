@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Support
+@{
     ViewData["Title"] = "Support";
 }
 
@@ -7,16 +8,16 @@
     <h4>The support page of Geekium</h4>
 </div>
 
-<form>
-    <div class="form-group">
-        <label for="supportHeader">Subject:</label>
-        <input type="text" class="form-control" id="supportHeader" aria-describedby="subjectHelp" placeholder="Subject">
-        <small id="subjectHelp" class="form-text text-muted">Give us a brief subject of the issue! </small>
-    </div>
-    <div class="form-group">
-        <label for="supportBody">Body:</label>
-        <textarea class="form-control" id="supportBody" rows="3" aria-describedby="bodyHelp" placeholder="Any issues regarding payment, account, users, or general knowledge can be asked here, be sure to check the FAQ page first!"></textarea>
-        <small id="bodyHelp" class="form-text text-muted">Tell us why you're writing today! :)</small>
-    </div>
-    <input class="btn btn-primary" type="reset" value="Clear"> <button type="submit" class="btn btn-success">Send</button>
+<form method="post" asp-controller="Home" asp-action="SendSupport">
+	<div class="form-group">
+		<label asp-for="SupportHeader" class="control-label">Subject:</label>
+		<input asp-for="SupportHeader" type="text" class="form-control" id="supportHeader" aria-describedby="subjectHelp" placeholder="Subject" />
+		<small id="subjectHelp" class="form-text text-muted">Give us a brief subject of the issue! </small>
+	</div>
+	<div class="form-group">
+		<label asp-for="SupportBody" class="control-label">Body:</label>
+		<input asp-for="SupportBody" type="text" class="form-control" id="supportbody" aria-describedby="subjectHelp" placeholder="Any issues regarding payment, account, users, or general knowledge can be asked here, be sure to check the FAQ page first!" />
+		<small id="bodyHelp" class="form-text text-muted">Tell us why you're writing today! :)</small>
+	</div>
+	<input class="btn btn-primary" type="reset" value="Clear"><input class="btn btn-secondary" type="submit" value="Send" />
 </form>

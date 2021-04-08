@@ -46,8 +46,8 @@ namespace Geekium.Controllers
                     .Where(s => s.TransactionComplete == false);
 
                 // The account does not have a cart associated with them
-                if (cartContext == null)
-                    CreateCart();
+                //if (cartContext == null)
+                //    CreateCart();
 
                 // Once cart is found, populate the viewbag to display on the
 

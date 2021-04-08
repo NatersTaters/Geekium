@@ -38,22 +38,38 @@ namespace Geekium.Controllers
 
 		public IActionResult Support()
 		{
-			return View();
+			if(HttpContext.Session.GetString("userEmail") == null)
+			{
+				return RedirectToAction("Login", "Accounts", new { area = "" });
+			}
+			else
+			{
+				return View();
+			}
 		}
 
-		public IActionResult SendSupport()
+		public IActionResult SendSupport(Support support)
 		{
-			SendEmail();
-			return View("SupportSubmit");
+			//Send support confirmation email to the user account email address
+			string accountSupportText = "Your support request has been submitted, please allow 3 to 5 buisness days for a responce";
+			string userEmail = HttpContext.Session.GetString("userEmail");
+			SendEmail(accountSupportText, userEmail);
+
+			//Send support details to the admin email address
+			string adminSupportText = support.SupportBody;
+			string adminEmail = "geekium1234@gmail.com";
+			SendEmail(adminSupportText, adminEmail);
+
+			return View("Index");
 		}
 
-		public void SendEmail()
+		public void SendEmail(string messageBody, string emailAddress)
 		{
 			var senderEmail = new MailAddress("geekium1234@gmail.com");
-			var receiverEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
+			var receiverEmail = new MailAddress(emailAddress);
 			var password = "geekiumaccount1234";
 			var sub = "Account Support";
-			var body = "Your support ticket has been submitted, please wait 3 to 5 buisness days for a response";
+			var body = messageBody;
 			var smtp = new SmtpClient
 			{
 				Host = "smtp.gmail.com",
@@ -78,9 +94,17 @@ namespace Geekium.Controllers
 			return View();
         }
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
+		public IActionResult Error(int? statusCode = null)
 		{
+			if (statusCode.HasValue)
+			{
+				if (statusCode == 404 || statusCode == 500)
+				{
+					var viewName = statusCode.ToString();
+					return View(viewName);
+				}
+			}
+
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}
