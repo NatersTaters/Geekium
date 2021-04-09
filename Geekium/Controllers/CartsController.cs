@@ -47,7 +47,7 @@ namespace Geekium.Controllers
 
                 // The account does not have a cart associated with them
                 if (cartContext == null)
-                    CreateCart();
+                    //CreateCart();
 
                 // Once cart is found, populate the viewbag to display on the
 
@@ -154,7 +154,8 @@ namespace Geekium.Controllers
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
-                customerNotifEmail(ViewBag.cart);
+                customerNotifEmail(cart, charge);
+                sellerNotifEmail(cart, charge);
                 return View("CheckOut");
             }
             else
@@ -178,15 +179,18 @@ namespace Geekium.Controllers
          *Has been processed
          *
          */
-        public void customerNotifEmail(List<ItemsForCart> cart)
-        {
-            var body = "";
+        
+        public void customerNotifEmail(List<ItemsForCart> cart, Charge charge)
+        {          
+            var pBody = "";
+            var price = "";
             for (int i = 0; i < cart.Count; i++)
             {
-                var pBody = Console.Write("Purchase of: {0}", ViewBag.cart.SellTitle);
-                var price = Console.Write(" - {0}", ViewBag.cart.SellPrice);
-                body = pBody + price + "\n";
+                pBody = "Purchase of: " + cart.SellTitle;
+                price = " - {0}" + cart.SellPrice;
             }
+
+            var body = "Thank you for your recent purchase at Geekium of products: \n" + pBody + price + "\n" + "For a total of: " + charge.Amount;
             var sEmail = new MailAddress("geekium1234@gmail.com");
             var rEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
             var password = "geekiumaccount1234";
@@ -209,7 +213,15 @@ namespace Geekium.Controllers
                 smtp.Send(message);
             }
         }
+        public void sellerNotifEmail(List<ItemsForCart> cart, Charge charge, SellListing sellListing)
+        {
+            var pBody = "";
+            var price = "";
+            for  (int i = 0; i < cart.Count; i++)
+            {
 
+            }
+        }
         /*Cost Calculations for: Price, Tax, and total*/
         public double FirstTotalPrice(List<ItemsForCart> cart)
         {
