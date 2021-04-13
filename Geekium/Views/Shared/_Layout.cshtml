@@ -1,47 +1,102 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Geekium</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/custom.css" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - Geekium</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" />
+	<link rel="stylesheet" href="~/css/custom.css" />
+	<style>
+		/* Dropdown Button */
+		.dropbtn {
+			background-color: #007bff;
+			color: white;
+			padding: 16px;
+			font-size: 16px;
+			border: none;
+		}
+
+		/* The container <div> - needed to position the dropdown content */
+		.dropdown {
+			position: relative;
+			display: inline-block;
+		}
+
+		/* Dropdown Content (Hidden by Default) */
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #f1f1f1;
+			min-width: 160px;
+			box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+			z-index: 1;
+		}
+
+		/* Links inside the dropdown */
+		.dropdown-content a {
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+		}
+
+		/* Change color of dropdown links on hover */
+		.dropdown-content a:hover {
+			background-color: #ddd;
+		}
+
+		/* Show the dropdown menu on hover */
+		.dropdown:hover .dropdown-content {
+			display: block;
+		}
+
+		/* Change the background color of the dropdown button when the dropdown content is shown */
+		.dropdown:hover .dropbtn {
+			background-color: #007bff;
+		}
+	</style>
 </head>
 <body>
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
 			<div class="container">
 				<div class="dropdown">
-					<a class="navbar-brand dropbtn" asp-area="" asp-controller="Home" asp-action="Index">
-						<img src="~/images/geekium_logo_transparent.png" style="max-height: 100px; max-width: 100px;" class="d-inline-block align-top" alt="Geekium Logo" />
-					</a>
+					<button class="dropbtn"><img src="~/images/menu-icon.png" style="max-height: 50px; max-width: 40px;" class="d-inline-block align-top" alt="Menu Icon" /></button>
 					<div class="dropdown-content">
+						<a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 						<a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
 						<a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Support">Support</a>
 						<a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a>
 					</div>
 				</div>
+				<a asp-area="" asp-controller="Home" asp-action="Index"><img src="~/images/geekium_logo_transparent.png" style="max-height: 100px; max-width: 100px; padding-right: 5px;" class="d-inline-block align-top" alt="Geekium Logo" /></a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-					<ul class="navbar-nav flex-grow-1">
+				<div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+					<ul class="nav navbar-nav navbar-right text-light">
 						<li class="nav-item">
-							<div class="dropdown">
-								<button class="dropbtn text-light">Active Listings<i class="fa fa-caret-down"></i></button>
-								<div class="dropdown-content">
-									<a class="dropdown-item" asp-area="" asp-controller="SellListings" asp-action="Index">Selling</a>
-									<a class="dropdown-item" asp-area="" asp-controller="TradeListings" asp-action="Index">Trading</a>
-									<a class="dropdown-item" asp-area="" asp-controller="ServiceListings" asp-action="Index">Services</a>
-									<a class="dropdown-item" asp-area="" asp-controller="SellListings" asp-action="MerchandiseIndex">Merchandise</a>
-								</div>
-							</div>
+							<a class="nav-link text-light" asp-area="" asp-controller="Carts" asp-action="Index"><img src="~/images/cart-icon.png" style="max-height: 30px; max-width: 30px;" class="d-inline-block align-top" alt="Cart Icon" /></a>
 						</li>
 					</ul>
-                </div>
+					<ul class="navbar-nav flex-grow-1">
+						<li class="nav-item">
+							<a class="nav-link text-light" asp-area="" asp-controller="SellListings" asp-action="Index">Buy & Sell</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-light" asp-area="" asp-controller="TradeListings" asp-action="Index">Trading</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-light" asp-area="" asp-controller="SellListings" asp-action="MerchandiseIndex">Our Merch</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-light" asp-area="" asp-controller="ServiceListings" asp-action="Index">Services</a>
+						</li>
+					</ul>
+				</div>
+				<partial name="_LoginPartial" />
 			</div>
 		</nav>
 	</header>

@@ -11,16 +11,19 @@ using Geekium.Helpers;
 using Stripe;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Geekium.Controllers
 {
     public class CartsController : Controller
     {
         private readonly GeekiumContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public CartsController(GeekiumContext context)
+        public CartsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // Get contents of cart and return index page
@@ -234,6 +237,21 @@ namespace Geekium.Controllers
                 string BalanceTransactionId = charge.BalanceTransactionId;
                 customerNotifEmail(cartItems, charge);
                 //sellerNotifEmail(cartItems, charge);
+
+                //Set session objects for reward type and reward code to null to avoid redundency when
+                //a new cart object is created
+                HttpContext.Session.SetString("rewardType", null);
+                HttpContext.Session.SetString("rewardCode", null);
+
+                //Find account object with previous point balance and add points earned to the account point balance
+                var account = await _context.Accounts
+                .FirstOrDefaultAsync(m => m.AccountId == int.Parse(accountId));
+
+                double newPointBalance = (double)(account.PointBalance + PointsEarned(charge.Amount));
+
+                AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
+                await accountsController.EditPoints(account, (int)newPointBalance);
+
                 return View("CheckOut");
             }
             else
@@ -310,7 +328,25 @@ namespace Geekium.Controllers
             Math.Round(totalPrice, 2);
             try
             {
-                return (double)totalPrice;
+                if(HttpContext.Session.GetString("rewardType") != null && HttpContext.Session.GetString("rewardType") == "-25% Discount Code")
+				{
+                    var discount = (double)totalPrice * 0.25;
+                    return (double)totalPrice - discount;
+                }
+                else if(HttpContext.Session.GetString("rewardType") != null && HttpContext.Session.GetString("rewardType") == "-50% Discount Code")
+				{
+                    var discount = (double)totalPrice * 0.50;
+                    return (double)totalPrice - discount;
+                }
+                else if(HttpContext.Session.GetString("rewardType") != null && HttpContext.Session.GetString("rewardType") == "-75% Discount Code")
+				{
+                    var discount = (double)totalPrice * 0.75;
+                    return (double)totalPrice - discount;
+                }
+                else
+				{
+                    return (double)totalPrice;
+                }
             }
             catch (Exception e)
             {

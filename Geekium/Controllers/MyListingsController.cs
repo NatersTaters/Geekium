@@ -648,8 +648,8 @@ namespace Geekium.Controllers
                 .Include(s => s.ServiceListings).Where(s => s.AccountId.ToString() == userId);
 
             // TEST
-            string ip = GetLocalIPAddress();
-            await CityStateCountByIp(ip);
+            //string ip = GetLocalIPAddress();
+            //await CityStateCountByIp(ip);
 
             return View(await context.ToListAsync());
         }
