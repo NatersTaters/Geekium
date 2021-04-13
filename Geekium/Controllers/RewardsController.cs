@@ -83,7 +83,7 @@ namespace Geekium.Controllers
             }
             else if(id == 3)
 			{
-                newReward.RewardType = "Free Website Merch";
+                newReward.RewardType = "-75% Discount Code";
                 newReward.PointCost = 150;
 
                 newPointBalance = oldPointBalance - 150;
