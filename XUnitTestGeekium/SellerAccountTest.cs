@@ -24,34 +24,34 @@ namespace XUnitTestGeekium
 			};
 		}
 
-		[Fact]
-		public void ValidAccountControllerUpgrade_ShouldAllowUpgrade()
-		{
-			//Arrange
-			Initialize();
-			var accountsController = new AccountsController(context);
+		//[Fact]
+		//public void ValidAccountControllerUpgrade_ShouldAllowUpgrade()
+		//{
+		//	//Arrange
+		//	Initialize();
+		//	var accountsController = new AccountsController(context);
 
-			//Act
-			accountsController.Upgrade(upgradeViewModel);
+		//	//Act
+		//	accountsController.Upgrade(upgradeViewModel);
 
-			//Assert
-			Assert.True(accountsController.ModelState.IsValid);
-		}
+		//	//Assert
+		//	Assert.True(accountsController.ModelState.IsValid);
+		//}
 
-		[Fact]
-		public void InvalidAccountControllerUpgrade_ShouldThrowError()
-		{
-			//Arrange
-			Initialize();
-			var accountsController = new AccountsController(context);
-			accountsController.ModelState.AddModelError("test", "test");
+		//[Fact]
+		//public void InvalidAccountControllerUpgrade_ShouldThrowError()
+		//{
+		//	Arrange
+		//	Initialize();
+		//	var accountsController = new AccountsController(context);
+		//	accountsController.ModelState.AddModelError("test", "test");
 
-			//Act
-			accountsController.Upgrade(model: null);
+		//	Act
+		//	accountsController.Upgrade(model: null);
 
-			//Assert
-			Assert.False(accountsController.ModelState.IsValid);
-		}
+		//	Assert
+		//	Assert.False(accountsController.ModelState.IsValid);
+		//}
 
 		[Fact]
 		public void ValidUpgradeViewModel_ShouldNotThrowError()

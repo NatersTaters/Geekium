@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Geekium.Controllers
 {
@@ -18,11 +19,35 @@ namespace Geekium.Controllers
             _context = context;
         }
 
-        // GET: SellerReviews
-        public async Task<IActionResult> Index()
+        // First we will open all the reviews related to this account
+        public async Task<IActionResult> Index(int id)
         {
-            var geekiumContext = _context.SellerReviews.Include(s => s.Seller);
-            return View(await geekiumContext.ToListAsync());
+            // All the reviews
+            var reviewContext = _context.SellerReviews
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .Where(s => s.Seller.SellerId == id);
+
+            // The seller account associated with these reviews
+            var accountContext = await _context.SellerReviews
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .FirstOrDefaultAsync(s => s.SellerId == id);
+
+
+            // We currently do not keep track of who made this review
+            try
+            {
+                ViewBag.Average = Math.Round((decimal)reviewContext.Average(s => s.BuyerRating), 2);
+            }
+            catch (Exception)
+            {
+                ViewBag.Average = "N/A";
+            }
+            ViewBag.Average = Math.Round((decimal)reviewContext.Average(s => s.BuyerRating), 2);
+            ViewBag.Seller = accountContext.Seller.Account.UserName;
+
+            return View(await reviewContext.ToListAsync());
         }
 
         // GET: SellerReviews/Details/5
@@ -44,7 +69,9 @@ namespace Geekium.Controllers
             return View(sellerReview);
         }
 
-        // GET: SellerReviews/Create
+        // The buyer can only create a review through their purchase history
+        // Even after refunding, the review will stay
+        // Only one review per account
         public IActionResult Create()
         {
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
@@ -68,7 +95,7 @@ namespace Geekium.Controllers
             return View(sellerReview);
         }
 
-        // GET: SellerReviews/Edit/5
+        // The user will be able to change any personalized reviews
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,7 +148,7 @@ namespace Geekium.Controllers
             return View(sellerReview);
         }
 
-        // GET: SellerReviews/Delete/5
+        // User should be able to delete their reviews
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

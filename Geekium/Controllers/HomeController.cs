@@ -9,21 +9,31 @@ using Geekium.Models;
 using Microsoft.AspNetCore.Http;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
+using System.Dynamic;
 
 namespace Geekium.Controllers
 {
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
+		private readonly GeekiumContext _context;
 
-		public HomeController(ILogger<HomeController> logger)
+		public HomeController(ILogger<HomeController> logger, GeekiumContext context)
 		{
 			_logger = logger;
+			_context = context;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View();
+			IndexListingsViewModel viewModel = new IndexListingsViewModel();
+
+			viewModel.SellListings = GetSellListings();
+			viewModel.TradeListings = GetTradeListings();
+			viewModel.ServiceListings = GetServiceListings();
+
+			return View(viewModel);
 		}
 
 		public IActionResult About()
@@ -106,6 +116,51 @@ namespace Geekium.Controllers
 			}
 
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+		}
+
+		public List<SellListing> GetSellListings()
+		{
+			List<SellListing> sellListings = new List<SellListing>();
+
+			var sellListingContext = _context.SellListings.Include(s => s.PriceTrend)
+				.Include(s => s.Seller)
+				.Include(s => s.Seller.Account);
+
+			foreach(var item in sellListingContext)
+			{
+				sellListings.Add(item);
+			}
+
+			return sellListings;
+		}
+
+		public List<TradeListing> GetTradeListings()
+		{
+			List<TradeListing> tradeListings = new List<TradeListing>();
+
+			var tradeListingContext = _context.TradeListings.Include(t => t.Seller)
+				.Include(t => t.Seller.Account);
+
+			foreach (var item in tradeListingContext)
+			{
+				tradeListings.Add(item);
+			}
+
+			return tradeListings;
+		}
+
+		public List<ServiceListing> GetServiceListings()
+		{
+			List<ServiceListing> serviceListings = new List<ServiceListing>();
+
+			var serviceListingContext = _context.ServiceListings.Include(s => s.Account);
+
+			foreach (var item in serviceListingContext)
+			{
+				serviceListings.Add(item);
+			}
+
+			return serviceListings;
 		}
 	}
 }

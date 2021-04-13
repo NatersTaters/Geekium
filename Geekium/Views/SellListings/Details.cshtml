@@ -6,7 +6,7 @@
 
 <body>
     <div>
-        <a class="btn btn-primary" type="button" asp-action="Index">Back to List</a>
+        <a class="btn btn-primary" type="button" asp-action="ChooseIndex" asp-route-id="@Model.SellListingId">Back to List</a>
     </div>
 	<img class="displayDetailImage" src="@("~/images/"+Model.SellImage)" asp-append-version="true" width="250" height="250" />
 
@@ -15,7 +15,7 @@
     <h1>@Html.DisplayFor(model => model.SellTitle)</h1>
     <p>
         Category: @Html.DisplayFor(model => model.SellItemType) <br />
-        Seller: @Html.DisplayFor(model => model.Seller.Account.UserName) <br />
+        Seller: <a asp-area="" asp-controller="SellerReviews" asp-action="Index" asp-route-id="@Model.SellerId">@Html.DisplayFor(model => model.Seller.Account.UserName)</a> <br />
         Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
     </p>
     <hr />
@@ -31,7 +31,7 @@
     }
     else
     {
-        <a type="button" class="btn btn-primary btn-lg btn-block disabled" asp-controller="Carts" asp-action="Add0" asp-route-id="@Model.SellListingId">Cannot Add Own Listing to Cart</a>
+        <a type="button" class="btn btn-primary btn-lg btn-block disabled" asp-controller="Carts" asp-action="Add" asp-route-id="@Model.SellListingId">Cannot Add Own Listing to Cart</a>
     }
     <br />
     <div id="accordion">
