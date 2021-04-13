@@ -1,47 +1,21 @@
 ﻿@model IEnumerable<Geekium.Models.SellerReview>
 
-@{
-    ViewData["Title"] = "Index";
-}
+<h1 style="text-align: center">Reviews for @ViewBag.Seller</h1>
+<h3 style="text-align: center">Average Rating: @ViewBag.Average</h3>
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.BuyerRating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReviewDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Seller)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.BuyerRating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReviewDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Seller.SellerId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SellerReviewId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SellerReviewId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SellerReviewId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<body>
+    @foreach (var item in Model)
+    {
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-block">
+                    <div class="card-body">
+                        <p class="card-text">Buyer Name: ...</p>
+                        <p class="card-text">Rating: @Html.DisplayFor(model => item.BuyerRating)</p>
+                        <p class="card-text">Description: @Html.DisplayFor(model => item.ReviewDescription)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</body>

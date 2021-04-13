@@ -17,10 +17,11 @@ using System.Web;
 
 namespace Geekium.Controllers
 {
-    public class MyListingsController : Controller
+    public static class DropDownValues
     {
-        private List<string> dropdownValues = new List<string>
+        public static List<string> dropdownValues = new List<string>
         {
+            "",
             "Video Games",
             "Trading Cards",
             "Books",
@@ -42,6 +43,10 @@ namespace Geekium.Controllers
             "Mouse",
             "Keyboard"
         };
+    }
+
+    public class MyListingsController : Controller
+    {
         private readonly GeekiumContext _context;
         private readonly IWebHostEnvironment _hostEnvironment;
 
@@ -49,12 +54,16 @@ namespace Geekium.Controllers
 
         #region Create
         // GET: TradeListings/Create
-        public IActionResult CreateTrade()
+        public async Task<IActionResult> CreateTrade()
         {
             ViewBag.TradeDate = DateTime.Now.ToString("yyyy-MM-dd");
+            // string ip = GetLocalIPAddress(); If we deploy, we can test this (for now its static)
+            var info = await CityStateCountByIp("99.226.48.14");
+            ViewBag.TradeLocation = info.CountryName + ", " + info.RegionCode;
             List<SelectListItem> dropdownList = PopulateDropdown();
             ViewData["TradeItemType"] = new SelectList(dropdownList, "Value", "Text");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
+
             return View();
         }
 
@@ -63,9 +72,11 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTrade([Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity,ImageFile")] TradeListing tradeListing)
+        public async Task<IActionResult> CreateTrade([Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity,ImageFile, TradeLocation")] TradeListing tradeListing)
         {
             tradeListing.TradeDate = DateTime.Now;
+
+            var info = await CityStateCountByIp("99.226.48.14");
             string userId = HttpContext.Session.GetString("userId"); // This is the account ID
             // We need the seller ID associated with this account ID
             var sellerAccountId = await _context.SellerAccounts
@@ -174,7 +185,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTrade(int id, [Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity")] TradeListing tradeListing)
+        public async Task<IActionResult> EditTrade(int id, [Bind("TradeListingId,SellerId,TradeTitle,TradeDescription,TradeFor,TradeDate,TradeItemType,TradeQuantity, ImageFile, TradeLocation")] TradeListing tradeListing)
         {
             if (id != tradeListing.TradeListingId)
             {
@@ -192,6 +203,25 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
+
+                if (tradeListing.ImageFile != null)
+                {
+                    //Save image to wwwroot/images
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(tradeListing.ImageFile.FileName);
+                    string extension = Path.GetExtension(tradeListing.ImageFile.FileName);
+                    tradeListing.TradeImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await tradeListing.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
+                else
+                {
+                    tradeListing.TradeImage = "trade-icon.png";
+                }
+
                 try
                 {
                     _context.Update(tradeListing);
@@ -363,7 +393,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditSell(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity")] SellListing sellListing)
+        public async Task<IActionResult> EditSell(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity, ImageFile")] SellListing sellListing)
         {
             if (id != sellListing.SellListingId)
             {
@@ -383,6 +413,26 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
+
+                if (sellListing.ImageFile != null)
+                {
+                    //Save image to wwwroot/images
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(sellListing.ImageFile.FileName);
+                    string extension = Path.GetExtension(sellListing.ImageFile.FileName);
+                    sellListing.SellImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await sellListing.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
+                else
+                {
+                    sellListing.SellImage = "buy-icon.png";
+                }
+
+
                 try
                 {
                     _context.Update(sellListing);
@@ -540,7 +590,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditService(int id, [Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate")] ServiceListing serviceListing)
+        public async Task<IActionResult> EditService(int id, [Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate,ImageFile")] ServiceListing serviceListing)
         {
             if (id != serviceListing.ServiceListingId)
             {
@@ -557,6 +607,24 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
+                if (serviceListing.ImageFile != null)
+                {
+                    //Save image to wwwroot/images
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(serviceListing.ImageFile.FileName);
+                    string extension = Path.GetExtension(serviceListing.ImageFile.FileName);
+                    serviceListing.ServiceImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await serviceListing.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
+                else
+                {
+                    serviceListing.ServiceImage = "geekium_symbol.png";
+                }
+
                 try
                 {
                     _context.Update(serviceListing);
@@ -647,10 +715,6 @@ namespace Geekium.Controllers
                 .Include(s => s.SellerAccounts).ThenInclude (s => s.TradeListings)
                 .Include(s => s.ServiceListings).Where(s => s.AccountId.ToString() == userId);
 
-            // TEST
-            string ip = GetLocalIPAddress();
-            await CityStateCountByIp(ip);
-
             return View(await context.ToListAsync());
         }
 
@@ -659,7 +723,7 @@ namespace Geekium.Controllers
         {
             List<SelectListItem> drop = new List<SelectListItem>();
 
-            foreach (var item in dropdownValues)
+            foreach (var item in DropDownValues.dropdownValues)
             {
                 SelectListItem select = new SelectListItem
                 {
@@ -672,9 +736,7 @@ namespace Geekium.Controllers
 
             return drop;
         }
-        #endregion
 
-        #region GeoLocation
         public string GetLocalIPAddress()
         {
             // Right now the returned ip address is ::1
@@ -684,14 +746,15 @@ namespace Geekium.Controllers
             return ipAddress.ToString();
         }
 
-        public async Task CityStateCountByIp(string IP)
+        public async Task<IpData.Models.IpInfo> CityStateCountByIp(string IP)
         {
             string api = "819abd64317b51bd13415be1dfec3c0faa3175184b4634e9fad779fe";
             var client = new IpDataClient(api);
 
-            // My personal IP address "2607:fea8:9640:5000:1c55:5539:a0f4:201f"
+            // Andrew Truong's IP address: 99.226.48.14
             var ipInfo = await client.Lookup(IP);
-            Console.WriteLine($"Country name for {ipInfo.Ip} is {ipInfo.CountryName}");
+
+            return ipInfo;
         }
         #endregion
     }

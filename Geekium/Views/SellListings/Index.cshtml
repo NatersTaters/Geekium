@@ -6,26 +6,38 @@
 
 <body>
     <h2>Sell Listings</h2>
-
+    <!--Item Type:&nbsp;<select class="form-control" asp-items="ViewBag.SellFilter" value="@ViewBag.Type" name="type" id="type"></select>-->
     <form method="post" asp-action="FilterProducts">
         <div class="form-inline">
             <input class="form-control mr-sm-2" id="searchBox" type="text" name="searchProduct" placeholder="Search for Products" value="@ViewBag.Search" />
-            <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
-                Add Filter
-            </a>&nbsp;
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Item</button>
-        </div>
+            <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">Filters</a>&nbsp;
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Item</button>&nbsp;
+        </div><br />
         <div class="@ViewBag.Collapse form-inline" id="filter">
             <div class="card card-body">
                 <div class="form-group form-inline">
                     Price:&nbsp;
                     <input class="form-control" style="width:25%;" name="minPrice" id="minPrice" type="text" placeholder="From" value="@ViewBag.MinPrice" /> -&nbsp;
                     <input class="form-control" style="width:25%;" name="maxPrice" id="maxPrice" type="text" placeholder="To" value="@ViewBag.MaxPrice" />
-                </div>
+                </div><br />
+                <div class="form-group form-inline">
+                    Item Type:&nbsp;@Html.DropDownList("typeList", (List<SelectListItem>)ViewBag.SellFilter, new { @class = "form-control select2 select1", @id = "type", @name = "type" })
+                </div><br />
+                <div class="form-group form-inline">
+                    Quantity:&nbsp;
+                    <input class="form-control" style="width:25%;" name="minQuantity" id="minQuantity" type="text" placeholder="From" value="@ViewBag.MinQuantity" /> -&nbsp;
+                    <input class="form-control" style="width:25%;" name="maxQuantity" id="maxQuantity" type="text" placeholder="To" value="@ViewBag.MaxQuantity" />
+                </div><br />
+                <div class="form-group form-inline">
+                    Listing Date:&nbsp;
+                    <input class="form-control" style="width:25%;" name="fromDate" id="fromDate" type="date" placeholder="From" value="@ViewBag.FromDate.Date.ToString("yyyy-MM-dd")" /> -&nbsp;
+                    <input class="form-control" style="width:25%;" name="toDate" id="toDate" type="date" placeholder="To" value="@ViewBag.ToDate.Date.ToString("yyyy-MM-dd")" />
+                </div><br />
+                <button class="btn btn-outline-danger my-2 my-sm-0" asp-action="Index">Clear All</button>
             </div>
         </div>
     </form>
-
+    <br />
     <div class="py-2">
         <div class="container">
             @{ var count = 0;}
@@ -43,12 +55,12 @@
                                 <div class="card-header truncate">
                                     @Html.DisplayFor(modelItem => item.SellTitle)
                                 </div>
-								<div class="card-body">
-									<img class="displayImage" src="@("~/images/"+item.SellImage)" asp-append-version="true" width="250" height="250"/>
-									<h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
-									<p class="card-text">Price: $@Html.DisplayFor(modelItem => item.SellPrice)</p>
-									<a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
-								</div>
+                                <div class="card-body">
+                                    <img class="displayImage" src="@("~/images/"+item.SellImage)" asp-append-version="true" width="250" height="250" />
+                                    <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Seller.Account.UserName)</h5>
+                                    <p class="card-text">Price: $@Html.DisplayFor(modelItem => item.SellPrice)</p>
+                                    <a class="stretched-link" asp-action="Details" asp-route-id="@item.SellListingId"></a>
+                                </div>
                             </div>
                         </div>
                     </div>

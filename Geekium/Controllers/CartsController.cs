@@ -50,6 +50,12 @@ namespace Geekium.Controllers
                     .Where(s => s.SellListingId == s.SellListing.SellListingId)
                     .Where(s => s.CartId == cartContext.CartId);
 
+                foreach (var item in cartItems)
+                {
+                    if (item.Quantity > item.SellListing.SellQuantity)
+                        item.Quantity = item.SellListing.SellQuantity;
+                }
+
                 // Calculate subtotal
                 var model = await cartItems.ToListAsync();
                 ViewBag.subTotal = SubTotal(model); // This is not updating properly
@@ -103,6 +109,11 @@ namespace Geekium.Controllers
         public async Task<IActionResult> Add(int id)
         {
             string accountId = HttpContext.Session.GetString("userId");
+            string url = "/Accounts/Login";
+            if (accountId == null)
+            {
+                return LocalRedirect(url);
+            }
 
             // Find the cart associated with this account
             var cartContext = await _context.Cart
@@ -143,6 +154,11 @@ namespace Geekium.Controllers
         public async Task<IActionResult> UpdateQuantity(int id, int quantity)
         {
             string accountId = HttpContext.Session.GetString("userId");
+            string url = "/Accounts/Login";
+            if (accountId == null)
+            {
+                return LocalRedirect(url);
+            }
 
             // Find the cart associated with this account
             var cartContext = await _context.Cart
