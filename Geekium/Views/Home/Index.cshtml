@@ -1,13 +1,12 @@
-﻿@model LoginViewModel
-@using Microsoft.AspNetCore.Http
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+﻿@model IndexListingsViewModel
 @{
 	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-	<h1 class="display-4">Welcome to Geekium!</h1>
+<div>
+	<h3>What's popular right now</h3>
 </div>
+<hr />
 
 <!-- Required meta tags -->
 <meta charset="utf-8">
@@ -23,59 +22,60 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
 
-<!--Carousel -->
-<div id="indexCarousel" class="carousel slide" data-ride="carousel">
-	<ol class="carousel-indicators">
-		<li data-target="#indexCarousel" data-slide-to="0" class="active"></li>
-		<li data-target="#indexCarousel" data-slide-to="1"></li>
-		<li data-target="#indexCarousel" data-slide-to="2"></li>
-		<li data-target="#indexCarousel" data-slide-to="3"></li>
-	</ol>
+<!--Sell Listing Carousel -->
+<h4 class="text-center">Active Buy & Sell Listings</h4>
+<div id="sellListingCarousel" class="carousel slide" data-ride="carousel">
 	<div class="carousel-inner">
-		<div class="carousel-item active">
-			<div class="d-flex justify-content-center">
-				<!--div class="d-flex justify-content-center" is meant-->
-				<img src="~/images/geekium_logo.png" alt="Geekium Logo" height="450">
+		@foreach (var item in Model.SellListings)
+		{
+			<div class="carousel-item @(item == Model.SellListings.First() ? "active" : "")">
+				<a asp-controller="SellListings" asp-action="Details" asp-route-id="@item.SellListingId"><img class="displayImage" src="@("~/images/"+item.SellImage)" asp-append-version="true" width="250" height="250" /></a>
+				<div class="text-center">
+					<p class="mb-0">@item.SellTitle</p>
+					<p class="mb-0">Price: @item.SellPrice</p>
+					<p class="mb-0">Seller: @item.Seller.Account.UserName</p>
+				</div>
 			</div>
-		</div>
-		<div class="carousel-item">
-			<div class="d-flex justify-content-center">
-				<img src="~/images/buy_products.jpg" alt="Marketplace" height="450">
-			</div>
-		</div>
-		<div class="carousel-item">
-			<div class="d-flex justify-content-center">
-				<img src="~/images/geekium_collectibles.jpg" alt="Antique Collectibles" height="450">
-			</div>
-		</div>
-		<div class="carousel-item">
-			<div class="d-flex justify-content-center">
-				<img src="~/images/collectible_product.jpg" alt="Game products" height="450"> <!--Image from https://www.pymnts.com/news/ecommerce/2020/as-classic-video-games-turn-into-collectibles-can-ecommerce-keep-up/ -->
-			</div>
-		</div>
+		}
 	</div>
-	<a class="carousel-control-prev" href="#indexCarousel" role="button" data-slide="prev">
-		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
-	</a>
-	<a class="carousel-control-next" href="#indexCarousel" role="button" data-slide="next">
-		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
-	</a>
 </div>
-<br />
-<!--End of Carousel-->
 
-@*<div class="text-center">
-	<p class="greeting">
-		A local based place for anyone looking to buy, sell or trade products!  Anything in specific you are looking for today?
-		<br /><br />
-		Learn more about us on our <a asp-area="" asp-controller="Home" asp-action="About">About Page</a>!
-		</br><br />
-		Need assistance?  Head over to our <a asp-area="" asp-controller="Home" asp-action="Support">Support Page</a> where one of our professional Geeks are surely to help you!
-		<br /><br />
-		Have a question needing answering?  The <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ Page</a> may be just what you need!
+<hr />
 
-	</p>
-</div>*@
+<!--Trade Listing Carousel -->
+<h4 class="text-center">Active Trade Listings</h4>
+<div id="tradeListingCarousel" class="carousel slide" data-ride="carousel">
+	<div class="carousel-inner">
+		@foreach (var item in Model.TradeListings)
+		{
+			<div class="carousel-item @(item == Model.TradeListings.First() ? "active" : "")">
+				<a asp-controller="TradeListings" asp-action="Details" asp-route-id="@item.TradeListingId"><img class="displayImage" src="@("~/images/"+item.TradeImage)" asp-append-version="true" width="250" height="250" /></a>
+				<div class="text-center">
+					<p class="mb-0">@item.TradeTitle</p>
+					<p class="mb-0">Trade For: @item.TradeFor</p>
+					<p class="mb-0">Trader: @item.Seller.Account.UserName</p>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+<hr />
+
+<!--Service Listing Carousel -->
+<h4 class="text-center">Active Service Listings</h4>
+<div id="serviceListingCarousel" class="carousel slide" data-ride="carousel">
+	<div class="carousel-inner">
+		@foreach (var item in Model.ServiceListings)
+		{
+			<div class="carousel-item @(item == Model.ServiceListings.First() ? "active" : "")">
+				<a asp-controller="ServiceListings" asp-action="Details" asp-route-id="@item.ServiceListingId"><img class="displayImage" src="@("~/images/"+item.ServiceImage)" asp-append-version="true" width="250" height="250" /></a>
+				<div class="text-center">
+					<p class="mb-0">@item.ServiceTitle</p>
+					<p class="mb-0">Contact: @item.Account.UserName</p>
+				</div>
+			</div>
+		}
+	</div>
+</div>
 
