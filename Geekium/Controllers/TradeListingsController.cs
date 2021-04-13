@@ -22,6 +22,8 @@ namespace Geekium.Controllers
         public async Task<IActionResult> Index()
         {
             var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account);
+            List<SelectListItem> dropdownList = PopulateDropdown();
+            ViewData["TradeFilter"] = new SelectList(dropdownList, "Value", "Text");
             SetViewBag(null);
             return View(await geekiumContext.ToListAsync());
         }
@@ -50,6 +52,7 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterTrades(string searchTrade)
         {
+            // They entered something in the search bar
             if (searchTrade != null && searchTrade != "")
             {
                 var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account)
@@ -75,5 +78,23 @@ namespace Geekium.Controllers
             else
                 ViewBag.Search = null;
         }
+        private List<SelectListItem> PopulateDropdown()
+        {
+            List<SelectListItem> drop = new List<SelectListItem>();
+
+            foreach (var item in DropDownValues.dropdownValues)
+            {
+                SelectListItem select = new SelectListItem
+                {
+                    Selected = false,
+                    Text = item,
+                    Value = item
+                };
+                drop.Add(select);
+            }
+
+            return drop;
+        }
+
     }
 }

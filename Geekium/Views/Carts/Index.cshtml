@@ -97,14 +97,13 @@
 			UpdateCart(id, y);
 		}
 	}
-
-	function UpdateCart(id, quantity) {
-		$.ajax({
-			url: 'Carts/UpdateQuantity',
-			data: { id: id, quantity: quantity },
-			success: function () {
-				window.location.reload(); //Implement partial refreshing.
-			}
-		});
-	}
+    function UpdateCart(id, quantity) {
+        $.ajax({
+            url: 'Carts/UpdateQuantity',
+            data: { id: id, quantity: quantity },
+            success: function () {
+                window.location.reload();
+            }
+        });
+    }
 </script>
