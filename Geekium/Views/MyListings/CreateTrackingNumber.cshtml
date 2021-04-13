@@ -1,5 +1,23 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Geekium.Models.AccountPurchase
+
 @{
+    ViewData["Title"] = "CreateTracking";
 }
+
+<h1>Create Tracking Number</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="CreateTracking">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group" hidden>
+                <label asp-for="TrackingNumber" class="control-label"></label>
+                <input asp-for="TrackingNumber" class="form-control" />
+                <span asp-validation-for="TrackingNumber" class="text-danger"></span>
+                <div class="form-group">
+                    <input type="submit" value="CreateTracking" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
