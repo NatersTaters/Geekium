@@ -67,8 +67,8 @@
 			</script>
 		</form>
 	</div>
-	<a class="btn btn-success" role="button" asp-controller="Carts" asp-action="Checkout" style="float: right;">Proceed to Checkout</a>
-	<a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
+    <a class="btn btn-success" role="button" asp-area="" asp-controller="Carts" asp-action="CartPayment" style="float: right;">Proceed to Checkout</a>
+    <a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
 
 	@if (@HttpContextAccessor.HttpContext.Session.GetString("rewardType") != null)
 	{
