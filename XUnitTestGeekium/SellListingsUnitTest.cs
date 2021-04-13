@@ -32,33 +32,33 @@ namespace XUnitTestGeekium
         // Call FilterProducts()
         // Pass in "Hello", 3 and 200
         // Return view
-        [Fact]
-        public async Task FilterProducts_SendViableValues_ReturnView()
-        {
-            // Arrange
-            SellListingsController controller = new SellListingsController(context);
+        //[Fact]
+        //public async Task FilterProducts_SendViableValues_ReturnView()
+        //{
+        //    // Arrange
+        //    SellListingsController controller = new SellListingsController(context);
 
-            // Act
-            var actionResult = await controller.FilterProducts("Hello", 3, 200);
+        //    // Act
+        //    var actionResult = await controller.FilterProducts("Hello", 3, 200);
 
-            // Assert
-            Assert.IsType<ViewResult>(actionResult);
-        }
+        //    // Assert
+        //    Assert.IsType<ViewResult>(actionResult);
+        //}
 
         // Call FilterProducts()
         // Pass in null, 0, 0
         // Return redirection
-        [Fact]
-        public async Task FilterProducts_SendNullData_ReturnRedirect()
-        {
-            // Arrange
-            SellListingsController controller = new SellListingsController(context);
+        //[Fact]
+        //public async Task FilterProducts_SendNullData_ReturnRedirect()
+        //{
+        //    // Arrange
+        //    SellListingsController controller = new SellListingsController(context);
 
-            // Act
-            var actionResult = await controller.FilterProducts(null, 0, 0);
+        //    // Act
+        //    var actionResult = await controller.FilterProducts(null, 0, 0);
 
-            // Assert
-            Assert.IsType<RedirectToActionResult>(actionResult);
-        }
+        //    // Assert
+        //    Assert.IsType<RedirectToActionResult>(actionResult);
+        //}
     }
 }

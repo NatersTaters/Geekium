@@ -20,7 +20,6 @@ namespace Geekium.Controllers
     {
         private readonly GeekiumContext _context;
         private long stripePay;
-        public CartsController(GeekiumContext context)
         private readonly IWebHostEnvironment _hostEnvironment;
 
         public CartsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
@@ -56,22 +55,24 @@ namespace Geekium.Controllers
                     .Where(s => s.SellListingId == s.SellListing.SellListingId)
                     .Where(s => s.CartId == cartContext.CartId);
 
-                foreach (var item in cartItems)
-                {
-                    if (item.Quantity > item.SellListing.SellQuantity)
-                        item.Quantity = item.SellListing.SellQuantity;
+                if (cartItems != null)
+				{
+                    foreach (var item in cartItems)
+                    {
+                        if (item.Quantity > item.SellListing.SellQuantity)
+                            item.Quantity = item.SellListing.SellQuantity;
+                    }
                 }
-
+                
                 // Calculate subtotal
                 var model = await cartItems.ToListAsync();
-                //ViewBag.subTotal = SubTotal(model); // This is not updating properly
-                int subTotal = (int)SubTotal(model);
-                HttpContext.Session.SetInt32("subTotal", subTotal);
+                double total = SubTotal(model); // This is not updating properly
+                ViewBag.subTotal = total;
                 stripePay = (long)SubTotal(model);
 
                 // Calculate points
                 //ViewBag.points = PointsEarned(ViewBag.subTotal);
-                string points = PointsEarned(subTotal).ToString();
+                string points = PointsEarned(total).ToString();
                 HttpContext.Session.SetString("points", points);
 
                 return View(model);
@@ -217,8 +218,25 @@ namespace Geekium.Controllers
 
         #region Checkout Functions
         //Payment page
-        public IActionResult CartPayment()
+        public async Task<IActionResult> CartPayment()
         {
+            // Find the cart associated with this account
+            var cartContext = await _context.Cart
+                .Where(s => s.TransactionComplete == false)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == HttpContext.Session.GetString("userId"));
+
+            // Find all the items associated with this cart
+            var cartItems = _context.ItemsForCart
+                .Include(s => s.SellListing)
+                .Include(s => s.Cart)
+                .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                .Where(s => s.CartId == cartContext.CartId);
+
+            // Calculate subtotal
+            var model = await cartItems.ToListAsync();
+            ViewBag.subTotal = SubTotal(model); // This is not updating properly
+            ViewBag.subTotalStripe = SubTotal(model) * 100;
+
             return View();
         }
 
@@ -229,19 +247,29 @@ namespace Geekium.Controllers
                 var customers = new CustomerService();
                 var charges = new ChargeService();
 
-                //int stripeAmount = Convert.ToInt32(ViewBag.subTotal * -1); // Test line
-                //var amount = (int)(stripeAmount); /// Test line
-
                 var customer = customers.Create(new CustomerCreateOptions{ 
                     Email=stripeEmail,
                     Source=stripeToken
                 });
 
-                //long amount = long.Parse(HttpContext.Session.GetInt32("subTotal"));
-                int a = (int)HttpContext.Session.GetInt32("subTotal");
-                long amount = Convert.ToInt64(a);
-                long sAmount = stripePay * 100;
-                //long.TryParse(HttpContext.Session.GetString("subTotal"), out amount);
+                // Find the cart associated with this account
+                var cartContext = await _context.Cart
+                .Where(s => s.TransactionComplete == false)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == HttpContext.Session.GetString("userId"));
+
+                // If the account does not have a cart associated with them, create one
+                if (cartContext == null)
+                await CreateCart();
+
+                // Find all the items associated with this cart
+                var cartItems = _context.ItemsForCart
+                .Include(s => s.SellListing)
+                .Include(s => s.Cart)
+                .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                .Where(s => s.CartId == cartContext.CartId);
+
+                var model = await cartItems.ToListAsync();
+                long sAmount = (long)SubTotal(model) * 100;
 
                 var charge = charges.Create(new ChargeCreateOptions
                 {
@@ -259,28 +287,19 @@ namespace Geekium.Controllers
 
                 string accountId = HttpContext.Session.GetString("userId");
 
-                // Find the cart associated with this account
-                var cartContext = await _context.Cart
-                    .Where(s => s.TransactionComplete == false)
-                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
-
-                // Find all the items associated with this cart
-                var cartItems = _context.ItemsForCart
-                    .Include(s => s.SellListing)
-                    .Include(s => s.Cart)
-                    .Where(s => s.SellListingId == s.SellListing.SellListingId)
-                    .Where(s => s.CartId == cartContext.CartId).ToList();
-
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
-                customerNotifEmail(cartItems, charge);
-                //sellerNotifEmail(cartItems, charge);
+                customerNotifEmail(model, charge);
+                sellerNotifEmail(model, charge);
 
                 //Set session objects for reward type and reward code to null to avoid redundency when
                 //a new cart object is created
-                HttpContext.Session.SetString("rewardType", null);
-                HttpContext.Session.SetString("rewardCode", null);
+                if ((HttpContext.Session.GetString("rewardType")) != null)
+				{
+                    HttpContext.Session.SetString("rewardType", null);
+                    HttpContext.Session.SetString("rewardCode", null);
+                }
 
                 //Find account object with previous point balance and add points earned to the account point balance
                 var account = await _context.Accounts
@@ -291,8 +310,9 @@ namespace Geekium.Controllers
                 AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
                 await accountsController.EditPoints(account, (int)newPointBalance);
 
-                return View("CheckOut");
-                }
+                return RedirectToAction("Create", "AccountPurchases", new { area = "" });
+
+            }
                 else
                 {
                     return View("Unsuccessful");

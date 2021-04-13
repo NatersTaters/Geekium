@@ -13,14 +13,14 @@
 <div class="text-center">
     <form asp-action="CheckOut" asp-controller="Carts" method="POST">
         <article>
-            <label>Sum: @HttpContextAccessor.HttpContext.Session.GetString("subTotal")</label> <!--If not working add this line also to data-amount-->
+            <label>Sum: @ViewBag.subTotal</label> <!--If not working add this line also to data-amount-->
         </article>
         <script src="//checkout.stripe.com/v2/checkout.js"
                 class="stripe-button"
                 data-key="@Stripe.Value.PublishableKey"
                 data-locale="auto"
                 data-description="Product Checkout"
-                data-amount="@HttpContextAccessor.HttpContext.Session.GetString("subTotal")"
+                data-amount="@ViewBag.subTotalStripe"
                 data-currency="cad">
         </script>
     </form>

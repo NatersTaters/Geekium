@@ -16,7 +16,6 @@
                     <div class="card">
                         <div class="card-block">
                             <div class="card-body">
-                                <p class="card-text">Seller: @Html.DisplayFor(model => item.SellerName)</p>
                                 <p class="card-text">Purchase Date: @Html.DisplayFor(model => item.PurchaseDate)</p>
                                 <p class="card-text">Total Price: $@Html.DisplayFor(model => item.PurchasePrice)</p>
                                 <a class="stretched-link" asp-action="Details" asp-route-id="@item.AccountPurchaseId"></a>

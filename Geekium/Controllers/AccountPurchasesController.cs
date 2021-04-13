@@ -61,6 +61,8 @@ namespace Geekium.Controllers
         // GET: AccountPurchases/Create
         public IActionResult Create()
         {
+            // Create account purchase item after checkout is completed
+
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
             return View();
@@ -80,7 +82,7 @@ namespace Geekium.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email", accountPurchase.AccountId);
-            ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", accountPurchase.SellerId);
+            //ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", accountPurchase.SellerId);
             return View(accountPurchase);
         }
 

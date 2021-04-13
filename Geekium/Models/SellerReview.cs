@@ -11,9 +11,11 @@ namespace Geekium.Models
     {
         public int SellerReviewId { get; set; }
         public int SellerId { get; set; }
+        public int AccountId { get; set; }
         public double? BuyerRating { get; set; }
         public string ReviewDescription { get; set; }
 
+        public virtual Account Account { get; set; }
         public virtual SellerAccount Seller { get; set; }
     }
 }

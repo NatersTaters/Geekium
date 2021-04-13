@@ -11,12 +11,10 @@ namespace Geekium.Models
     {
         public int AccountPurchaseId { get; set; }
         public int AccountId { get; set; }
-        public int SellerId { get; set; }
         public int CartId { get; set; }
         public DateTime PurchaseDate { get; set; }
         public double PurchasePrice { get; set; }
         public int TrackingNumber { get; set; }
-        public string SellerName { get; set; }
         public int PointsGained { get; set; }
 
         public virtual Account Account { get; set; }

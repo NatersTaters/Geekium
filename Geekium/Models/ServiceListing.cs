@@ -19,6 +19,7 @@ namespace Geekium.Models
         public string ServiceDescription { get; set; }
         [DataType(DataType.Date)]
         public DateTime ListingDate { get; set; }
+        public string ServiceLocation { get; set; }
         public string ServiceImage { get; set; }
 
         [NotMapped]

@@ -41,32 +41,12 @@
 				<td align="right" colspan="4">Subtotal</td>
 				<td>$@ViewBag.subTotal</td>
 			</tr>
-			<tr>
-				<td align="right" colspan="4">Points</td>
-				<td id="price">@ViewBag.points</td>
-			</tr>
 		</table>
 	}
 	else
 	{
 		<h4 style="text-align:center">Your cart seems to be empty!</h4>
 	}
-
-	<div class="text-center">
-		<form asp-action="CheckOut" asp-controller="Carts" method="POST">
-			<article>
-				<label>Sum: @ViewBag.total</label>
-			</article>
-			<script src="//checkout.stripe.com/v2/checkout.js"
-					class="stripe-button"
-					data-key="@Stripe.Value.PublishableKey"
-					data-locale="auto"
-					data-description="Product Checkout"
-					data-amount="@ViewBag.stripeTotal"
-					data-currency="cad">
-			</script>
-		</form>
-	</div>
     <a class="btn btn-success" role="button" asp-area="" asp-controller="Carts" asp-action="CartPayment" style="float: right;">Proceed to Checkout</a>
     <a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
 

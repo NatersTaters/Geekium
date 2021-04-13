@@ -15,6 +15,7 @@ namespace Geekium.Models
             Cart = new HashSet<Cart>();
             Rewards = new HashSet<Reward>();
             SellerAccounts = new HashSet<SellerAccount>();
+            SellerReviews = new HashSet<SellerReview>();
             ServiceListings = new HashSet<ServiceListing>();
         }
 
@@ -32,5 +33,6 @@ namespace Geekium.Models
         public virtual ICollection<Reward> Rewards { get; set; }
         public virtual ICollection<SellerAccount> SellerAccounts { get; set; }
         public virtual ICollection<ServiceListing> ServiceListings { get; set; }
+        public virtual ICollection<SellerReview> SellerReviews { get; set; }
     }
 }

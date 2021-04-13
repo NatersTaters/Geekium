@@ -32,6 +32,7 @@ namespace Geekium.Models
         public int SellQuantity { get; set; }
         public string SellImage { get; set; }
         public string PriceTrendKeywords { get; set; }
+        public bool? Display { get; set; }
 
         [NotMapped]
         [DisplayName("Upload File")]
