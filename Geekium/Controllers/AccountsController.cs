@@ -311,25 +311,50 @@ namespace Geekium.Controllers
                 .Include(s => s.Account)
                 .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
 
-            if(sellListing != null)
+            var accountPurchases = await _context.AccountPurchases
+                .Include(a => a.Account)
+                .Include(a => a.Cart)
+                .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+
+            var cartContext = await _context.Cart
+                    .Where(s => s.TransactionComplete == false)
+                    .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+
+            if (sellListing != null)
 			{
-                _context.SellListings.Remove(sellListing);
+                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+                await myListings.DeleteConfirmedSelling(sellListing.SellListingId);
             }
             
             if(serviceListing != null)
 			{
-                _context.ServiceListings.Remove(serviceListing);
+                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+                await myListings.DeleteConfirmedService(serviceListing.ServiceListingId);
             }
             
             if(tradeListing != null)
 			{
-                _context.TradeListings.Remove(tradeListing);
+                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+                await myListings.DeleteConfirmedTrade(tradeListing.TradeListingId);
             }
             
             if(sellerAccount != null)
 			{
-                _context.SellerAccounts.Remove(sellerAccount);
+                SellerAccountsController sellerAccounts = new SellerAccountsController(_context);
+                await sellerAccounts.DeleteConfirmed(sellerAccount.SellerId);
             }
+
+            if(accountPurchases != null)
+			{
+                AccountPurchasesController purchasesController = new AccountPurchasesController(_context);
+                await purchasesController.DeleteConfirmed(accountPurchases.AccountPurchaseId);
+			}
+
+            if(cartContext != null)
+			{
+                CartsController cartsController = new CartsController(_context, _hostEnvironment);
+                cartsController.DeleteCart(cartContext.CartId);
+			}
 
             _context.Accounts.Remove(account);
             await _context.SaveChangesAsync();

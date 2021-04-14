@@ -11,7 +11,6 @@ namespace Geekium.Models
     {
         public SellerAccount()
         {
-            AccountPurchases = new HashSet<AccountPurchase>();
             SellListings = new HashSet<SellListing>();
             SellerReviews = new HashSet<SellerReview>();
             TradeListings = new HashSet<TradeListing>();
@@ -22,7 +21,6 @@ namespace Geekium.Models
         public double? AverageRating { get; set; }
 
         public virtual Account Account { get; set; }
-        public virtual ICollection<AccountPurchase> AccountPurchases { get; set; }
         public virtual ICollection<SellListing> SellListings { get; set; }
         public virtual ICollection<SellerReview> SellerReviews { get; set; }
         public virtual ICollection<TradeListing> TradeListings { get; set; }

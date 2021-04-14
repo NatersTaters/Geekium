@@ -41,6 +41,7 @@ namespace Geekium.Controllers
             {
                 // Find the cart associated with this account
                 var cartContext = await _context.Cart
+                    .Include(c => c.Account)
                     .Where(s => s.TransactionComplete == false)
                     .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
 
@@ -71,9 +72,8 @@ namespace Geekium.Controllers
                 stripePay = (long)SubTotal(model);
 
                 // Calculate points
-                //ViewBag.points = PointsEarned(ViewBag.subTotal);
                 string points = PointsEarned(total).ToString();
-                HttpContext.Session.SetString("points", points);
+                ViewBag.points = PointsEarned(ViewBag.subTotal);
 
                 return View(model);
             }
@@ -214,6 +214,25 @@ namespace Geekium.Controllers
 
             return RedirectToAction("Index");
         }
+
+        //Update current cart item and set TransactionComplete to "true"
+        public async void ChangeCartTransactionStatus([Bind("CartId,AccountId,TransactionComplete,NumberOfProducts,TotalPrice,PointsGained")] Cart cart)
+		{
+            if (ModelState.IsValid)
+            {
+                cart.TransactionComplete = true;
+                _context.Update(cart);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        //Delete any cart objects from the database, to be used when the account is deleted
+        public async void DeleteCart(int id)
+        {
+            var cart = await _context.Cart.FindAsync(id);
+            _context.Cart.Remove(cart);
+            await _context.SaveChangesAsync();
+        }
         #endregion
 
         #region Checkout Functions
@@ -269,11 +288,12 @@ namespace Geekium.Controllers
                 .Where(s => s.CartId == cartContext.CartId);
 
                 var model = await cartItems.ToListAsync();
-                long sAmount = (long)SubTotal(model) * 100;
+                
+                long amount = (long)SubTotal(model);
 
                 var charge = charges.Create(new ChargeCreateOptions
                 {
-                    Amount = sAmount,
+                    Amount = amount * 100,
                     Description = "Purchase off of Geekium",
                     Currency = "cad",
                     Customer = customer.Id,
@@ -290,8 +310,8 @@ namespace Geekium.Controllers
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
-                customerNotifEmail(model, charge);
-                sellerNotifEmail(model, charge);
+                //customerNotifEmail(model, charge);
+                //sellerNotifEmail(model, charge);
 
                 //Set session objects for reward type and reward code to null to avoid redundency when
                 //a new cart object is created
@@ -301,17 +321,34 @@ namespace Geekium.Controllers
                     HttpContext.Session.SetString("rewardCode", null);
                 }
 
-                //Find account object with previous point balance and add points earned to the account point balance
+                //Find account object with previous point balance
                 var account = await _context.Accounts
                 .FirstOrDefaultAsync(m => m.AccountId == int.Parse(accountId));
 
-                double newPointBalance = (double)(account.PointBalance + PointsEarned(charge.Amount));
+                //Determing new points balance for the current account that is making the purchase
+                double newPointBalance = (double)(account.PointBalance + amount);
 
+                //Save the new point balance to the buyer account
                 AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
                 await accountsController.EditPoints(account, (int)newPointBalance);
 
-                return RedirectToAction("Create", "AccountPurchases", new { area = "" });
+                //Create a new purchase item for the AccountPurchase Controller
+                AccountPurchase purchase = new AccountPurchase();
+                purchase.AccountId = int.Parse(HttpContext.Session.GetString("userId"));
+                purchase.CartId = cartContext.CartId;
+                purchase.PurchaseDate = DateTime.Now;
+                purchase.PurchasePrice = amount;
+                purchase.TrackingNumber = 0;
+                purchase.PointsGained = (int)amount;
 
+                //Save the new purchase item to the AccountPurchases Controller
+                AccountPurchasesController accountPurchases = new AccountPurchasesController(_context);
+                await accountPurchases.Create(purchase);
+
+                //Update Cart Transaction Status
+                ChangeCartTransactionStatus(cartContext);
+
+                return RedirectToAction("Index", "AccountPurchases", new { area = "" });
             }
                 else
                 {
