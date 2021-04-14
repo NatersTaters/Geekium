@@ -296,17 +296,6 @@ namespace Geekium.Controllers
             var account = await _context.Accounts.FindAsync(id);
             var sellerAccount = await _context.SellerAccounts.FindAsync(HttpContext.Session.GetInt32("sellerId"));
 
-            var sellListing = await _context.SellListings
-                   .Include(s => s.PriceTrend)
-                   .Include(s => s.Seller)
-                   .Include(s => s.Seller.Account)
-                   .FirstOrDefaultAsync(m => m.SellerId == sellerAccount.SellerId);
-
-            var tradeListing = await _context.TradeListings
-                .Include(t => t.Seller)
-                .Include(t => t.Seller.Account)
-                .FirstOrDefaultAsync(m => m.SellerId == sellerAccount.SellerId);
-
             var serviceListing = await _context.ServiceListings
                 .Include(s => s.Account)
                 .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
@@ -319,12 +308,6 @@ namespace Geekium.Controllers
             var cartContext = await _context.Cart
                     .Where(s => s.TransactionComplete == false)
                     .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
-
-            if (sellListing != null)
-			{
-                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
-                await myListings.DeleteConfirmedSelling(sellListing.SellListingId);
-            }
             
             if(serviceListing != null)
 			{
@@ -332,15 +315,9 @@ namespace Geekium.Controllers
                 await myListings.DeleteConfirmedService(serviceListing.ServiceListingId);
             }
             
-            if(tradeListing != null)
-			{
-                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
-                await myListings.DeleteConfirmedTrade(tradeListing.TradeListingId);
-            }
-            
             if(sellerAccount != null)
 			{
-                SellerAccountsController sellerAccounts = new SellerAccountsController(_context);
+                SellerAccountsController sellerAccounts = new SellerAccountsController(_context, _hostEnvironment);
                 await sellerAccounts.DeleteConfirmed(sellerAccount.SellerId);
             }
 

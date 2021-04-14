@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Geekium.Controllers
 {
     public class SellerAccountsController : Controller
     {
         private readonly GeekiumContext _context;
+        private IWebHostEnvironment _hostEnvironment;
 
-        public SellerAccountsController(GeekiumContext context)
+        public SellerAccountsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
 		// GET: SellerAccounts
@@ -147,7 +150,43 @@ namespace Geekium.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var sellerAccount = await _context.SellerAccounts.FindAsync(id);
+
+            var sellListing = await _context.SellListings
+                .Include(s => s.PriceTrend)
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .FirstOrDefaultAsync(s => s.Seller.SellerId == id);
+
+            var tradeListing = await _context.TradeListings
+                .Include(t => t.Seller)
+                .Include(t => t.Seller.Account)
+                .FirstOrDefaultAsync(t => t.Seller.SellerId == id);
+
+            var sellerReview = await _context.SellerReviews
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .FirstOrDefaultAsync(s => s.Seller.SellerId == id);
+
+            if (sellListing != null)
+            {
+                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+                await myListings.DeleteConfirmedSelling(sellListing.SellListingId);
+            }
+
+            if (tradeListing != null)
+            {
+                MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+                await myListings.DeleteConfirmedTrade(tradeListing.TradeListingId);
+            }
+
+            if (sellerReview != null)
+			{
+                SellerReviewsController sellerReviews = new SellerReviewsController(_context);
+                await sellerReviews.DeleteConfirmed(sellerReview.SellerReviewId);
+			}
+
             _context.SellerAccounts.Remove(sellerAccount);
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
