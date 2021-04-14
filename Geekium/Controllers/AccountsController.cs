@@ -189,7 +189,7 @@ namespace Geekium.Controllers
                     sellerAccount.AccountId = Int32.Parse(HttpContext.Session.GetString("userId"));
                     HttpContext.Session.SetInt32("sellerId", sellerAccount.SellerId);
 
-                    SellerAccountsController sellerAccountsController = new SellerAccountsController(_context);
+                    SellerAccountsController sellerAccountsController = new SellerAccountsController(_context, _hostEnvironment);
                     await sellerAccountsController.Create(sellerAccount);
 
                     return View("UpgradeSuccess");

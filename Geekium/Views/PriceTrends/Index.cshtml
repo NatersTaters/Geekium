@@ -1,31 +1,28 @@
 ﻿@model IEnumerable<Geekium.Models.PriceTrend>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Price Trends";
 }
 
-<h1>Index</h1>
+<h1>Price Trends</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ItemName)
+                Product
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateOfUpdate)
+                Last Updated
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AveragePrice)
+                Average Price
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LowestPrice)
+                Lowest Price
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HighestPrice)
+                Highest Price
             </th>
             <th></th>
         </tr>
@@ -49,9 +46,7 @@
                 @Html.DisplayFor(modelItem => item.HighestPrice)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.PriceTrendId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PriceTrendId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PriceTrendId">Delete</a>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.PriceTrendId">View Details</a>
             </td>
         </tr>
 }
