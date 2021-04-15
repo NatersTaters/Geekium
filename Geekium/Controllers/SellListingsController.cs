@@ -27,7 +27,7 @@ namespace Geekium.Controllers
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId != 2)
+                .Where(s => s.Seller.AccountId != 1)
                 .Where(s => s.Display == true);
 
             List<SelectListItem> dropdownList = PopulateDropdown(null);
@@ -47,7 +47,7 @@ namespace Geekium.Controllers
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId == 2)
+                .Where(s => s.Seller.AccountId == 1)
                 .Where(s => s.Display == true);
 
             List<SelectListItem> dropdownList = PopulateDropdown(null);

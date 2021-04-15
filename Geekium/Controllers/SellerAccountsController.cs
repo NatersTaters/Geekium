@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Geekium.Controllers
 {
     public class SellerAccountsController : Controller
     {
         private readonly GeekiumContext _context;
+        private IWebHostEnvironment _hostEnvironment;
 
-        public SellerAccountsController(GeekiumContext context)
+        public SellerAccountsController(GeekiumContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
 		// GET: SellerAccounts
@@ -146,9 +149,66 @@ namespace Geekium.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var sellerAccount = await _context.SellerAccounts.FindAsync(id);
-            _context.SellerAccounts.Remove(sellerAccount);
-            await _context.SaveChangesAsync();
+            var sellerAccount = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .Where(s => s.SellerId == id)
+                .ToListAsync();
+
+            var sellListing = _context.SellListings
+                .Include(s => s.PriceTrend)
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .Where(s => s.Seller.SellerId == id);
+
+            foreach(var item in sellerAccount)
+			{
+                if (sellListing != null)
+                {
+                    MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+
+                    foreach (var sitem in sellListing)
+                    {
+                        sitem.SellerId = 1;
+                        sitem.Display = false;
+                        _context.SellListings.Update(sitem);
+                    }
+                }
+
+                var tradeListing = _context.TradeListings
+                    .Include(t => t.Seller)
+                    .Include(t => t.Seller.Account)
+                    .Where(t => t.Seller.SellerId == id);
+
+                if (tradeListing != null)
+                {
+                    MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
+
+                    foreach (var titem in tradeListing)
+                    {
+                        titem.SellerId = 1;
+                        titem.Display = false;
+                        _context.TradeListings.Update(titem);
+                    }
+                }
+
+                var sellerReview = _context.SellerReviews
+                    .Include(s => s.Seller)
+                    .Include(s => s.Seller.Account)
+                    .Where(s => s.Seller.SellerId == id);
+
+                if (sellerReview != null)
+                {
+                    SellerReviewsController sellerReviews = new SellerReviewsController(_context);
+
+                    foreach (var ritem in sellerReview)
+                    {
+                        await sellerReviews.DeleteConfirmed(ritem.SellerReviewId);
+                    }
+                }
+
+                _context.SellerAccounts.Remove(item);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

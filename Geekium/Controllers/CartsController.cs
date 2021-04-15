@@ -41,46 +41,60 @@ namespace Geekium.Controllers
             {
                 // Find the cart associated with this account
                 var cartContext = await _context.Cart
+                    .Include(c => c.Account)
                     .Where(s => s.TransactionComplete == false)
                     .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
 
                 // If the account does not have a cart associated with them, create one
                 if (cartContext == null)
-                {
+				{
                     await CreateCart();
                     cartContext = await _context.Cart
                         .Where(s => s.TransactionComplete == false)
                         .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
                 }
 
-                // Find all the items associated with this cart
-                var cartItems = _context.ItemsForCart
-                    .Include(s => s.SellListing)
-                    .Include(s => s.Cart)
-                    .Where(s => s.SellListingId == s.SellListing.SellListingId)
-                    .Where(s => s.CartId == cartContext.CartId);
+                    // Calculate subtotal
+                    double total = 0; // This is not updating properly
+                    ViewBag.subTotal = total;
+                    stripePay = 0;
 
-                if (cartItems != null)
-				{
-                    foreach (var item in cartItems)
-                    {
-                        if (item.Quantity > item.SellListing.SellQuantity)
-                            item.Quantity = item.SellListing.SellQuantity;
-                    }
+                    // Calculate points
+                    string points = PointsEarned(total).ToString();
+                    ViewBag.points = PointsEarned(ViewBag.subTotal);
+
+                    return View();
                 }
-                
-                // Calculate subtotal
-                var model = await cartItems.ToListAsync();
-                double total = SubTotal(model); // This is not updating properly
-                ViewBag.subTotal = total;
-                stripePay = (long)SubTotal(model);
+                else
+				{
+                    // Find all the items associated with this cart
+                    var cartItems = await _context.ItemsForCart
+                        .Include(s => s.SellListing)
+                        .Include(s => s.Cart)
+                        .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                        .Where(s => s.CartId == cartContext.CartId)
+                        .ToListAsync();
 
-                // Calculate points
-                //ViewBag.points = PointsEarned(ViewBag.subTotal);
-                string points = PointsEarned(total).ToString();
-                HttpContext.Session.SetString("points", points);
+                    if (cartItems.Count != 0)
+                    {
+                        foreach (var item in cartItems)
+                        {
+                            if (item.Quantity > item.SellListing.SellQuantity)
+                                item.Quantity = item.SellListing.SellQuantity;
+                        }
+                    }
 
-                return View(model);
+                    // Calculate subtotal
+                    double total = SubTotal(cartItems); // This is not updating properly
+                    ViewBag.subTotal = total;
+                    stripePay = (long)SubTotal(cartItems);
+
+                    // Calculate points
+                    string points = PointsEarned(total).ToString();
+                    ViewBag.points = PointsEarned(ViewBag.subTotal);
+
+                    return View(cartItems);
+                }
             }
         }
 
@@ -229,6 +243,37 @@ namespace Geekium.Controllers
 
             return RedirectToAction("Index");
         }
+
+        //Update current cart item and set TransactionComplete to "true"
+        public async void ChangeCartTransactionStatus([Bind("CartId,AccountId,TransactionComplete,NumberOfProducts,TotalPrice,PointsGained")] Cart cart)
+		{
+            if (ModelState.IsValid)
+            {
+                cart.TransactionComplete = true;
+                _context.Update(cart);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        //Delete any cart objects and items for cart objects from the database, to be used when the account is deleted
+        public async Task<IActionResult> DeleteCart(int id)
+        {
+            var cart = await _context.Cart.FindAsync(id);
+
+            var itemContext = await _context.ItemsForCart
+                .Where(s => s.CartId == cart.CartId)
+                .ToListAsync();
+
+            foreach(var item in itemContext)
+			{
+                _context.ItemsForCart.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+
+            _context.Cart.Remove(cart);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
         #endregion
 
         #region Checkout Functions
@@ -289,7 +334,6 @@ namespace Geekium.Controllers
                 long sAmount = (long)StripeSubTotal(model);
                 long tax = (long)StripeTax(sAmount);
                 long amount = (long)TotalCost(sAmount, tax);
-
             //Amount is being charged correctly with the decimal places, but doesn't want to display them 
             // (ex: 5082 should display $50.82 in email but only displays $50 instead)
             var charge = charges.Create(new ChargeCreateOptions
@@ -322,17 +366,34 @@ namespace Geekium.Controllers
                     HttpContext.Session.SetString("rewardCode", null);
                 }
 
-                //Find account object with previous point balance and add points earned to the account point balance
+                //Find account object with previous point balance
                 var account = await _context.Accounts
                 .FirstOrDefaultAsync(m => m.AccountId == int.Parse(accountId));
 
-                double newPointBalance = (double)(account.PointBalance + PointsEarned(charge.Amount));
+                //Determing new points balance for the current account that is making the purchase
+                double newPointBalance = (double)(account.PointBalance + amount);
 
+                //Save the new point balance to the buyer account
                 AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
                 await accountsController.EditPoints(account, (int)newPointBalance);
 
-                return RedirectToAction("Create", "AccountPurchases", new { area = "" });
+                //Create a new purchase item for the AccountPurchase Controller
+                AccountPurchase purchase = new AccountPurchase();
+                purchase.AccountId = int.Parse(HttpContext.Session.GetString("userId"));
+                purchase.CartId = cartContext.CartId;
+                purchase.PurchaseDate = DateTime.Now;
+                purchase.PurchasePrice = amount;
+                purchase.TrackingNumber = 0;
+                purchase.PointsGained = (int)amount;
 
+                //Save the new purchase item to the AccountPurchases Controller
+                AccountPurchasesController accountPurchases = new AccountPurchasesController(_context);
+                await accountPurchases.Create(purchase);
+
+                //Update Cart Transaction Status
+                ChangeCartTransactionStatus(cartContext);
+
+                return RedirectToAction("Index", "AccountPurchases", new { area = "" });
             }
                 else
                 {

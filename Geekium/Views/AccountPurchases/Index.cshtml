@@ -1,35 +1,39 @@
 ﻿@model IEnumerable<Geekium.Models.AccountPurchase>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Purchases";
 }
 
-<h1>Purchase History</h1>
+<h1>Account Purchases</h1>
 
-<div class="py-2">
-    <div class="container">
-        @{ var count = 0;}
-        @foreach (var item in Model)
-        {
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-block">
-                            <div class="card-body">
-                                <p class="card-text">Purchase Date: @Html.DisplayFor(model => item.PurchaseDate)</p>
-                                <p class="card-text">Total Price: $@Html.DisplayFor(model => item.PurchasePrice)</p>
-                                <a class="stretched-link" asp-action="Details" asp-route-id="@item.AccountPurchaseId"></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div><br />
-            count++;
-        }
-
-        @if (count <= 0)
-        {
-            <h4 style="text-align:center">You have not purchased anything!</h4>
-        }
-    </div>
-</div>
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Date of Purchase
+			</th>
+			<th>
+				Purchase Price
+			</th>
+			<th>
+				Points Gained
+			</th>
+		</tr>
+	</thead>
+	@foreach (var item in Model)
+	{
+		<tbody>
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.PurchaseDate)
+				</td>
+				<td>
+					$@Html.DisplayFor(modelItem => item.PurchasePrice)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.PointsGained)
+				</td>
+			</tr>
+		</tbody>
+	}
+	</table>

@@ -3,46 +3,22 @@
 @{
     ViewData["Title"] = "Details";
 }
+<body>
+	<div>
+		<a class="btn btn-primary" type="button" asp-action="Index" asp-route-id="@Model.PriceTrendId">Back to List</a>
+	</div>
 
-<h1>Details</h1>
+	<br />
 
-<div>
-    <h4>PriceTrend</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ItemName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ItemName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateOfUpdate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateOfUpdate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AveragePrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AveragePrice)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LowestPrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LowestPrice)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HighestPrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HighestPrice)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.PriceTrendId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+	<h1>@Html.DisplayFor(model => model.ItemName)</h1>
+	<p>
+		Last Updated: @Html.DisplayFor(model => model.DateOfUpdate)
+	</p>
+	<hr />
+	<h3>Average Price: $@Html.DisplayFor(model => model.AveragePrice)</h3>
+	<p>Highest Price: $@Html.DisplayFor(model => model.HighestPrice)</p>
+	<p>Lowest Price: $@Html.DisplayFor(model => model.LowestPrice)</p>
+	<div>
+		<a class="btn btn-info" type="button" asp-action="Details" asp-controller="SellListings" asp-route-id="@Model.PriceTrendId">View Current Listing</a>
+	</div>
+</body>
