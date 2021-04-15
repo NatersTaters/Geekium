@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Geekium.Models.ItemsForCart>
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="text-center">
+    <h1 class="display-4">Purchase</h1>
+</div>
+
+<body>
+    @if (Model.Count() > 0)
+    {
+        <table class="table">
+            <tr>
+                <th>Product</th>
+                <th>Images appear below</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+            @{ var count = 0; }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellTitle)</td>
+                    <td><!-- Image --></td>
+                    <td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellDescription)</td>
+                    <td>$@Html.DisplayFor(modelItem => item.SellListing.SellPrice) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                </tr>
+                count++;
+            }
+            <tr>
+                <td align="right" colspan="4">Subtotal</td>
+                <td>$@ViewBag.subTotal</td>
+            </tr>
+        </table>
+    }
+</body>

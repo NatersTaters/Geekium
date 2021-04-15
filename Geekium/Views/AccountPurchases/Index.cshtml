@@ -18,6 +18,9 @@
 			<th>
 				Points Gained
 			</th>
+			<th>
+				Details
+			</th>
 		</tr>
 	</thead>
 	@foreach (var item in Model)
@@ -33,6 +36,9 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.PointsGained)
 				</td>
+                <th>
+                    <a asp-action="Details" asp-route-id="@Html.DisplayFor(m => item.CartId)"></a>
+                </th>
 			</tr>
 		</tbody>
 	}

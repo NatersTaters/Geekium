@@ -29,22 +29,18 @@ namespace Geekium.Controllers
         // GET: AccountPurchases/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Cart id is passed in
             if (id == null)
             {
                 return NotFound();
             }
 
-            var accountPurchase = await _context.AccountPurchases
-                .Include(a => a.Account)
-                .Include(a => a.Cart)
-                .FirstOrDefaultAsync(m => m.AccountPurchaseId == id);
+            // Find the cart items
+            var cart = await _context.ItemsForCart
+                .Include(s => s.Cart)
+                .FirstOrDefaultAsync(s => s.CartId == id);
 
-            if (accountPurchase == null)
-            {
-                return NotFound();
-            }
-
-            return View(accountPurchase);
+            return View(cart);
         }
 
         // GET: AccountPurchases/Create
