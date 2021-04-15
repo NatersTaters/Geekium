@@ -282,15 +282,27 @@ namespace Geekium.Controllers
                 .Include(s => s.Account)
                 .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
 
-            var priceTrendExists = PriceTrendExists(sellListing.PriceTrendId);
+            //Find price trend items with same title as new sell listing title
+            var priceTrend = await _context.PriceTrends
+                .Where(m => m.ItemName == sellListing.SellTitle)
+                .ToListAsync();
 
             sellListing.SellerId = sellerAccountId.SellerId;
 
             if (ModelState.IsValid)
             {
-                if (priceTrendExists == null)
-                {
-                    // Create a new price trend 
+                PriceTrendsController priceTrendsController = new PriceTrendsController(_context);
+
+                if (priceTrend.Count == 0)
+				{
+                    PriceTrend trend = new PriceTrend();
+                    trend.ItemName = sellListing.SellTitle;
+                    trend.DateOfUpdate = DateTime.Now;
+                    trend.AveragePrice = sellListing.SellPrice;
+                    trend.HighestPrice = sellListing.SellPrice;
+                    trend.LowestPrice = sellListing.SellPrice;
+
+                    await priceTrendsController.Create(trend);
                 }
 
                 if (sellListing.ImageFile != null)
