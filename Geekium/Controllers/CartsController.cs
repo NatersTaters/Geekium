@@ -46,7 +46,12 @@ namespace Geekium.Controllers
 
                 // If the account does not have a cart associated with them, create one
                 if (cartContext == null)
+                {
                     await CreateCart();
+                    cartContext = await _context.Cart
+                        .Where(s => s.TransactionComplete == false)
+                        .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+                }
 
                 // Find all the items associated with this cart
                 var cartItems = _context.ItemsForCart
@@ -130,10 +135,20 @@ namespace Geekium.Controllers
                 return LocalRedirect(url);
             }
 
+
             // Find the cart associated with this account
             var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
                 .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+
+            // If the account does not have a cart associated with them, create one
+            if (cartContext == null)
+            {
+                await CreateCart();
+                cartContext = await _context.Cart.
+                    Where(s => s.TransactionComplete == false)
+                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+            }
 
             // Does this item already exist in this cart?
             var itemContext = await _context.ItemsForCart

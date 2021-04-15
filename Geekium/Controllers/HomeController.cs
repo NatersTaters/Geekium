@@ -124,7 +124,8 @@ namespace Geekium.Controllers
 
 			var sellListingContext = _context.SellListings.Include(s => s.PriceTrend)
 				.Include(s => s.Seller)
-				.Include(s => s.Seller.Account);
+				.Include(s => s.Seller.Account)
+				.Where(s => s.Display == true);
 
 			foreach(var item in sellListingContext)
 			{

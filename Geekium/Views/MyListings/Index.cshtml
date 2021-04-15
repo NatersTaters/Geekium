@@ -40,7 +40,10 @@
                             if (count == 0)
                             {
                                 @:<div class="row">
-                                }
+                                count++;
+                            }
+                            if (product.Display != false)
+                            {
                                 <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-block">
@@ -48,7 +51,7 @@
                                                 @Html.DisplayFor(modelItem => product.SellTitle)
                                             </div>
                                             <div class="card-body">
-                                                <img class="displayDetailImage" src="@("~/images/"+product.SellImage)" asp-append-version="true" width="250" height="250" />
+                                                <img class="displayDetailImage" src="@("~/images/" + product.SellImage)" asp-append-version="true" width="250" height="250" />
                                                 <h5 class="card-title truncate">Seller: @Html.DisplayFor(modelItem => product.Seller.Account.UserName)</h5>
                                                 <p class="card-text">Price: $@Html.DisplayFor(modelItem => product.SellPrice)</p>
                                                 <a class="stretched-link" asp-action="SellDetails" asp-route-id="@product.SellListingId"></a>
@@ -56,16 +59,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                if (count == 2)
+
+                                if (count == 3)
                                 {
                                     count = 0;
-                                @:</div><br />
+                                    @:</div><br />
+                                }
+                                else
+                                {
+                                    count++;
+                                }
                             }
-                            else
-                            {
-                                count++;
-                            }
-                        }
+                         }
                     }
                 </div>
             </div>
