@@ -226,12 +226,24 @@ namespace Geekium.Controllers
             }
         }
 
-        //Delete any cart objects from the database, to be used when the account is deleted
-        public async void DeleteCart(int id)
+        //Delete any cart objects and items for cart objects from the database, to be used when the account is deleted
+        public async Task<IActionResult> DeleteCart(int id)
         {
             var cart = await _context.Cart.FindAsync(id);
+
+            var itemContext = await _context.ItemsForCart
+                .Where(s => s.CartId == cart.CartId)
+                .ToListAsync();
+
+            foreach(var item in itemContext)
+			{
+                _context.ItemsForCart.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+
             _context.Cart.Remove(cart);
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
         #endregion
 

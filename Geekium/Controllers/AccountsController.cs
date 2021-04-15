@@ -294,43 +294,81 @@ namespace Geekium.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var account = await _context.Accounts.FindAsync(id);
-            var sellerAccount = await _context.SellerAccounts.FindAsync(HttpContext.Session.GetInt32("sellerId"));
 
             var serviceListing = await _context.ServiceListings
                 .Include(s => s.Account)
-                .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+                .Where(m => m.AccountId == id)
+                .ToListAsync();
+
+            var sellerAccount = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .Where(s => s.AccountId == id)
+                .ToListAsync();
 
             var accountPurchases = await _context.AccountPurchases
                 .Include(a => a.Account)
                 .Include(a => a.Cart)
-                .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
+                .Where(m => m.AccountId == id)
+                .ToListAsync();
 
             var cartContext = await _context.Cart
-                    .Where(s => s.TransactionComplete == false)
-                    .FirstOrDefaultAsync(m => m.AccountId == account.AccountId);
-            
-            if(serviceListing != null)
+                .Where(m => m.AccountId == id)
+                .ToListAsync();
+
+            var rewardContext = await _context.Rewards
+                .Include(r => r.Account)
+                .Where(m => m.AccountId == id)
+                .ToListAsync();
+
+
+            if (serviceListing != null)
 			{
                 MyListingsController myListings = new MyListingsController(_context, _hostEnvironment);
-                await myListings.DeleteConfirmedService(serviceListing.ServiceListingId);
+
+                foreach(var item in serviceListing)
+				{
+                    await myListings.DeleteConfirmedService(item.ServiceListingId);
+                }
             }
-            
-            if(sellerAccount != null)
+
+            if (sellerAccount != null)
 			{
                 SellerAccountsController sellerAccounts = new SellerAccountsController(_context, _hostEnvironment);
-                await sellerAccounts.DeleteConfirmed(sellerAccount.SellerId);
+
+                foreach(var item in sellerAccount)
+				{
+                    await sellerAccounts.DeleteConfirmed(item.SellerId);
+                }
             }
 
-            if(accountPurchases != null)
+            if (accountPurchases != null)
 			{
                 AccountPurchasesController purchasesController = new AccountPurchasesController(_context);
-                await purchasesController.DeleteConfirmed(accountPurchases.AccountPurchaseId);
+
+                foreach(var item in accountPurchases)
+				{
+                    await purchasesController.DeleteConfirmed(item.AccountPurchaseId);
+                }
 			}
 
-            if(cartContext != null)
+            if (cartContext != null)
 			{
                 CartsController cartsController = new CartsController(_context, _hostEnvironment);
-                cartsController.DeleteCart(cartContext.CartId);
+
+                foreach(var item in cartContext)
+				{
+                    await cartsController.DeleteCart(item.CartId);
+                }
+			}
+
+            if (rewardContext != null)
+			{
+                RewardsController rewardsController = new RewardsController(_context, _hostEnvironment);
+
+                foreach(var item in rewardContext)
+				{
+                    await rewardsController.DeleteConfirmed(item.RewardId);
+                }
 			}
 
             _context.Accounts.Remove(account);
