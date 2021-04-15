@@ -64,13 +64,14 @@ namespace Geekium.Controllers
                 else
 				{
                     // Find all the items associated with this cart
-                    var cartItems = _context.ItemsForCart
+                    var cartItems = await _context.ItemsForCart
                         .Include(s => s.SellListing)
                         .Include(s => s.Cart)
                         .Where(s => s.SellListingId == s.SellListing.SellListingId)
-                        .Where(s => s.CartId == cartContext.CartId);
+                        .Where(s => s.CartId == cartContext.CartId)
+                        .ToListAsync();
 
-                    if (cartItems != null)
+                    if (cartItems.Count != 0)
                     {
                         foreach (var item in cartItems)
                         {
@@ -80,16 +81,15 @@ namespace Geekium.Controllers
                     }
 
                     // Calculate subtotal
-                    var model = await cartItems.ToListAsync();
-                    double total = SubTotal(model); // This is not updating properly
+                    double total = SubTotal(cartItems); // This is not updating properly
                     ViewBag.subTotal = total;
-                    stripePay = (long)SubTotal(model);
+                    stripePay = (long)SubTotal(cartItems);
 
                     // Calculate points
                     string points = PointsEarned(total).ToString();
                     ViewBag.points = PointsEarned(ViewBag.subTotal);
 
-                    return View(model);
+                    return View(cartItems);
                 }
             }
         }

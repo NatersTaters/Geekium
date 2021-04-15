@@ -291,8 +291,7 @@ namespace Geekium.Controllers
 
             if (ModelState.IsValid)
             {
-                PriceTrendsController priceTrendsController = new PriceTrendsController(_context);
-
+                //Check if a price trend exists for the sell listing, and create one if it does not exist
                 if (priceTrend.Count == 0)
 				{
                     PriceTrend trend = new PriceTrend();
@@ -302,6 +301,7 @@ namespace Geekium.Controllers
                     trend.HighestPrice = sellListing.SellPrice;
                     trend.LowestPrice = sellListing.SellPrice;
 
+                    PriceTrendsController priceTrendsController = new PriceTrendsController(_context);
                     await priceTrendsController.Create(trend);
                 }
 
