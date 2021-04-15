@@ -52,7 +52,6 @@ namespace Geekium.Controllers
                     cartContext = await _context.Cart
                         .Where(s => s.TransactionComplete == false)
                         .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
-                }
 
                     // Calculate subtotal
                     double total = 0; // This is not updating properly
@@ -225,9 +224,12 @@ namespace Geekium.Controllers
             {
                 try
                 {
-                    itemContext.Quantity = quantity;
-                    _context.Update(itemContext);
-                    await _context.SaveChangesAsync();
+                    if (!(quantity > itemContext.Quantity))
+                    {
+                        itemContext.Quantity = quantity;
+                        _context.Update(itemContext);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
