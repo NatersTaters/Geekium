@@ -49,6 +49,10 @@ namespace Geekium.Controllers
                 if (cartContext == null)
 				{
                     await CreateCart();
+                    cartContext = await _context.Cart
+                        .Where(s => s.TransactionComplete == false)
+                        .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+                }
 
                     // Calculate subtotal
                     double total = 0; // This is not updating properly
@@ -145,10 +149,20 @@ namespace Geekium.Controllers
                 return LocalRedirect(url);
             }
 
+
             // Find the cart associated with this account
             var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
                 .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+
+            // If the account does not have a cart associated with them, create one
+            if (cartContext == null)
+            {
+                await CreateCart();
+                cartContext = await _context.Cart.
+                    Where(s => s.TransactionComplete == false)
+                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+            }
 
             // Does this item already exist in this cart?
             var itemContext = await _context.ItemsForCart
@@ -278,10 +292,12 @@ namespace Geekium.Controllers
                 .Where(s => s.SellListingId == s.SellListing.SellListingId)
                 .Where(s => s.CartId == cartContext.CartId);
 
-            // Calculate subtotal
+            // Calculate subtotal, tax, and total
             var model = await cartItems.ToListAsync();
             ViewBag.subTotal = SubTotal(model); // This is not updating properly
-            ViewBag.subTotalStripe = SubTotal(model) * 100;
+            ViewBag.tax = Tax(ViewBag.subTotal);
+            ViewBag.total = TotalCost(ViewBag.subTotal, ViewBag.tax);
+            ViewBag.totalStripe = TotalCost(ViewBag.subTotal, ViewBag.tax) * 100;
 
             return View();
         }
@@ -315,12 +331,14 @@ namespace Geekium.Controllers
                 .Where(s => s.CartId == cartContext.CartId);
 
                 var model = await cartItems.ToListAsync();
-                
-                long amount = (long)SubTotal(model);
-
-                var charge = charges.Create(new ChargeCreateOptions
+                long sAmount = (long)StripeSubTotal(model);
+                long tax = (long)StripeTax(sAmount);
+                long amount = (long)TotalCost(sAmount, tax);
+            //Amount is being charged correctly with the decimal places, but doesn't want to display them 
+            // (ex: 5082 should display $50.82 in email but only displays $50 instead)
+            var charge = charges.Create(new ChargeCreateOptions
                 {
-                    Amount = amount * 100,
+                    Amount = amount,
                     Description = "Purchase off of Geekium",
                     Currency = "cad",
                     Customer = customer.Id,
@@ -337,7 +355,7 @@ namespace Geekium.Controllers
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
-                //customerNotifEmail(model, charge);
+                customerNotifEmail(model, charge);
                 //sellerNotifEmail(model, charge);
 
                 //Set session objects for reward type and reward code to null to avoid redundency when
@@ -408,8 +426,11 @@ namespace Geekium.Controllers
             //Total: $500 
             //It will display as 
             //Total: $5
-            var amount = charge.Amount / 100;
 
+            var amount = charge.Amount / 100;
+            //TODO: Fix formatting for ToString to display proper price as: $50.82
+            //var total = (charge.Amount);
+            //string amount = total.ToString(("C2"));
 
             var body = "Thank you for your recent purchase at Geekium: 0 \n" + "Total: $" + amount;
             sb.Append(body);
@@ -450,15 +471,15 @@ namespace Geekium.Controllers
              * Product: Geekium T-shirt - 19
              * Product: Item 2 - 20
              * Product: Item 3 - 35 
-             *
+             * Purchase by: BobRoss@gmail.com
              *
              */
         public void sellerNotifEmail(List<ItemsForCart> cart, Charge charge)
         {
             StringBuilder sb = new StringBuilder();
             StringBuilder sbEmail = new StringBuilder();
-
-            var body = "One of your products have recently been sold: 0 \n";
+            
+            var body = "One of your products have recently been sold: 0 \n" + "Purchase by: buyeremail";
             var email = "Placeholder";
 
             sb.Append(body);
@@ -466,10 +487,11 @@ namespace Geekium.Controllers
             for (int i = 0; i < cart.Count; i++)
             {
                 sb.Insert(sb.ToString().IndexOf("0 "), " \n  Product: " + cart[i].SellListing.SellTitle + " - $" + cart[i].SellListing.SellPrice);
-                sbEmail.Insert(sb.ToString().IndexOf("Placeholder "), cart[i].SellListing.Seller.Account.Email);
+                //sb.Insert(sb.ToString().IndexOf("buyeremail"), HttpContext.Session.GetString("userEmail", account.Email);)
+                sbEmail.Insert(sbEmail.ToString().IndexOf("Placeholder "), cart[i].SellListing.Seller.Account.Email);
             }
             var sEmail = new MailAddress("geekium1234@gmail.com");
-            var rEmail = new MailAddress(email); //TODO: Find out why it's returning null
+            var rEmail = new MailAddress(email); //TODO: test
             var password = "geekiumaccount1234";
             var sub = "Purchase Confirmation";
             var smtp = new SmtpClient
@@ -526,16 +548,60 @@ namespace Geekium.Controllers
                 throw e;
             }
         }
-
-        public double Tax(double firstTotal)
+        //Stripe method of SubTotal
+        public double StripeSubTotal(List<ItemsForCart> cart)
+        {
+            var totalPrice = cart.Sum(s => s.SellListing.SellPrice * s.Quantity) * 100;
+            Math.Round(totalPrice, 2);
+            try
+            {
+                if (HttpContext.Session.GetString("rewardType") != null && HttpContext.Session.GetString("rewardType") == "-25% Discount Code")
+                {
+                    var discount = (double)totalPrice * 0.25;
+                    return (double)totalPrice - discount;
+                }
+                else if (HttpContext.Session.GetString("rewardType") != null && HttpContext.Session.GetString("rewardType") == "-50% Discount Code")
+                {
+                    var discount = (double)totalPrice * 0.50;
+                    return (double)totalPrice - discount;
+                }
+                else if (HttpContext.Session.GetString("rewardType") != null && HttpContext.Session.GetString("rewardType") == "-75% Discount Code")
+                {
+                    var discount = (double)totalPrice * 0.75;
+                    return (double)totalPrice - discount;
+                }
+                else
+                {
+                    return (double)totalPrice;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception caught {0}", e);
+                throw e;
+            }
+        }
+        public double Tax(double subTotal)
         {
             double tax = 0.13;
-            return Math.Round(firstTotal * tax, 2);
+            //double totalPrice = cart.Sum(s => s.SellListing.SellPrice * s.Quantity);
+            return Math.Round(subTotal * tax, 2);
+        }
+        //Stripe method of tax
+        public double StripeTax(double subTotal)
+        {
+            double tax = 0.13;
+            double taxAmount = Math.Round(subTotal * tax, 0, MidpointRounding.AwayFromZero);
+            double totalTax = taxAmount;
+            //double totalPrice = cart.Sum(s => s.SellListing.SellPrice * s.Quantity);
+            //return Math.Round(subTotal * tax, 2);
+            return totalTax;
         }
 
-        public double TotalCost(double totalWithoutTax, double tax)
+        public double TotalCost(double subTotal, double tax)
         {
-            return totalWithoutTax + tax;
+            double total = subTotal + tax;
+            return total;
         }
 
         public double StripeAmount(double total)
@@ -544,7 +610,7 @@ namespace Geekium.Controllers
             return total * stripeRate;
         }
 
-        //Points are calculated by totalPoints(total cost of items) times the point rate of 10 and is rounded to the nearest whole number away from zero 
+        //Points are calculated by totalPoints(total cost of items) times the point rate of 10 and is rounded to the nearest whole number away from zero ($21.47 = 215 points)
         public double PointsEarned(double totalPoints)
         {
             double pRate = 10;

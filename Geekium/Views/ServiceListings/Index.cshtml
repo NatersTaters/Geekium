@@ -14,16 +14,19 @@
                 Add Filter
             </a>&nbsp;
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Service</button>
-        </div>
-        <div class="@ViewBag.Collapse form-inline" id="filter">
-            <div class="card card-body">
-                <div class="form-group form-inline">
-                    TBD
-                </div>
-            </div>
-        </div>
+        </div><br />
+              <div class="@ViewBag.Collapse form-inline" id="filter">
+                  <div class="card card-body">
+                      <div class="form-group form-inline">
+                          <div class="form-group form-inline">
+                              Location:&nbsp;@Html.DropDownList("typeList", (List<SelectListItem>)ViewBag.ServiceFilter, new { @class = "form-control select2 select1", @id = "type", @name = "type" })
+                          </div><br />
+                      </div><br />
+                      <button class="btn btn-outline-danger my-2 my-sm-0" asp-action="Index">Clear All</button>
+                  </div>
+              </div>
     </form>
-
+    <br />
     <div class="py-2">
         <div class="container">
             @{ var count = 0;}
@@ -41,7 +44,7 @@
                                     @Html.DisplayFor(modelItem => item.ServiceTitle)
                                 </div>
                                 <div class="card-body">
-									<img class="displayDetailImage" src="@("~/Images/"+item.ServiceImage)" asp-append-version="true" width="250px" height="250px" />
+                                    <img class="displayDetailImage" src="@("~/Images/"+item.ServiceImage)" asp-append-version="true" width="250px" height="250px" />
                                     <h5 class="card-title">Seller: @Html.DisplayFor(modelItem => item.Account.UserName)</h5>
                                     <p class="card-text truncate">Description: @Html.DisplayFor(modelItem => item.ServiceDescription)</p>
                                     <p class="card-text">Date Listed: @Html.DisplayFor(modelItem => item.ListingDate)</p>

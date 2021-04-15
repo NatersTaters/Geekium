@@ -43,6 +43,24 @@ namespace Geekium.Controllers
             "Mouse",
             "Keyboard"
         };
+
+        public static List<string> provinceDictionary = new List<string>
+        {
+            "",
+            "Alberta",
+            "British Columbia",
+            "Manitoba",
+            "New Brunswick",
+            "Newfoundland and Labrador",
+            "Northwest Territories",
+            "Nova Scotia",
+            "Nunavut",
+            "Ontario",
+            "Prince Edward Island",
+            "Quebec",
+            "Saskatchewan",
+            "Yukon"
+        };
     }
 
     public class MyListingsController : Controller
@@ -59,7 +77,7 @@ namespace Geekium.Controllers
             ViewBag.TradeDate = DateTime.Now.ToString("yyyy-MM-dd");
             // string ip = GetLocalIPAddress(); If we deploy, we can test this (for now its static)
             var info = await CityStateCountByIp("99.226.48.14");
-            ViewBag.TradeLocation = info.CountryName + ", " + info.RegionCode;
+            ViewBag.TradeLocation = info.Region;
             List<SelectListItem> dropdownList = PopulateDropdown();
             ViewData["TradeItemType"] = new SelectList(dropdownList, "Value", "Text");
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
@@ -273,9 +291,10 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateSell([Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity,ImageFile")] SellListing sellListing)
+        public async Task<IActionResult> CreateSell([Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity,ImageFile,Display")] SellListing sellListing)
         {
             sellListing.SellDate = DateTime.Now;
+            sellListing.Display = true;
             string userId = HttpContext.Session.GetString("userId"); // This is the account ID
             // We need the seller ID associated with this account ID
             var sellerAccountId = await _context.SellerAccounts
@@ -361,20 +380,50 @@ namespace Geekium.Controllers
         {
             var sellListing = await _context.SellListings.FindAsync(id);
 
-            if(sellListing.SellImage != null)
-			{
-                //Delete the image from wwwroot/images
-                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "images", sellListing.SellImage);
-                if (imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "buy-icon.png"))
-                {
-                    if (System.IO.File.Exists(imagePath))
-                        System.IO.File.Delete(imagePath);
-                }
-            }
+            // If the user deletes their sell listing,
+            // check to see if the listing is associated with any other cart
+            // that has been BOUGHT (look through carts, look through all their purchases)
 
-            _context.SellListings.Remove(sellListing);
-            await _context.SaveChangesAsync();
+            var itemWasBought = _context.ItemsForCart
+                .Include(s => s.Cart)
+                .Where(s => s.SellListingId == id && s.Cart.TransactionComplete == true);
+
+            // This item is NOT part of someone's purchased cart
+            if (itemWasBought.ToList().Count == 0)
+            {
+                // Remove the item from anyone's existing cart
+                var itemInCarts = _context.ItemsForCart
+                    .Include(s => s.Cart)
+                    .Where(s => s.SellListingId == id && s.Cart.TransactionComplete == false);
+
+                foreach (var item in itemInCarts)
+                {
+                    _context.ItemsForCart.Remove(item);
+                }
+
+                if (sellListing.SellImage != null)
+                {
+                    //Delete the image from wwwroot/images
+                    var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "images", sellListing.SellImage);
+                    if (imagePath != Path.Combine(_hostEnvironment.WebRootPath, "images", "buy-icon.png"))
+                    {
+                        if (System.IO.File.Exists(imagePath))
+                            System.IO.File.Delete(imagePath);
+                    }
+                }
+
+                _context.SellListings.Remove(sellListing);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // The item was already bought from someone, so we must keep the details
+                // "Pretend to delete it"
+                sellListing.Display = false;
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
+
         }
         #endregion
         #region Edit
@@ -405,7 +454,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditSell(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity, ImageFile")] SellListing sellListing)
+        public async Task<IActionResult> EditSell(int id, [Bind("SellListingId,SellerId,PriceTrendId,SellTitle,SellDescription,SellPrice,SellDate,SellItemType,SellQuantity, ImageFile, Display")] SellListing sellListing)
         {
             if (id != sellListing.SellListingId)
             {
@@ -413,55 +462,95 @@ namespace Geekium.Controllers
             }
 
             sellListing.SellDate = DateTime.Now;
-            string userId = HttpContext.Session.GetString("userId"); // This is the account ID
-            // We need the seller ID associated with this account ID
+            string userId = HttpContext.Session.GetString("userId"); 
+
             var sellerAccountId = await _context.SellerAccounts
                 .Include(s => s.Account)
                 .FirstOrDefaultAsync(s => s.Account.AccountId.ToString() == userId);
 
             var priceTrendExists = PriceTrendExists(sellListing.PriceTrendId);
-
             sellListing.SellerId = sellerAccountId.SellerId;
 
             if (ModelState.IsValid)
             {
+                // If the user edits their sell listing,
+                // check to see if the listing is associated with any other cart
+                // that has been BOUGHT
 
-                if (sellListing.ImageFile != null)
+                var itemWasBought = _context.ItemsForCart
+                    .Include(s => s.Cart)
+                    .Where(s => s.SellListingId == id && s.Cart.TransactionComplete == true);
+
+                // If the edited item that was already bought by someone,
+                // we must create another sell listing with the new data
+                if (itemWasBought.ToList().Count != 0)
                 {
-                    //Save image to wwwroot/images
-                    string wwwRootPath = _hostEnvironment.WebRootPath;
-                    string fileName = Path.GetFileNameWithoutExtension(sellListing.ImageFile.FileName);
-                    string extension = Path.GetExtension(sellListing.ImageFile.FileName);
-                    sellListing.SellImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath + "/Images/", fileName);
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        await sellListing.ImageFile.CopyToAsync(fileStream);
-                    }
+                    var editDisplay = await _context.SellListings
+                        .FirstOrDefaultAsync(s => s.SellListingId == sellListing.SellListingId);
+
+                    editDisplay.Display = false;
+                    _context.Update(editDisplay);
+                    await _context.SaveChangesAsync();
+
+                    sellListing.SellListingId = 0;
+                    await CreateSell(sellListing);
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
-                    sellListing.SellImage = "buy-icon.png";
-                }
+                    // This item was not bought by anyone
+                    // However, if it is inside anyone's cart right now, remove it
+                    var itemInCart = _context.ItemsForCart
+                        .Where(s => s.SellListingId == id && s.Cart.TransactionComplete == false);
 
-
-                try
-                {
-                    _context.Update(sellListing);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SellListingExists(sellListing.SellListingId))
+                    if (itemInCart != null && itemInCart.ToList().Count != 0)
                     {
-                        return NotFound();
+                        foreach (var item in itemInCart)
+                        {
+                            _context.Remove(item);
+                        }
+                    }
+
+                    // Then proceed like usual
+                    if (sellListing.ImageFile != null)
+                    {
+                        //Save image to wwwroot/images
+                        string wwwRootPath = _hostEnvironment.WebRootPath;
+                        string fileName = Path.GetFileNameWithoutExtension(sellListing.ImageFile.FileName);
+                        string extension = Path.GetExtension(sellListing.ImageFile.FileName);
+                        sellListing.SellImage = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                        string path = Path.Combine(wwwRootPath + "/Images/", fileName);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await sellListing.ImageFile.CopyToAsync(fileStream);
+                        }
                     }
                     else
                     {
-                        throw;
+                        sellListing.SellImage = "buy-icon.png";
                     }
+
+
+                    try
+                    {
+                        sellListing.Display = true;
+                        _context.Update(sellListing);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!SellListingExists(sellListing.SellListingId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
+
                 }
-                return RedirectToAction(nameof(Index));
             }
             ViewData["PriceTrendId"] = new SelectList(_context.PriceTrends, "PriceTrendId", "PriceTrendId", sellListing.PriceTrendId);
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellListing.SellerId);
@@ -482,9 +571,11 @@ namespace Geekium.Controllers
 
         #region Create
         // GET: ServiceListings/Create
-        public IActionResult CreateService()
+        public async Task<IActionResult> CreateService()
         {
             ViewBag.ServiceDate = DateTime.Now.ToString("yyyy-MM-dd");
+            var info = await CityStateCountByIp("99.226.48.14");
+            ViewBag.ServiceLocation = info.Region;
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Email");
             return View();
         }
@@ -494,7 +585,7 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateService([Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate,ImageFile")] ServiceListing serviceListing)
+        public async Task<IActionResult> CreateService([Bind("ServiceListingId,AccountId,ServiceTitle,ServiceDescription,ListingDate,ImageFile, ServiceLocation")] ServiceListing serviceListing)
         {
             serviceListing.ListingDate = DateTime.Now;
             string userId = HttpContext.Session.GetString("userId"); // This is the account ID
@@ -724,8 +815,9 @@ namespace Geekium.Controllers
 
             var context = _context.Accounts
                 .Include(s => s.SellerAccounts).ThenInclude(s => s.SellListings)
-                .Include(s => s.SellerAccounts).ThenInclude (s => s.TradeListings)
-                .Include(s => s.ServiceListings).Where(s => s.AccountId.ToString() == userId);
+                .Include(s => s.SellerAccounts).ThenInclude(s => s.TradeListings)
+                .Include(s => s.ServiceListings)
+                .Where(s => s.AccountId.ToString() == userId);
 
             return View(await context.ToListAsync());
         }

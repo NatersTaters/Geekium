@@ -22,30 +22,41 @@ namespace Geekium.Controllers
         // First we will open all the reviews related to this account
         public async Task<IActionResult> Index(int id)
         {
+            if (TempData.ContainsKey("Message"))
+            {
+                ViewBag.Error = TempData["Message"].ToString();
+                string redirectedId = HttpContext.Session.GetString("sellerid");
+                id = Convert.ToInt32(redirectedId);
+            }
+
             // All the reviews
             var reviewContext = _context.SellerReviews
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
+                .Include(s => s.Account)
                 .Where(s => s.Seller.SellerId == id);
 
             // The seller account associated with these reviews
-            var accountContext = await _context.SellerReviews
-                .Include(s => s.Seller)
-                .Include(s => s.Seller.Account)
+            var accountContext = await _context.SellerAccounts
+                .Include(s => s.Account)
                 .FirstOrDefaultAsync(s => s.SellerId == id);
-
-
-            // We currently do not keep track of who made this review
-            try
+           
+            if (accountContext == null)
             {
-                ViewBag.Average = Math.Round((decimal)reviewContext.Average(s => s.BuyerRating), 2);
+                string redirectedId = HttpContext.Session.GetString("sellerid");
+                id = Convert.ToInt32(redirectedId);
+                accountContext = await _context.SellerAccounts
+                    .Include(s => s.Account)
+                    .FirstOrDefaultAsync(s => s.SellerId == id);
             }
-            catch (Exception)
-            {
+
+            if (reviewContext.ToList().Count > 0)
+                ViewBag.Average = Math.Round((double)reviewContext.Average(s => s.BuyerRating), 2);
+            else
                 ViewBag.Average = "N/A";
-            }
-            ViewBag.Average = Math.Round((decimal)reviewContext.Average(s => s.BuyerRating), 2);
-            ViewBag.Seller = accountContext.Seller.Account.UserName;
+
+            HttpContext.Session.SetString("sellerid", id.ToString());
+            ViewBag.Seller = accountContext.Account.UserName;
 
             return View(await reviewContext.ToListAsync());
         }
@@ -69,12 +80,41 @@ namespace Geekium.Controllers
             return View(sellerReview);
         }
 
-        // The buyer can only create a review through their purchase history
-        // Even after refunding, the review will stay
-        // Only one review per account
-        public IActionResult Create()
+        // Only accounts that have bought from this seller can make a review
+        // Only one review per account per seller
+        public async Task<IActionResult> Create()
         {
+            string userId = HttpContext.Session.GetString("userId");
+            string url = "/Accounts/Login";
+            if (userId == null)
+                return LocalRedirect(url);
+
+            string id = HttpContext.Session.GetString("sellerid");
+
+            // Figure out if they have a review on this person already
+            var allowReview = await _context.SellerReviews
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .Include(s => s.Account)
+                .Where(s => s.Seller.SellerId.ToString() == id)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
+            var sellerName = await _context.SellerReviews
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .FirstOrDefaultAsync(s => s.Seller.SellerId.ToString() == id);
+
+            // Optional: figure out if the reviewer actually bought something from seller
+
+            if (allowReview != null)
+            {
+                TempData["Message"] = "You already left a review for this person!";
+                return RedirectToAction(nameof(Index));
+            }
+
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
+            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "AccountId");
+            ViewData["SellerName"] = sellerName.Seller.Account.UserName;
             return View();
         }
 
@@ -83,32 +123,67 @@ namespace Geekium.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SellerReviewId,SellerId,BuyerRating,ReviewDescription")] SellerReview sellerReview)
+        public async Task<IActionResult> Create([Bind("SellerReviewId,AccountId,SellerId,BuyerRating,ReviewDescription")] SellerReview sellerReview)
         {
+            string userId = HttpContext.Session.GetString("userId");
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
             if (ModelState.IsValid)
             {
+                sellerReview.Account = account;
+                sellerReview.AccountId = account.AccountId;
                 _context.Add(sellerReview);
                 await _context.SaveChangesAsync();
+                TempData["Message"] = "Successfully added review!";
+
+                var sellerId = sellerReview.SellerId;
+
+                // All the reviews
+                var reviewContext = _context.SellerReviews
+                    .Include(s => s.Seller)
+                    .Include(s => s.Seller.Account)
+                    .Include(s => s.Account)
+                    .Where(s => s.Seller.SellerId == sellerId);
+
+                var sellerAccount = await _context.SellerAccounts
+                    .Include(s => s.Account)
+                    .FirstOrDefaultAsync(s => s.SellerId == sellerId);
+
+                sellerAccount.AverageRating = Math.Round((double)reviewContext.Average(s => s.BuyerRating), 2);
+                _context.Update(sellerAccount);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
+
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellerReview.SellerId);
             return View(sellerReview);
         }
 
         // The user will be able to change any personalized reviews
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            string userId = HttpContext.Session.GetString("userId");
+            string url = "/Accounts/Login";
+            if (userId == null)
+                return LocalRedirect(url);
 
-            var sellerReview = await _context.SellerReviews.FindAsync(id);
+            string id = HttpContext.Session.GetString("sellerid");
+
+            var sellerReview = await _context.SellerReviews
+                .Include(s => s.Seller.Account)
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
             if (sellerReview == null)
             {
-                return NotFound();
+                TempData["Message"] = "Review not found. Please create one!";
+                return RedirectToAction(nameof(Index));
             }
+
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId", sellerReview.SellerId);
+            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "AccountId");
             return View(sellerReview);
         }
 
@@ -119,17 +194,37 @@ namespace Geekium.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SellerReviewId,SellerId,BuyerRating,ReviewDescription")] SellerReview sellerReview)
         {
-            if (id != sellerReview.SellerReviewId)
-            {
-                return NotFound();
-            }
+            string userId = HttpContext.Session.GetString("userId");
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    sellerReview.Account = account;
+                    sellerReview.AccountId = account.AccountId;
                     _context.Update(sellerReview);
                     await _context.SaveChangesAsync();
+
+                    var sellerId = sellerReview.SellerId;
+
+                    // All the reviews
+                    var reviewContext = _context.SellerReviews
+                        .Include(s => s.Seller)
+                        .Include(s => s.Seller.Account)
+                        .Include(s => s.Account)
+                        .Where(s => s.Seller.SellerId == sellerId);
+
+                    var sellerAccount = await _context.SellerAccounts
+                        .Include(s => s.Account)
+                        .FirstOrDefaultAsync(s => s.SellerId == sellerId);
+
+                    sellerAccount.AverageRating = Math.Round((double)reviewContext.Average(s => s.BuyerRating), 2);
+                    _context.Update(sellerAccount);
+                    await _context.SaveChangesAsync();
+
+                    TempData["Message"] = "Successfully edited review!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -149,19 +244,24 @@ namespace Geekium.Controllers
         }
 
         // User should be able to delete their reviews
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            string userId = HttpContext.Session.GetString("userId");
+            string url = "/Accounts/Login";
+            if (userId == null)
+                return LocalRedirect(url);
+
+            string id = HttpContext.Session.GetString("sellerid");
 
             var sellerReview = await _context.SellerReviews
                 .Include(s => s.Seller)
-                .FirstOrDefaultAsync(m => m.SellerReviewId == id);
+                .Include(s => s.Seller.Account)
+                .FirstOrDefaultAsync(m => m.AccountId.ToString() == userId);
+
             if (sellerReview == null)
             {
-                return NotFound();
+                TempData["Message"] = "Review not found. Please create one!";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(sellerReview);
@@ -172,9 +272,32 @@ namespace Geekium.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var sellerReview = await _context.SellerReviews.FindAsync(id);
+            string userId = HttpContext.Session.GetString("userId");
+
+            var sellerReview = await _context.SellerReviews
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
             _context.SellerReviews.Remove(sellerReview);
             await _context.SaveChangesAsync();
+            TempData["Message"] = "Review successfully deleted!";
+
+            var sellerId = sellerReview.SellerId;
+
+            // All the reviews
+            var reviewContext = _context.SellerReviews
+                .Include(s => s.Seller)
+                .Include(s => s.Seller.Account)
+                .Include(s => s.Account)
+                .Where(s => s.Seller.SellerId == sellerId);
+
+            var sellerAccount = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(s => s.SellerId == sellerId);
+
+            sellerAccount.AverageRating = Math.Round((double)reviewContext.Average(s => s.BuyerRating), 2);
+            _context.Update(sellerAccount);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

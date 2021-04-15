@@ -4,28 +4,33 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
 
-<h4>SellerReview</h4>
+<a class="btn btn-primary" type="button" asp-action="Index">Back to List</a>
+<br />
+<h1>Edit for @Html.DisplayFor(model => model.Seller.Account.UserName)</h1>
+
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="SellerReviewId" />
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="SellerId" class="control-label"></label>
                 <select asp-for="SellerId" class="form-control" asp-items="ViewBag.SellerId"></select>
-                <span asp-validation-for="SellerId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
+                <label asp-for="AccountId" class="control-label"></label>
+                <select asp-for="AccountId" class="form-control" asp-items="ViewBag.AccountId"></select>
+            </div>
+            <div class="form-group col-3">
                 <label asp-for="BuyerRating" class="control-label"></label>
-                <input asp-for="BuyerRating" class="form-control" />
+                <input required asp-for="BuyerRating" class="form-control" min="1" max="5" />
                 <span asp-validation-for="BuyerRating" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-12">
                 <label asp-for="ReviewDescription" class="control-label"></label>
-                <input asp-for="ReviewDescription" class="form-control" />
+                <textarea asp-for="ReviewDescription" class="form-control" rows="3" width="100%" maxlength="255"></textarea>
                 <span asp-validation-for="ReviewDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -33,10 +38,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
