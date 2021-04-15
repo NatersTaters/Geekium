@@ -327,10 +327,12 @@ namespace Geekium.Controllers
 
                 // Find all the items associated with this cart
                 var cartItems = _context.ItemsForCart
-                .Include(s => s.SellListing)
-                .Include(s => s.Cart)
-                .Where(s => s.SellListingId == s.SellListing.SellListingId)
-                .Where(s => s.CartId == cartContext.CartId);
+                    .Include(s => s.SellListing)
+                    .Include(s => s.SellListing.Seller)
+                    .Include(s => s.SellListing.Seller.Account)
+                    .Include(s => s.Cart)
+                    .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                    .Where(s => s.CartId == cartContext.CartId);
 
                 var model = await cartItems.ToListAsync();
                 long sAmount = (long)StripeSubTotal(model);
@@ -358,14 +360,14 @@ namespace Geekium.Controllers
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
                 customerNotifEmail(model, charge);
-                //sellerNotifEmail(model, charge);
+                sellerNotifEmail(model, charge);
 
                 //Set session objects for reward type and reward code to null to avoid redundency when
                 //a new cart object is created
                 if ((HttpContext.Session.GetString("rewardType")) != null)
 				{
-                    HttpContext.Session.SetString("rewardType", null);
-                    HttpContext.Session.SetString("rewardCode", null);
+                    HttpContext.Session.SetString("rewardType", "");
+                    HttpContext.Session.SetString("rewardCode", "");
                 }
 
                 //Find account object with previous point balance
@@ -379,14 +381,16 @@ namespace Geekium.Controllers
                 AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
                 await accountsController.EditPoints(account, (int)newPointBalance);
 
+                double purchasePostPrice = SubTotal(cartItems.ToList());
+
                 //Create a new purchase item for the AccountPurchase Controller
                 AccountPurchase purchase = new AccountPurchase();
                 purchase.AccountId = int.Parse(HttpContext.Session.GetString("userId"));
                 purchase.CartId = cartContext.CartId;
                 purchase.PurchaseDate = DateTime.Now;
-                purchase.PurchasePrice = amount;
+                purchase.PurchasePrice = purchasePostPrice;
                 purchase.TrackingNumber = 0;
-                purchase.PointsGained = (int)amount;
+                purchase.PointsGained = (int)purchasePostPrice;
 
                 //Save the new purchase item to the AccountPurchases Controller
                 AccountPurchasesController accountPurchases = new AccountPurchasesController(_context);
@@ -420,47 +424,33 @@ namespace Geekium.Controllers
 
         public void customerNotifEmail(List<ItemsForCart> cart, Charge charge)
         {
-            //Initialize new instance of stringbuilder
-            StringBuilder sb = new StringBuilder();
-
-            //Since Stripes pricing is 100 = $1, 1000 = $10, 10000 = $100, the charge.Amount is divided by 100 to get proper pricing
-            //So instead of the output being:
-            //Total: $500 
-            //It will display as 
-            //Total: $5
-
-            var amount = charge.Amount / 100;
-            //TODO: Fix formatting for ToString to display proper price as: $50.82
-            //var total = (charge.Amount);
-            //string amount = total.ToString(("C2"));
-
-            var body = "Thank you for your recent purchase at Geekium: 0 \n" + "Total: $" + amount;
-            sb.Append(body);
-            for (int i = 0; i < cart.Count; i++)
-            {
-                sb.Insert(sb.ToString().IndexOf("0 "), " \n  Purchase of: " + cart[i].SellListing.SellTitle + " - $" + cart[i].SellListing.SellPrice);
+            foreach(var item in cart)
+			{
+                var amount = item.SellListing.SellPrice;
+                string body = "Thank you for your recent purchase at Geekium: \n" + "Total: $" + amount + "\n  Product: " + item.SellListing.SellTitle + " - $" + item.SellListing.SellPrice;
+                var sEmail = new MailAddress("geekium1234@gmail.com");
+                var rEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
+                var password = "geekiumaccount1234";
+                var sub = "Purchase Confirmation";
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(sEmail.Address, password)
+                };
+                using (var message = new MailMessage(sEmail, rEmail)
+                {
+                    Subject = sub,
+                    Body = body
+                })
+                {
+                    smtp.Send(message);
+                }
             }
-            var sEmail = new MailAddress("geekium1234@gmail.com");
-            var rEmail = new MailAddress(HttpContext.Session.GetString("userEmail"));
-            var password = "geekiumaccount1234";
-            var sub = "Purchase Confirmation";
-            var smtp = new SmtpClient
-            {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(sEmail.Address, password)
-            };
-            using (var message = new MailMessage(sEmail, rEmail)
-            {
-                Subject = sub,
-                Body = sb.ToString()
-            })
-            {
-                smtp.Send(message);
-            }
+            
         }
              /* Seller email, layout as:
              *-----------------------------------
@@ -478,40 +468,32 @@ namespace Geekium.Controllers
              */
         public void sellerNotifEmail(List<ItemsForCart> cart, Charge charge)
         {
-            StringBuilder sb = new StringBuilder();
-            StringBuilder sbEmail = new StringBuilder();
-            
-            var body = "One of your products have recently been sold: 0 \n" + "Purchase by: buyeremail";
-            var email = "Placeholder";
+            foreach(var item in cart)
+			{
+                string body = "One of your products have recently been sold: \n" + "Purchase by: " + HttpContext.Session.GetString("userEmail") + " \n  Product: " + item.SellListing.SellTitle + " - $" + item.SellListing.SellPrice;
+                var email = item.SellListing.Seller.Account.Email;
 
-            sb.Append(body);
-            sbEmail.Append(email);
-            for (int i = 0; i < cart.Count; i++)
-            {
-                sb.Insert(sb.ToString().IndexOf("0 "), " \n  Product: " + cart[i].SellListing.SellTitle + " - $" + cart[i].SellListing.SellPrice);
-                //sb.Insert(sb.ToString().IndexOf("buyeremail"), HttpContext.Session.GetString("userEmail", account.Email);)
-                sbEmail.Insert(sbEmail.ToString().IndexOf("Placeholder "), cart[i].SellListing.Seller.Account.Email);
-            }
-            var sEmail = new MailAddress("geekium1234@gmail.com");
-            var rEmail = new MailAddress(email); //TODO: test
-            var password = "geekiumaccount1234";
-            var sub = "Purchase Confirmation";
-            var smtp = new SmtpClient
-            {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(sEmail.Address, password)
-            };
-            using (var message = new MailMessage(sEmail, rEmail)
-            {
-                Subject = sub,
-                Body = sb.ToString()
-            })
-            {
-                smtp.Send(message);
+                var sEmail = new MailAddress("geekium1234@gmail.com");
+                var rEmail = new MailAddress(email.ToString()); //TODO: test
+                var password = "geekiumaccount1234";
+                var sub = "Purchase Confirmation";
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(sEmail.Address, password)
+                };
+                using (var message = new MailMessage(sEmail, rEmail)
+                {
+                    Subject = sub,
+                    Body = body
+                })
+                {
+                    smtp.Send(message);
+                }
             }
         }
         #endregion

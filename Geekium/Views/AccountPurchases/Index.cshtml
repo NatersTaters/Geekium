@@ -37,7 +37,7 @@
 					@Html.DisplayFor(modelItem => item.PointsGained)
 				</td>
                 <th>
-                    <a asp-action="Details" asp-route-id="@Html.DisplayFor(m => item.CartId)"></a>
+                    <a asp-action="Details" asp-route-id="@item.CartId">Details</a>
                 </th>
 			</tr>
 		</tbody>

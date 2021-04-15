@@ -38,7 +38,9 @@ namespace Geekium.Controllers
             // Find the cart items
             var cart = await _context.ItemsForCart
                 .Include(s => s.Cart)
-                .FirstOrDefaultAsync(s => s.CartId == id);
+                .Include(s => s.SellListing)
+                .Where(s => s.CartId == id)
+                .ToListAsync();
 
             return View(cart);
         }
