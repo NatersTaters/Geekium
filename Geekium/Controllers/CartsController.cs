@@ -47,35 +47,50 @@ namespace Geekium.Controllers
 
                 // If the account does not have a cart associated with them, create one
                 if (cartContext == null)
+				{
                     await CreateCart();
 
-                // Find all the items associated with this cart
-                var cartItems = _context.ItemsForCart
-                    .Include(s => s.SellListing)
-                    .Include(s => s.Cart)
-                    .Where(s => s.SellListingId == s.SellListing.SellListingId)
-                    .Where(s => s.CartId == cartContext.CartId);
+                    // Calculate subtotal
+                    double total = 0; // This is not updating properly
+                    ViewBag.subTotal = total;
+                    stripePay = 0;
 
-                if (cartItems != null)
-				{
-                    foreach (var item in cartItems)
-                    {
-                        if (item.Quantity > item.SellListing.SellQuantity)
-                            item.Quantity = item.SellListing.SellQuantity;
-                    }
+                    // Calculate points
+                    string points = PointsEarned(total).ToString();
+                    ViewBag.points = PointsEarned(ViewBag.subTotal);
+
+                    return View();
                 }
-                
-                // Calculate subtotal
-                var model = await cartItems.ToListAsync();
-                double total = SubTotal(model); // This is not updating properly
-                ViewBag.subTotal = total;
-                stripePay = (long)SubTotal(model);
+                else
+				{
+                    // Find all the items associated with this cart
+                    var cartItems = _context.ItemsForCart
+                        .Include(s => s.SellListing)
+                        .Include(s => s.Cart)
+                        .Where(s => s.SellListingId == s.SellListing.SellListingId)
+                        .Where(s => s.CartId == cartContext.CartId);
 
-                // Calculate points
-                string points = PointsEarned(total).ToString();
-                ViewBag.points = PointsEarned(ViewBag.subTotal);
+                    if (cartItems != null)
+                    {
+                        foreach (var item in cartItems)
+                        {
+                            if (item.Quantity > item.SellListing.SellQuantity)
+                                item.Quantity = item.SellListing.SellQuantity;
+                        }
+                    }
 
-                return View(model);
+                    // Calculate subtotal
+                    var model = await cartItems.ToListAsync();
+                    double total = SubTotal(model); // This is not updating properly
+                    ViewBag.subTotal = total;
+                    stripePay = (long)SubTotal(model);
+
+                    // Calculate points
+                    string points = PointsEarned(total).ToString();
+                    ViewBag.points = PointsEarned(ViewBag.subTotal);
+
+                    return View(model);
+                }
             }
         }
 

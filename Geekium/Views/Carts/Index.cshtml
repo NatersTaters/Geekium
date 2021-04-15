@@ -11,50 +11,57 @@
 </div>
 
 <body onload="recalculateSubtotal(null)">
-	@if (Model.Count() > 0)
-	{
-		<table class="table">
-			<tr>
-				<th>Product</th>
-				<th>Images appear below</th>
-				<th>Description</th>
-				<th>Price</th>
-				<th>Quantity</th>
-				<th></th>
-			</tr>
-			@{ var count = 0; }
-			@foreach (var item in Model)
-			{
-				<tr>
-					<td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellTitle)</td>
-					<td><!-- Image --></td>
-					<td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellDescription)</td>
-					<td>$@Html.DisplayFor(modelItem => item.SellListing.SellPrice) </td>
-					<td>
-						<input id="quantity(@count)" onchange="recalculateSubtotal(@item.ItemsForCartId, this.id)" type="number" max="999" min="1" value="@Html.DisplayFor(modelItem => item.Quantity)" />
-					</td>
-					<td><a asp-controller="Carts" asp-action="Remove" asp-route-id="@item.ItemsForCartId">Remove Item</a></td>
-				</tr>
-				count++;
-			}
-			<tr>
-				<td align="right" colspan="4">Subtotal</td>
-				<td>$@ViewBag.subTotal</td>
-			</tr>
-		</table>
-	}
-	else
+	@if (Model == null)
 	{
 		<h4 style="text-align:center">Your cart seems to be empty!</h4>
 	}
-    <a class="btn btn-success" role="button" asp-area="" asp-controller="Carts" asp-action="CartPayment" style="float: right;">Proceed to Checkout</a>
-    <a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
-
-	@if (@HttpContextAccessor.HttpContext.Session.GetString("rewardType") != null)
+	else
 	{
-		<p>Your discount code for @HttpContextAccessor.HttpContext.Session.GetString("rewardType") has been applied</p>
-	}
+		@if (Model.Count() > 0)
+		{
+			<table class="table">
+				<tr>
+					<th>Product</th>
+					<th>Images appear below</th>
+					<th>Description</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th></th>
+				</tr>
+				@{ var count = 0; }
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellTitle)</td>
+						<td><!-- Image --></td>
+						<td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellDescription)</td>
+						<td>$@Html.DisplayFor(modelItem => item.SellListing.SellPrice) </td>
+						<td>
+							<input id="quantity(@count)" onchange="recalculateSubtotal(@item.ItemsForCartId, this.id)" type="number" max="999" min="1" value="@Html.DisplayFor(modelItem => item.Quantity)" />
+						</td>
+						<td><a asp-controller="Carts" asp-action="Remove" asp-route-id="@item.ItemsForCartId">Remove Item</a></td>
+					</tr>
+					count++;
+				}
+				<tr>
+					<td align="right" colspan="4">Subtotal</td>
+					<td>$@ViewBag.subTotal</td>
+				</tr>
+			</table>
+					}
+					else
+					{
+			<h4 style="text-align:center">Your cart seems to be empty!</h4>
+					}
+		<a class="btn btn-success" role="button" asp-area="" asp-controller="Carts" asp-action="CartPayment" style="float: right;">Proceed to Checkout</a>
+		<a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
 
+		@if (@HttpContextAccessor.HttpContext.Session.GetString("rewardType") != null)
+		{
+			<p>Your discount code for @HttpContextAccessor.HttpContext.Session.GetString("rewardType") has been applied</p>
+		}
+
+					}
 </body>
 
 <script>
