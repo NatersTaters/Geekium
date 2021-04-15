@@ -168,7 +168,9 @@ namespace Geekium.Controllers
 
                     foreach (var sitem in sellListing)
                     {
-                        _context.SellListings.Remove(sitem);
+                        sitem.SellerId = 1;
+                        sitem.Display = false;
+                        _context.SellListings.Update(sitem);
                     }
                 }
 
@@ -183,7 +185,9 @@ namespace Geekium.Controllers
 
                     foreach (var titem in tradeListing)
                     {
-                        _context.TradeListings.Remove(titem);
+                        titem.SellerId = 1;
+                        titem.Display = false;
+                        _context.TradeListings.Update(titem);
                     }
                 }
 

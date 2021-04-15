@@ -21,7 +21,7 @@ namespace Geekium.Controllers
         // Get all trade listings
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account);
+            var geekiumContext = _context.TradeListings.Include(t => t.Seller).Include(t => t.Seller.Account).Where(t => t.Display == true);
             List<SelectListItem> dropdownList = PopulateDropdown();
             ViewData["TradeFilter"] = new SelectList(dropdownList, "Value", "Text");
             SetViewBag(null);

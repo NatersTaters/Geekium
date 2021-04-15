@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Geekium.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Geekium.Controllers
 {
@@ -21,7 +22,7 @@ namespace Geekium.Controllers
         // GET: AccountPurchases
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.AccountPurchases.Include(a => a.Account).Include(a => a.Cart);
+            var geekiumContext = _context.AccountPurchases.Include(a => a.Account).Include(a => a.Cart).Where(a => a.AccountId == int.Parse(HttpContext.Session.GetString("userId")));
             return View(await geekiumContext.ToListAsync());
         }
 

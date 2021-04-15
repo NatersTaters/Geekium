@@ -28,7 +28,8 @@ namespace Geekium.Controllers
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId != 1);
+                .Where(s => s.Seller.AccountId != 1)
+                .Where(s => s.Display == true);
 
             List<SelectListItem> dropdownList = PopulateDropdown(null);
             ViewBag.SellFilter = dropdownList;
@@ -48,7 +49,8 @@ namespace Geekium.Controllers
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId == 1);
+                .Where(s => s.Seller.AccountId == 1)
+                .Where(s => s.Display == true);
 
             SetViewBag(null, 0, 0, 0, 0, defaultDate, defaultDate);
             var model = await geekiumContext.ToListAsync();

@@ -24,6 +24,7 @@ namespace Geekium.Models
         public int TradeQuantity { get; set; }
         public string TradeImage { get; set; }
         public string TradeLocation { get; set; }
+        public bool? Display { get; set; }
 
         [NotMapped]
         [DisplayName("Upload File")]
