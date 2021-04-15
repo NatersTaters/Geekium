@@ -48,11 +48,11 @@
 					<td>$@ViewBag.subTotal</td>
 				</tr>
 			</table>
-					}
-					else
-					{
+			}
+			else
+			{
 			<h4 style="text-align:center">Your cart seems to be empty!</h4>
-					}
+			}
 		<a class="btn btn-success" role="button" asp-area="" asp-controller="Carts" asp-action="CartPayment" style="float: right;">Proceed to Checkout</a>
 		<a class="btn btn-primary" role="button" asp-controller="SellListings" asp-action="Index">Continue Shopping</a>
 
@@ -61,7 +61,7 @@
 			<p>Your discount code for @HttpContextAccessor.HttpContext.Session.GetString("rewardType") has been applied</p>
 		}
 
-					}
+	}
 </body>
 
 <script>
