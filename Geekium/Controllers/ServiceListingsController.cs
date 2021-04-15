@@ -21,8 +21,13 @@ namespace Geekium.Controllers
         // Display all service listings
         public async Task<IActionResult> Index()
         {
-            var geekiumContext = _context.ServiceListings.Include(s => s.Account);
-            SetViewBag(null);
+            var geekiumContext = _context.ServiceListings
+                .Include(s => s.Account);
+
+            List<SelectListItem> dropdownList = PopulateDropdown(null);
+            ViewBag.ServiceFilter = dropdownList;
+
+            SetViewBag(null, null);
             return View(await geekiumContext.ToListAsync());
         }
 
@@ -49,22 +54,28 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterServices(string searchService)
         {
-            if (searchService != null && searchService != "")
-            {
-                var geekiumContext = _context.ServiceListings.Include(t => t.Account);
-                SetViewBag(searchService);
-                return View("Index", await geekiumContext.ToListAsync());
+            string type = Request.Form["typeList"].ToString();
+            var geekiumContext = _context.ServiceListings
+                .Include(s => s.Account);
 
-            }
-            else
-            {
-                SetViewBag(null);
-                return RedirectToAction("Index");
-            }
+            var filterContext = (IQueryable<ServiceListing>)geekiumContext;
+            if (searchService != null && searchService != "")
+                filterContext = geekiumContext.Where(s => s.ServiceTitle.Contains(searchService));
+
+
+            var typeContext = filterContext;
+            if (type != "")
+                typeContext = filterContext.Where(s => s.ServiceLocation == type);
+
+            List<SelectListItem> dropdownList = PopulateDropdown(type);
+            ViewBag.ServiceFilter = dropdownList;
+            SetViewBag(searchService, type);
+
+            return View("Index", await typeContext.ToListAsync());
         }
 
         // Set view bag based on filter
-        void SetViewBag(string search)
+        void SetViewBag(string search, string type)
         {
             ViewBag.Collapse = "collapse";
 
@@ -72,6 +83,38 @@ namespace Geekium.Controllers
                 ViewBag.Search = search;
             else
                 ViewBag.Search = null;
+
+            if (type == "" || type == null)
+                ViewBag.Collapse = "collapse";
+            else
+                ViewBag.Collapse = "collapse in show";
+        }
+
+        private List<SelectListItem> PopulateDropdown(string type)
+        {
+            List<SelectListItem> drop = new List<SelectListItem>();
+
+            foreach (var item in DropDownValues.provinceDictionary)
+            {
+                SelectListItem select = new SelectListItem
+                {
+                    Selected = false,
+                    Text = item,
+                    Value = item
+                };
+                drop.Add(select);
+            }
+
+            foreach (var item in drop)
+            {
+                if (item.Value == type)
+                {
+                    item.Selected = true;
+                    break;
+                }
+            }
+
+            return drop;
         }
     }
 }

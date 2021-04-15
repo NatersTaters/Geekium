@@ -23,16 +23,6 @@
                 <div class="form-group form-inline">
                     Item Type:&nbsp;@Html.DropDownList("typeList", (List<SelectListItem>)ViewBag.SellFilter, new { @class = "form-control select2 select1", @id = "type", @name = "type" })
                 </div><br />
-                <div class="form-group form-inline">
-                    Quantity:&nbsp;
-                    <input class="form-control" style="width:25%;" name="minQuantity" id="minQuantity" type="text" placeholder="From" value="@ViewBag.MinQuantity" /> -&nbsp;
-                    <input class="form-control" style="width:25%;" name="maxQuantity" id="maxQuantity" type="text" placeholder="To" value="@ViewBag.MaxQuantity" />
-                </div><br />
-                <div class="form-group form-inline">
-                    Listing Date:&nbsp;
-                    <input class="form-control" style="width:25%;" name="fromDate" id="fromDate" type="date" placeholder="From" value="@ViewBag.FromDate.Date.ToString("yyyy-MM-dd")" /> -&nbsp;
-                    <input class="form-control" style="width:25%;" name="toDate" id="toDate" type="date" placeholder="To" value="@ViewBag.ToDate.Date.ToString("yyyy-MM-dd")" />
-                </div><br />
                 <button class="btn btn-outline-danger my-2 my-sm-0" asp-action="Index">Clear All</button>
             </div>
         </div>

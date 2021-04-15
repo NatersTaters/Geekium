@@ -7,25 +7,29 @@
 <body>
     <h2>Merchandise Listings</h2>
 
-    <form method="post" asp-action="FilterProducts">
+    <form method="post" asp-action="FilterMerchandise">
         <div class="form-inline">
             <input class="form-control mr-sm-2" id="searchBox" type="text" name="searchProduct" placeholder="Search for Products" value="@ViewBag.Search" />
             <a class="btn btn-outline-secondary my-2 my-sm-0" data-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filterSearch">
                 Add Filter
             </a>&nbsp;
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" title="searchButton">Search Item</button>
-        </div>
+        </div><br />
         <div class="@ViewBag.Collapse form-inline" id="filter">
             <div class="card card-body">
                 <div class="form-group form-inline">
                     Price:&nbsp;
                     <input class="form-control" style="width:25%;" name="minPrice" id="minPrice" type="text" placeholder="From" value="@ViewBag.MinPrice" /> -&nbsp;
                     <input class="form-control" style="width:25%;" name="maxPrice" id="maxPrice" type="text" placeholder="To" value="@ViewBag.MaxPrice" />
-                </div>
+                </div><br />
+                <div class="form-group form-inline">
+                    Item Type:&nbsp;@Html.DropDownList("typeList", (List<SelectListItem>)ViewBag.MerchandiseFilter, new { @class = "form-control select2 select1", @id = "type", @name = "type" })
+                </div><br />
+                <button class="btn btn-outline-danger my-2 my-sm-0" asp-action="MerchandiseIndex">Clear All</button>
             </div>
         </div>
     </form>
-
+    <br />
     <div class="py-2">
         <div class="container">
             @{ var count = 0;}
