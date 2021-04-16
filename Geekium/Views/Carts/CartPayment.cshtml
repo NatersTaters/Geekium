@@ -11,16 +11,18 @@
 </div>
 
 <div class="text-center">
+    <p>Sub Total: @ViewBag.subTotal</p>
+    <p>Tax: @ViewBag.tax</p>
     <form asp-action="CheckOut" asp-controller="Carts" method="POST">
         <article>
-            <label>Sum: @ViewBag.subTotal</label> <!--If not working add this line also to data-amount-->
+            <label>Sum: @ViewBag.total</label>
         </article>
         <script src="//checkout.stripe.com/v2/checkout.js"
                 class="stripe-button"
                 data-key="@Stripe.Value.PublishableKey"
                 data-locale="auto"
                 data-description="Product Checkout"
-                data-amount="@ViewBag.subTotalStripe"
+                data-amount="@ViewBag.totalStripe"
                 data-currency="cad">
         </script>
     </form>
