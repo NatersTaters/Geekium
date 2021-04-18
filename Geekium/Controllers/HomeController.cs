@@ -60,17 +60,22 @@ namespace Geekium.Controllers
 
 		public IActionResult SendSupport(Support support)
 		{
-			//Send support confirmation email to the user account email address
-			string accountSupportText = "Your support request has been submitted, please allow 3 to 5 buisness days for a responce";
-			string userEmail = HttpContext.Session.GetString("userEmail");
-			SendEmail(accountSupportText, userEmail);
+			if(ModelState.IsValid)
+			{
+				//Send support confirmation email to the user account email address
+				string accountSupportText = "Your support request has been submitted, please allow 3 to 5 buisness days for a responce";
+				string userEmail = HttpContext.Session.GetString("userEmail");
+				SendEmail(accountSupportText, userEmail);
 
-			//Send support details to the admin email address
-			string adminSupportText = support.SupportBody;
-			string adminEmail = "geekium1234@gmail.com";
-			SendEmail(adminSupportText, adminEmail);
+				//Send support details to the admin email address
+				string adminSupportText = support.SupportBody;
+				string adminEmail = "geekium1234@gmail.com";
+				SendEmail(adminSupportText, adminEmail);
 
-			return View("Index");
+				return View("Index");
+			}
+			ModelState.AddModelError("", "Invalid Attempt");
+			return View(support);
 		}
 
 		public void SendEmail(string messageBody, string emailAddress)

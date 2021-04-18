@@ -119,216 +119,219 @@ namespace XUnitTestGeekium
             return listing;
         }
 
-        #region Sell Listings
-        // Call CreateSell()
-        // Pass the initialized sell listing
-        // Model returns okay
-        //[Fact]
-        //public void CreateSell_InputViableSellData_ModelReturnsValid()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    SellListing list = InitializeSellListing();
+		#region Sell Listings
+		// Call CreateSell()
+		// Pass the initialized sell listing
+		// Model returns okay
+		//[Fact]
+		//public void CreateSell_InputViableSellData_ModelReturnsValid()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
+		//    SellListing list = InitializeSellListing();
 
-        //    // Act
-        //    controller.CreateSell(list);
+		//    // Act
+		//    controller.CreateSell(list);
 
-        //    // Assert
-        //    Assert.True(controller.ModelState.IsValid);
-        //}
+		//    // Assert
+		//    Assert.True(controller.ModelState.IsValid);
+		//}
 
-        // Call CreateSell()
-        // Pass the null data
-        // An exception is returned
-        //[Fact]
-        //public void CreateSell__InsertNullData_NullException()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
+		// Call CreateSell()
+		// Pass the null data
+		// An exception is returned
+		//[Fact]
+		//public void CreateSell__InsertNullData_NullException()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
 
-        //    // Act
-        //    var ex = controller.CreateSell(null);
+		//    // Act
+		//    var ex = controller.CreateSell(null);
 
-        //    // Assert
-        //    Assert.NotNull(ex.Exception);
-        //}
+		//    // Assert
+		//    Assert.NotNull(ex.Exception);
+		//}
 
-        // Call SellDetails()
-        // Pass the initialized sell listing id
-        // Result should be okay
-        //[Fact]
-        //public async Task SellDetails_PassInInitializedSellListingId_ReturnNoErrors()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    SellListing list = InitializeSellListing();
+		//Call SellDetails()
 
-        //    // Act
-        //    context.Add(list);
-        //    // list.SellListingid = 0, but adding to context changes it to 1
-        //    var actionResult = await controller.SellDetails(1);
+		// Pass the initialized sell listing id
 
-        //    // Assert
-        //    Assert.IsType<ViewResult>(actionResult);
-        //}
+		// Result should be okay
+		//[Fact]
 
-        // Call SellDetails()
-        // Pass in null
-        // No result found error should be returned
-        //[Fact]
-        //public void SellDetails_PassInNull_ReturnNotFound()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-            
-        //    // Act
-        //    var actionResult = controller.SellDetails(null);
+		//public async Task SellDetails_PassInInitializedSellListingId_ReturnNoErrors()
+		//{
+		//	// Arrange
+		//	MyListingsController controller = new MyListingsController(context);
+		//	SellListing list = InitializeSellListing();
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(actionResult.Result);
-        //}
+		//	// Act
+		//	context.Add(list);
+		//	// list.SellListingid = 0, but adding to context changes it to 1
+		//	var actionResult = await controller.SellDetails(1);
 
-        #region Construction
-        //[Fact]
-        // public async Task DeleteConfirmedSelling_PassInInitializedSellListingId_ReturnOk()
-        // {
-        //     // Assert
-        //     MyListingsController controller = new MyListingsController(context);
-        //     SellListing list = InitializeSellListing();
-        //     InitializeSeller();
+		//	// Assert
+		//	Assert.IsType<ViewResult>(actionResult);
+		//}
 
-        //     // Act
-        //     context.Add(list);
-        //     var result = await controller.DeleteConfirmedSelling(0);
+		// Call SellDetails()
+		// Pass in null
+		// No result found error should be returned
+		//[Fact]
+		//public void SellDetails_PassInNull_ReturnNotFound()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
 
-        //     // Assert
-        //     Assert.IsType<OkResult>(result);
-        // }
+		//    // Act
+		//    var actionResult = controller.SellDetails(null);
 
+		//    // Assert
+		//    Assert.IsType<NotFoundResult>(actionResult.Result);
+		//}
 
-        // [Fact]
-        // public async Task EditSell_PassSellIdAndModifiedSellListing_ModelIsValid()
-        // {
-        //     // Assert
-        //     MyListingsController controller = new MyListingsController(context);
-        //     SellListing list = InitializeSellListing();
+		#region Construction
+		//[Fact]
+		// public async Task DeleteConfirmedSelling_PassInInitializedSellListingId_ReturnOk()
+		// {
+		//     // Assert
+		//     MyListingsController controller = new MyListingsController(context);
+		//     SellListing list = InitializeSellListing();
+		//     InitializeSeller();
+
+		//     // Act
+		//     context.Add(list);
+		//     var result = await controller.DeleteConfirmedSelling(0);
+
+		//     // Assert
+		//     Assert.IsType<OkResult>(result);
+		// }
 
 
-        //     // Act
-        //     context.Add(list);
-        //     list.SellPrice = 555555;
-        //     await controller.EditSell(list.SellListingId, list);
-
-        //     Assert.True(controller.ModelState.IsValid);
-        // }
-        #endregion
-        #endregion
-
-        #region Trade Listings
-        // Call CreateTrade()
-        // Pass the initialized trade listing
-        // Model returns okay
-        //[Fact]
-        //public void CreateTrade_InputViableTradeData_ModelReturnsValid()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    TradeListing list = InitializeTradeListing();
-
-        //    // Act
-        //    controller.CreateTrade(list);
-
-        //    // Assert
-        //    Assert.True(controller.ModelState.IsValid);
-        //}
-
-        // Call CreateTrade()
-        // Pass the null data
-        // An exception is returned
-        //[Fact]
-        //public void CreateTrade__InsertNullData_NullException()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-
-        //    // Act
-        //    var ex = controller.CreateTrade(null);
-
-        //    // Assert
-        //    Assert.NotNull(ex.Exception);
-        //}
+		// [Fact]
+		// public async Task EditSell_PassSellIdAndModifiedSellListing_ModelIsValid()
+		// {
+		//     // Assert
+		//     MyListingsController controller = new MyListingsController(context);
+		//     SellListing list = InitializeSellListing();
 
 
-        // Call TradeDetails()
-        // Pass in null
-        // No result found error should be returned
-        //[Fact]
-        //public void TradeDetails_PassInNull_ReturnNotFound()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
+		//     // Act
+		//     context.Add(list);
+		//     list.SellPrice = 555555;
+		//     await controller.EditSell(list.SellListingId, list);
 
-        //    // Act
-        //    var actionResult = controller.TradeDetails(null);
+		//     Assert.True(controller.ModelState.IsValid);
+		// }
+		#endregion
+		#endregion
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(actionResult.Result);
-        //}
+		#region Trade Listings
+		// Call CreateTrade()
+		// Pass the initialized trade listing
+		// Model returns okay
+		//[Fact]
+		//public void CreateTrade_InputViableTradeData_ModelReturnsValid()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
+		//    TradeListing list = InitializeTradeListing();
 
-        #endregion
+		//    // Act
+		//    controller.CreateTrade(list);
 
-        #region Service Listings
-        // Call CreateService()
-        // Pass the initialized service listing
-        // Model returns okay
-        //[Fact]
-        //public void CreateService_InputViableServiceData_ModelReturnsValid()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    ServiceListing list = InitializeServiceListing();
+		//    // Assert
+		//    Assert.True(controller.ModelState.IsValid);
+		//}
 
-        //    // Act
-        //    context.Add(InitializeAccount());
-        //    controller.CreateService(list);
+		// Call CreateTrade()
+		// Pass the null data
+		// An exception is returned
+		//[Fact]
+		//public void CreateTrade__InsertNullData_NullException()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
 
-        //    // Assert
-        //    Assert.True(controller.ModelState.IsValid);
-        //}
+		//    // Act
+		//    var ex = controller.CreateTrade(null);
 
-        // Call CreateService()
-        // Pass the null data
-        // An exception is returned
-        //[Fact]
-        //public void CreateService__InsertNullData_NullException()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-
-        //    // Act
-        //    var ex = controller.CreateService(null);
-
-        //    // Assert
-        //    Assert.NotNull(ex.Exception);
-        //}
+		//    // Assert
+		//    Assert.NotNull(ex.Exception);
+		//}
 
 
-        // Call ServiceDetails()
-        // Pass in null
-        // No result found error should be returned
-        //[Fact]
-        //public void ServiceDetails_PassInNull_ReturnNotFound()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
+		// Call TradeDetails()
+		// Pass in null
+		// No result found error should be returned
+		//[Fact]
+		//public void TradeDetails_PassInNull_ReturnNotFound()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
 
-        //    // Act
-        //    var actionResult = controller.ServiceDetails(null);
+		//    // Act
+		//    var actionResult = controller.TradeDetails(null);
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(actionResult.Result);
-        //}
+		//    // Assert
+		//    Assert.IsType<NotFoundResult>(actionResult.Result);
+		//}
 
-        #endregion
-    }
+		#endregion
+
+		#region Service Listings
+		// Call CreateService()
+		// Pass the initialized service listing
+		// Model returns okay
+		//[Fact]
+		//public void CreateService_InputViableServiceData_ModelReturnsValid()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
+		//    ServiceListing list = InitializeServiceListing();
+
+		//    // Act
+		//    context.Add(InitializeAccount());
+		//    controller.CreateService(list);
+
+		//    // Assert
+		//    Assert.True(controller.ModelState.IsValid);
+		//}
+
+		// Call CreateService()
+		// Pass the null data
+		// An exception is returned
+		//[Fact]
+		//public void CreateService__InsertNullData_NullException()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
+
+		//    // Act
+		//    var ex = controller.CreateService(null);
+
+		//    // Assert
+		//    Assert.NotNull(ex.Exception);
+		//}
+
+
+		// Call ServiceDetails()
+		// Pass in null
+		// No result found error should be returned
+		//[Fact]
+		//public void ServiceDetails_PassInNull_ReturnNotFound()
+		//{
+		//    // Arrange
+		//    MyListingsController controller = new MyListingsController(context);
+
+		//    // Act
+		//    var actionResult = controller.ServiceDetails(null);
+
+		//    // Assert
+		//    Assert.IsType<NotFoundResult>(actionResult.Result);
+		//}
+
+		#endregion
+	}
 }

@@ -51,57 +51,72 @@ namespace Geekium.Controllers
         //point balance to reflect the purchase, and add the new reward to the database
         public async Task<IActionResult> SpendPoints(int? id)
         {
-            AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
-
-            var account = await _context.Accounts.FindAsync(int.Parse(HttpContext.Session.GetString("userId")));
-
-            Reward newReward = new Reward();
-            newReward.AccountId = account.AccountId;
-            newReward.DateReceived = DateTime.Now;
-            newReward.RewardCode = RandomString();
-
-            int oldPointBalance = (int)account.PointBalance;
-            int newPointBalance = 0;
-
-            if (id == null)
+            if(id == null)
 			{
                 return View();
 			}
-            else if(id == 1)
+            else
 			{
-                newReward.RewardType = "-25% Discount Code";
-                newReward.PointCost = 50;
+                var account = await _context.Accounts.FindAsync(int.Parse(HttpContext.Session.GetString("userId")));
 
-                newPointBalance = oldPointBalance - 50;
+                await AddRewardToAccount((int)id, account);
+                return RedirectToAction("Index");
             }
-            else if(id == 2)
-			{
-                newReward.RewardType = "-50% Discount Code";
-                newReward.PointCost = 100;
-
-                newPointBalance = oldPointBalance - 100;
-            }
-            else if(id == 3)
-			{
-                newReward.RewardType = "-75% Discount Code";
-                newReward.PointCost = 150;
-
-                newPointBalance = oldPointBalance - 150;
-            }
-
-            _context.Add(newReward);
-            await _context.SaveChangesAsync();
-
-            HttpContext.Session.SetInt32("pointsBalance", newPointBalance);
-
-            await accountsController.EditPoints(account, newPointBalance);
-            return RedirectToAction("Index");
         }
 
-        //Will take the reward id and set session objects for the reward code and reward type to be
-        //used at checkout and delete the reward from the database to prevent the user from using the
-        //reward multiple times
-        public async Task<IActionResult> UseReward(int? id)
+        //Will determine which reward is being redeemed then create a new reward object associated to that account
+		public async Task AddRewardToAccount(int id, Account account)
+		{
+            if(ModelState.IsValid)
+			{
+                Reward newReward = new Reward();
+                newReward.AccountId = account.AccountId;
+                newReward.DateReceived = DateTime.Now;
+                newReward.RewardCode = RandomString();
+
+                int oldPointBalance = (int)account.PointBalance;
+                int newPointBalance = 0;
+
+                if (id == 1)
+                {
+                    newReward.RewardType = "-25% Discount Code";
+                    newReward.PointCost = 50;
+
+                    newPointBalance = oldPointBalance - 50;
+                }
+                else if (id == 2)
+                {
+                    newReward.RewardType = "-50% Discount Code";
+                    newReward.PointCost = 100;
+
+                    newPointBalance = oldPointBalance - 100;
+                }
+                else if (id == 3)
+                {
+                    newReward.RewardType = "-75% Discount Code";
+                    newReward.PointCost = 150;
+
+                    newPointBalance = oldPointBalance - 150;
+                }
+                else
+				{
+                    ModelState.AddModelError("", "Invalid Reward Id");
+				}
+
+                _context.Add(newReward);
+                await _context.SaveChangesAsync();
+
+                AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
+                await accountsController.EditPoints(account, newPointBalance);
+
+                HttpContext.Session.SetInt32("pointsBalance", newPointBalance);
+            }
+        }
+
+		//Will take the reward id and set session objects for the reward code and reward type to be
+		//used at checkout and delete the reward from the database to prevent the user from using the
+		//reward multiple times
+		public async Task<IActionResult> UseReward(int? id)
         {
             var reward = await _context.Rewards.FindAsync(id);
 

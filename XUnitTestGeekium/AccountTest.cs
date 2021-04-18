@@ -5,6 +5,7 @@ using Geekium.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
 
 namespace XUnitTestGeekium
 {
@@ -13,6 +14,7 @@ namespace XUnitTestGeekium
 		AccountViewModel accountViewModel;
 		LoginViewModel loginViewModel;
 		GeekiumContext context = new GeekiumContext();
+		IWebHostEnvironment hostEnvironment;
 
 		private void Initialize()
 		{
@@ -38,63 +40,63 @@ namespace XUnitTestGeekium
 			};
 		}
 
-		//[Fact]
-		//public void ValidAccountControllerCreate_ShouldAllowCreate()
-		//{
-		//	//Arrange
-		//	Initialize();
-		//	var accountsController = new AccountsController(context);
+		[Fact]
+		public void ValidAccountControllerCreate_ShouldAllowCreate()
+		{
+			//Arrange
+			Initialize();
+			var accountsController = new AccountsController(context, hostEnvironment);
 
-		//	//Act
-		//	accountsController.Create(accountViewModel);
+			//Act
+			accountsController.Create(accountViewModel);
 
-		//	//Assert
-		//	Assert.True(accountsController.ModelState.IsValid);
-		//}
+			//Assert
+			Assert.True(accountsController.ModelState.IsValid);
+		}
 
-		//[Fact]
-		//public void InvalidAccountControllerCreate_ShouldThrowError()
-		//{
-		//	//Arrange
-		//	Initialize();
-		//	var accountsController = new AccountsController(context);
-		//	accountsController.ModelState.AddModelError("test", "test");
+		[Fact]
+		public void InvalidAccountControllerCreate_ShouldThrowError()
+		{
+			//Arrange
+			Initialize();
+			var accountsController = new AccountsController(context, hostEnvironment);
+			accountsController.ModelState.AddModelError("test", "test");
 
-		//	//Act
-		//	accountsController.Create(model: null);
+			//Act
+			accountsController.Create(model: null);
 
-		//	//Assert
-		//	Assert.False(accountsController.ModelState.IsValid);
-		//}
+			//Assert
+			Assert.False(accountsController.ModelState.IsValid);
+		}
 
-		//[Fact]
-		//public void ValidAccountControllerLogin_ShouldAllowLogin()
-		//{
-		//	//Arrange
-		//	Initialize();
-		//	var accountsController = new AccountsController(context);
+		[Fact]
+		public void ValidAccountControllerLogin_ShouldAllowLogin()
+		{
+			//Arrange
+			Initialize();
+			var accountsController = new AccountsController(context, hostEnvironment);
 
-		//	//Act
-		//	accountsController.Login(loginViewModel);
+			//Act
+			accountsController.Login(loginViewModel);
 
-		//	//Assert
-		//	Assert.True(accountsController.ModelState.IsValid);
-		//}
+			//Assert
+			Assert.True(accountsController.ModelState.IsValid);
+		}
 
-		//[Fact]
-		//public void InvalidAccountControllerLogin_ShouldThrowError()
-		//{
-		//	//Arrange
-		//	Initialize();
-		//	var accountsController = new AccountsController(context);
-		//	accountsController.ModelState.AddModelError("test", "test");
+		[Fact]
+		public void InvalidAccountControllerLogin_ShouldThrowError()
+		{
+			//Arrange
+			Initialize();
+			var accountsController = new AccountsController(context, hostEnvironment);
+			accountsController.ModelState.AddModelError("test", "test");
 
-		//	//Act
-		//	accountsController.Login(loginViewModel);
+			//Act
+			accountsController.Login(loginViewModel);
 
-		//	//Assert
-		//	Assert.False(accountsController.ModelState.IsValid);
-		//}
+			//Assert
+			Assert.False(accountsController.ModelState.IsValid);
+		}
 
 		[Fact]
 		public void ValidAccountViewModel_ShouldNotThrowError()

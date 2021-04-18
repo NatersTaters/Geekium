@@ -247,7 +247,7 @@ namespace Geekium.Controllers
         }
 
         //Update current cart item and set TransactionComplete to "true"
-        public async void ChangeCartTransactionStatus([Bind("CartId,AccountId,TransactionComplete,NumberOfProducts,TotalPrice,PointsGained")] Cart cart)
+        public async Task ChangeCartTransactionStatus([Bind("CartId,AccountId,TransactionComplete,NumberOfProducts,TotalPrice,PointsGained")] Cart cart)
 		{
             if (ModelState.IsValid)
             {
