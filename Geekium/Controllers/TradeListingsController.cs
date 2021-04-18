@@ -44,6 +44,7 @@ namespace Geekium.Controllers
                 .Include(t => t.Seller)
                 .Include(t => t.Seller.Account)
                 .FirstOrDefaultAsync(m => m.TradeListingId == id);
+
             if (tradeListing == null)
             {
                 return NotFound();
@@ -56,7 +57,17 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterTrades(string searchTrade)
         {
-            string type = Request.Form["typeList"].ToString();
+            string type = "";
+
+            try
+            {
+                type = Request.Form["typeList"].ToString();
+            }
+            catch (Exception)
+            {
+                // Do nothing
+            }
+
             var geekiumContext = _context.TradeListings
                 .Include(s => s.Seller.Account);
 
@@ -77,7 +88,7 @@ namespace Geekium.Controllers
         }
 
         // Set view bag based on filter
-        void SetViewBag(string search, string type)
+        public void SetViewBag(string search, string type)
         {
             ViewBag.Collapse = "collapse";
 
@@ -91,7 +102,8 @@ namespace Geekium.Controllers
             else
                 ViewBag.Collapse = "collapse in show";
         }
-        private List<SelectListItem> PopulateDropdown(string type)
+
+        public List<SelectListItem> PopulateDropdown(string type)
         {
             List<SelectListItem> drop = new List<SelectListItem>();
 

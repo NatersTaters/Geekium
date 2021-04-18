@@ -7,25 +7,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Geekium.Models;
-using Microsoft.AspNetCore.Http;
-using System.Security.Cryptography;
-using System.Text;
-using System.IO;
-using System.Net.Mail;
-using System.Net;
-
+using Microsoft.AspNetCore.Hosting;
+using System.Threading;
 namespace XUnitTestGeekium
 {
     public class MyListingsUnitTest
     {
         GeekiumContext context = new GeekiumContext();
+        private readonly IWebHostEnvironment _hostEnvironment;
 
+        #region Initialize
         SellerAccount InitializeSeller()
         {
             SellerAccount seller = new SellerAccount
@@ -119,161 +110,202 @@ namespace XUnitTestGeekium
             return listing;
         }
 
+        #endregion
+
+        // Call CityStateCountByIp
+        // Pass in a known ip address
+        // Return "info" of type IpInfo
+        [Fact]
+        public async void CityStateCountByIp_PassInIp_ReturnIpInfo()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+
+            // Act
+            string ip = "99.226.48.14";
+            var info = await controller.CityStateCountByIp(ip);
+
+            // Assert
+            Assert.IsType<IpData.Models.IpInfo>(info);
+        }
+
+        // Call PopulateDropdown
+        // Returns a list of select list items
+        [Fact]
+        public void PopulateDropdown_SendYes_ReturnListOfSelectListItems()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+
+            // Act
+            var list = controller.PopulateDropdown();
+
+            // Assert
+            Assert.True(list.Count > 0);
+        }
+
+        // Call Index()
+        // View should be returned
+        [Fact]
+        public async void Index_CallFunction_ReturnView()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            // Act
+            var actionResult = await controller.Index();
+
+            // Assert
+            Assert.IsType<ViewResult>(actionResult);
+        }
+
         #region Sell Listings
         // Call CreateSell()
         // Pass the initialized sell listing
         // Model returns okay
-        //[Fact]
-        //public void CreateSell_InputViableSellData_ModelReturnsValid()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    SellListing list = InitializeSellListing();
+        [Fact]
+        public async void CreateSell_InputViableSellData_ModelReturnsValid()
+        {
+            // Arrange
+            //GenerateSession();
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            SellListing list = InitializeSellListing();
 
-        //    // Act
-        //    controller.CreateSell(list);
+            // Act
+            await controller.CreateSell(list);
 
-        //    // Assert
-        //    Assert.True(controller.ModelState.IsValid);
-        //}
-
-        // Call CreateSell()
-        // Pass the null data
-        // An exception is returned
-        //[Fact]
-        //public void CreateSell__InsertNullData_NullException()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-
-        //    // Act
-        //    var ex = controller.CreateSell(null);
-
-        //    // Assert
-        //    Assert.NotNull(ex.Exception);
-        //}
-
-        // Call SellDetails()
-        // Pass the initialized sell listing id
-        // Result should be okay
-        //[Fact]
-        //public async Task SellDetails_PassInInitializedSellListingId_ReturnNoErrors()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    SellListing list = InitializeSellListing();
-
-        //    // Act
-        //    context.Add(list);
-        //    // list.SellListingid = 0, but adding to context changes it to 1
-        //    var actionResult = await controller.SellDetails(1);
-
-        //    // Assert
-        //    Assert.IsType<ViewResult>(actionResult);
-        //}
+            // Assert
+            Assert.True(controller.ModelState.IsValid);
+        }
 
         // Call SellDetails()
         // Pass in null
-        // No result found error should be returned
-        //[Fact]
-        //public void SellDetails_PassInNull_ReturnNotFound()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-            
-        //    // Act
-        //    var actionResult = controller.SellDetails(null);
+        // Result should be okay
+        [Fact]
+        public async Task SellDetails_PassInInitializedSellListingId_ReturnNotFound()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+           
+            // Act
+            var actionResult = await controller.SellDetails(null);
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(actionResult.Result);
-        //}
+            // Assert
+            Assert.IsType<NotFoundResult>(actionResult);
+        }
 
-        #region Construction
-        //[Fact]
-        // public async Task DeleteConfirmedSelling_PassInInitializedSellListingId_ReturnOk()
-        // {
-        //     // Assert
-        //     MyListingsController controller = new MyListingsController(context);
-        //     SellListing list = InitializeSellListing();
-        //     InitializeSeller();
+        // Call DeleteConfirmedSelling
+        // Pass in the sell listing id of 0
+        // Get tot the redirection view
+        [Fact]
+        public async Task DeleteConfirmedSelling_PassInInitializedSellListingId_ReturnOk()
+        {
+            // Assert
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            SellListing list = InitializeSellListing();
+            InitializeSeller();
 
-        //     // Act
-        //     context.Add(list);
-        //     var result = await controller.DeleteConfirmedSelling(0);
+            // Act
+            context.Add(list);
+            var result = await controller.DeleteConfirmedSelling(0);
 
-        //     // Assert
-        //     Assert.IsType<OkResult>(result);
-        // }
+            // Assert
+            Assert.IsType<RedirectToActionResult>(result);
+        }
 
+        // Call EditSell
+        // Pass in a sell listing and modify it
+        // Return valid model state
+        [Fact]
+        public async Task EditSell_PassSellIdAndModifiedSellListing_ModelIsValid()
+        {
+            // Assert
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            SellListing list = InitializeSellListing();
 
-        // [Fact]
-        // public async Task EditSell_PassSellIdAndModifiedSellListing_ModelIsValid()
-        // {
-        //     // Assert
-        //     MyListingsController controller = new MyListingsController(context);
-        //     SellListing list = InitializeSellListing();
+            // Act
+            context.Add(list);
+            list.SellPrice = 555555;
+            var result = await controller.EditSell(list.SellListingId, list);
 
+            // Assert
+            Assert.True(controller.ModelState.IsValid);
+            Assert.IsType<ViewResult>(result);
+        }
 
-        //     // Act
-        //     context.Add(list);
-        //     list.SellPrice = 555555;
-        //     await controller.EditSell(list.SellListingId, list);
-
-        //     Assert.True(controller.ModelState.IsValid);
-        // }
-        #endregion
         #endregion
 
         #region Trade Listings
         // Call CreateTrade()
         // Pass the initialized trade listing
         // Model returns okay
-        //[Fact]
-        //public void CreateTrade_InputViableTradeData_ModelReturnsValid()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    TradeListing list = InitializeTradeListing();
+        [Fact]
+        public async void CreateTrade_InputViableTradeData_ModelReturnsValid()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            TradeListing list = InitializeTradeListing();
 
-        //    // Act
-        //    controller.CreateTrade(list);
+            // Act
+            await controller.CreateTrade(list);
 
-        //    // Assert
-        //    Assert.True(controller.ModelState.IsValid);
-        //}
-
-        // Call CreateTrade()
-        // Pass the null data
-        // An exception is returned
-        //[Fact]
-        //public void CreateTrade__InsertNullData_NullException()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-
-        //    // Act
-        //    var ex = controller.CreateTrade(null);
-
-        //    // Assert
-        //    Assert.NotNull(ex.Exception);
-        //}
-
+            // Assert
+            Assert.True(controller.ModelState.IsValid);
+        }
 
         // Call TradeDetails()
         // Pass in null
         // No result found error should be returned
-        //[Fact]
-        //public void TradeDetails_PassInNull_ReturnNotFound()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
+        [Fact]
+        public async Task TradeDetails_PassInNull_ReturnNotFound()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
 
-        //    // Act
-        //    var actionResult = controller.TradeDetails(null);
+            // Act
+            var actionResult = await controller.TradeDetails(null);
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(actionResult.Result);
-        //}
+            // Assert
+            Assert.IsType<NotFoundResult>(actionResult);
+        }
+
+        // Call DeleteConfirmedTrade
+        // Pass in the trade listing id of 0
+        // Get tot the redirection view
+        [Fact]
+        public async Task DeleteConfirmedTrade_PassInInitializedTradeId_ReturnRedirection()
+        {
+            // Assert
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            TradeListing list = InitializeTradeListing();
+            InitializeSeller();
+
+            // Act
+            context.Add(list);
+            var result = await controller.DeleteConfirmedSelling(0);
+
+            // Assert
+            Assert.IsType<RedirectToActionResult>(result);
+        }
+
+        // Call EditTrade
+        // Do not send in a model
+        // Return valid model state
+        [Fact]
+        public async Task EditTrade_PassInNull_ModelIsValid()
+        {
+            // Assert
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            TradeListing list = InitializeTradeListing();
+
+            // Act
+            context.Add(list);
+            list.TradeDescription = "Hello";
+            await controller.EditTrade(0, list);
+
+            // Assert
+            Assert.True(controller.ModelState.IsValid);
+        }
+
 
         #endregion
 
@@ -281,54 +313,76 @@ namespace XUnitTestGeekium
         // Call CreateService()
         // Pass the initialized service listing
         // Model returns okay
-        //[Fact]
-        //public void CreateService_InputViableServiceData_ModelReturnsValid()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-        //    ServiceListing list = InitializeServiceListing();
+        [Fact]
+        public async void CreateService_InputViableServiceData_ModelReturnsValid()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            ServiceListing list = InitializeServiceListing();
 
-        //    // Act
-        //    context.Add(InitializeAccount());
-        //    controller.CreateService(list);
+            // Act
+            await controller.CreateService(list);
 
-        //    // Assert
-        //    Assert.True(controller.ModelState.IsValid);
-        //}
-
-        // Call CreateService()
-        // Pass the null data
-        // An exception is returned
-        //[Fact]
-        //public void CreateService__InsertNullData_NullException()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
-
-        //    // Act
-        //    var ex = controller.CreateService(null);
-
-        //    // Assert
-        //    Assert.NotNull(ex.Exception);
-        //}
+            // Assert
+            Assert.True(controller.ModelState.IsValid);
+        }
 
 
         // Call ServiceDetails()
         // Pass in null
         // No result found error should be returned
-        //[Fact]
-        //public void ServiceDetails_PassInNull_ReturnNotFound()
-        //{
-        //    // Arrange
-        //    MyListingsController controller = new MyListingsController(context);
+        [Fact]
+        public async Task ServiceDetails_PassInNull_ReturnNotFound()
+        {
+            // Arrange
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
 
-        //    // Act
-        //    var actionResult = controller.ServiceDetails(null);
+            // Act
+            var actionResult = await controller.ServiceDetails(null);
 
-        //    // Assert
-        //    Assert.IsType<NotFoundResult>(actionResult.Result);
-        //}
+            // Assert
+            Assert.IsType<NotFoundResult>(actionResult);
+        }
+
+        // Call DeleteConfirmedTrade
+        // Pass in the service listing id of 0
+        // Get tot the redirection view
+        [Fact]
+        public async Task DeleteConfirmedService_PassInInitializedServiceId_ReturnRedirection()
+        {
+            // Assert
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            ServiceListing list = InitializeServiceListing();
+            InitializeSeller();
+
+            // Act
+            context.Add(list);
+            var result = await controller.DeleteConfirmedService(0);
+
+            // Assert
+            Assert.IsType<RedirectToActionResult>(result);
+        }
+
+        // Call EditService
+        // Do not send in a model
+        // Return valid model state
+        [Fact]
+        public async Task EditService_PassInNull_ModelIsValid()
+        {
+            // Assert
+            MyListingsController controller = new MyListingsController(context, _hostEnvironment);
+            ServiceListing list = InitializeServiceListing();
+
+            // Act
+            context.Add(list);
+            list.ServiceDescription = "Hello";
+            await controller.EditService(0, list);
+
+            // Assert
+            Assert.True(controller.ModelState.IsValid);
+        }
 
         #endregion
+
     }
 }

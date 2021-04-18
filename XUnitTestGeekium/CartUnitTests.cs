@@ -1,5 +1,6 @@
 ﻿using Geekium.Controllers;
 using Geekium.Models;
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -8,6 +9,9 @@ namespace XUnitTestGeekium
 {
     public class CartUnitTests
     {
+
+        GeekiumContext _context = new GeekiumContext();
+        private readonly IWebHostEnvironment _hostEnvironment;
 
         public SellListing Product()
         {   //Initializing a sample selllisting to use in use cases 
@@ -21,6 +25,17 @@ namespace XUnitTestGeekium
             };
             return sellListing;
         }
+
+        public SellerAccount Seller()
+        {
+            SellerAccount seller = new SellerAccount
+            {
+                AccountId = 1,
+                AverageRating = 4
+            };
+            return seller;
+        }
+
         //Creating the cart, adding sample listing to cart
         public List<ItemsForCart> Cart()
         {
@@ -43,7 +58,7 @@ namespace XUnitTestGeekium
         //public void SellListingSum_ReturnProperTotalOf1500()
         //{
         //    // Arrange 
-        //    CartsController context = new CartsController();
+        //    CartsController context = new CartsController(_context, _hostEnvironment);
         //    List<ItemsForCart> cart = Cart();
         //    double totalOfProducts = 1500;
 

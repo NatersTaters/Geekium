@@ -54,7 +54,15 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterServices(string searchService)
         {
-            string type = Request.Form["typeList"].ToString();
+            string type = "";
+            try
+            {
+                type = Request.Form["typeList"].ToString();
+            }
+            catch (Exception)
+            {
+                type = "";
+            }
             var geekiumContext = _context.ServiceListings
                 .Include(s => s.Account);
 
@@ -75,7 +83,7 @@ namespace Geekium.Controllers
         }
 
         // Set view bag based on filter
-        void SetViewBag(string search, string type)
+        public void SetViewBag(string search, string type)
         {
             ViewBag.Collapse = "collapse";
 
@@ -90,7 +98,7 @@ namespace Geekium.Controllers
                 ViewBag.Collapse = "collapse in show";
         }
 
-        private List<SelectListItem> PopulateDropdown(string type)
+        public List<SelectListItem> PopulateDropdown(string type)
         {
             List<SelectListItem> drop = new List<SelectListItem>();
 
