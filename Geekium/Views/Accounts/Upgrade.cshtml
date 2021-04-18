@@ -17,9 +17,10 @@
 			<div class="text-danger">
 				@Html.ValidationSummary()
 			</div>
-			<input type="submit" value="Upgrade" class="btn btn-outline-info"/>
 			<div class="form-group">
-				<a asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-outline-secondary">Resend Code</a>
+				<input type="submit" value="Upgrade" class="btn btn-primary" />
+				<a asp-action="Upgrade" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-secondary">Resend Code</a>
+				<a asp-action="Details" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetString("userId")" class="btn btn-info">Cancel</a>
 			</div>
 		</form>
 	</div>

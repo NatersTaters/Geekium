@@ -33,7 +33,7 @@
 				{
 					<tr>
 						<td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellTitle)</td>
-						<td><!-- Image --></td>
+						<td><img class="displayImage" src="@("~/images/"+item.SellListing.SellImage)" asp-append-version="true" width="250" height="250" /></td>
 						<td class="truncate">@Html.DisplayFor(modelItem => item.SellListing.SellDescription)</td>
 						<td>$@Html.DisplayFor(modelItem => item.SellListing.SellPrice) </td>
 						<td>
@@ -58,9 +58,10 @@
 
 		@if (@HttpContextAccessor.HttpContext.Session.GetString("rewardType") != null)
 		{
-			<p>Your discount code for @HttpContextAccessor.HttpContext.Session.GetString("rewardType") has been applied</p>
+			<div class="text-center">
+				<p>Your discount code for @HttpContextAccessor.HttpContext.Session.GetString("rewardType") has been applied</p>
+			</div>	
 		}
-
 	}
 </body>
 

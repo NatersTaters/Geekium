@@ -1,54 +1,56 @@
 ﻿@model Geekium.Models.SellListing
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = @Html.DisplayFor(model => model.SellTitle) + " Details";
+	ViewData["Title"] = @Html.DisplayFor(model => model.SellTitle) + " Details";
 }
 
 <body>
-    <div>
-        <a class="btn btn-primary" type="button" asp-action="ChooseIndex" asp-route-id="@Model.SellListingId">Back to List</a>
-    </div>
+	<div>
+		<a class="btn btn-primary" type="button" asp-action="ChooseIndex" asp-route-id="@Model.SellListingId">Back to List</a>
+	</div>
 	<img class="displayDetailImage" src="@("~/images/"+Model.SellImage)" asp-append-version="true" width="250" height="250" />
 
-    <hr />
+	<hr />
 
-    <h1>@Html.DisplayFor(model => model.SellTitle)</h1>
-    <p>
-        Category: @Html.DisplayFor(model => model.SellItemType) <br />
-        Seller: <a asp-area="" asp-controller="SellerReviews" asp-action="Index" asp-route-id="@Model.SellerId">@Html.DisplayFor(model => model.Seller.Account.UserName)</a> <br />
-        Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
-    </p>
-    <hr />
-    <p>
-        Listing Date: @Html.DisplayFor(model => model.SellDate)<br />
-        Current Stock: @Html.DisplayFor(model => model.SellQuantity)<br />
-        Price: $@Html.DisplayFor(model => model.SellPrice)
-    </p>
+	<h1>@Html.DisplayFor(model => model.SellTitle)</h1>
+	<p>
+		Category: @Html.DisplayFor(model => model.SellItemType) <br />
+		Seller: <a asp-area="" asp-controller="SellerReviews" asp-action="Index" asp-route-id="@Model.SellerId">@Html.DisplayFor(model => model.Seller.Account.UserName)</a> <br />
+		Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
+	</p>
+	<hr />
+	<p>
+		Listing Date: @Html.DisplayFor(model => model.SellDate)<br />
+		Current Stock: @Html.DisplayFor(model => model.SellQuantity)<br />
+		Price: $@Html.DisplayFor(model => model.SellPrice)
+	</p>
 
-    @if (@ViewBag.ShowCart)
-    {
-        <a type="button" class="btn btn-primary btn-lg btn-block" asp-controller="Carts" asp-action="Add" asp-route-id="@Model.SellListingId">Add to Cart</a>
-    }
-    else
-    {
-        <a type="button" class="btn btn-primary btn-lg btn-block disabled" asp-controller="Carts" asp-action="Add" asp-route-id="@Model.SellListingId">Cannot Add Own Listing to Cart</a>
-    }
-    <br />
-    <div id="accordion">
-        <div class="card">
-            <div class="card-header" id="sellDescriptionHeading">
-                <h5 class="mb-0">
-                    <a class="stretched-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Product Description
-                    </a>
-                </h5>
-            </div>
+	@if (@ViewBag.ShowCart)
+	{
+		<a type="button" class="btn btn-primary btn-lg btn-block" asp-controller="Carts" asp-action="Add" asp-route-listingId="@Model.SellListingId" asp-route-userId="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Add to Cart</a>
+	}
+	else
+	{
+		<a type="button" class="btn btn-primary btn-lg btn-block disabled" asp-controller="Carts" asp-action="Add" asp-route-listingId="@Model.SellListingId" asp-route-userId="@HttpContextAccessor.HttpContext.Session.GetString("userId")">Cannot Add Own Listing to Cart</a>
+	}
+	<br />
+	<div id="accordion">
+		<div class="card">
+			<div class="card-header" id="sellDescriptionHeading">
+				<h5 class="mb-0">
+					<a class="stretched-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						Product Description
+					</a>
+				</h5>
+			</div>
 
-            <div id="collapseOne" class="collapse show" aria-labelledby="sellDescriptionHeading" data-parent="#accordion">
-                <div class="card-body">
-                    @Html.DisplayFor(model => model.SellDescription)
-                </div>
-            </div>
-        </div>
-    </div>
+			<div id="collapseOne" class="collapse show" aria-labelledby="sellDescriptionHeading" data-parent="#accordion">
+				<div class="card-body">
+					@Html.DisplayFor(model => model.SellDescription)
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
