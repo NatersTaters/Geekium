@@ -48,7 +48,7 @@ namespace Geekium.Controllers
                 // If the account does not have a cart associated with them, create one
                 if (cartContext == null)
 				{
-                    await CreateCart();
+                    await CreateCart(accountId);
                     cartContext = await _context.Cart
                         .Where(s => s.TransactionComplete == false)
                         .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
@@ -99,17 +99,15 @@ namespace Geekium.Controllers
 
         #region Cart Functions
         // Creates the cart
-        public async Task<IActionResult> CreateCart()
+        public async Task<IActionResult> CreateCart(string id)
         {
-            string userId = HttpContext.Session.GetString("userId");
+            string userId = id;
             Cart cart = new Cart();
             cart.AccountId = int.Parse(userId);
             cart.TransactionComplete = false;
             cart.NumberOfProducts = 0;
             cart.TotalPrice = 0;
             cart.PointsGained = 0;
-
-            // We need the seller ID associated with this account ID
 
             if (ModelState.IsValid)
             {
@@ -139,11 +137,10 @@ namespace Geekium.Controllers
         }
 
         // Adding the item to cart
-        public async Task<IActionResult> Add(int id)
+        public async Task<IActionResult> Add(int listingId, string userId)
         {
-            string accountId = HttpContext.Session.GetString("userId");
             string url = "/Accounts/Login";
-            if (accountId == null)
+            if (userId == null)
             {
                 return LocalRedirect(url);
             }
@@ -152,27 +149,27 @@ namespace Geekium.Controllers
             // Find the cart associated with this account
             var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
-                .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
             // If the account does not have a cart associated with them, create one
             if (cartContext == null)
             {
-                await CreateCart();
+                await CreateCart(userId);
                 cartContext = await _context.Cart.
                     Where(s => s.TransactionComplete == false)
-                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
             }
 
             // Does this item already exist in this cart?
             var itemContext = await _context.ItemsForCart
                 .Where(s => s.CartId == cartContext.CartId)
-                .FirstOrDefaultAsync(s => s.SellListingId == id);
+                .FirstOrDefaultAsync(s => s.SellListingId == listingId);
 
             if (itemContext == null)
             {
                 ItemsForCart item = new ItemsForCart();
                 item.CartId = cartContext.CartId;
-                item.SellListingId = id;
+                item.SellListingId = listingId;
                 item.Quantity = 1;
 
                 if (ModelState.IsValid)
@@ -247,7 +244,7 @@ namespace Geekium.Controllers
         }
 
         //Update current cart item and set TransactionComplete to "true"
-        public async void ChangeCartTransactionStatus([Bind("CartId,AccountId,TransactionComplete,NumberOfProducts,TotalPrice,PointsGained")] Cart cart)
+        public async Task ChangeCartTransactionStatus([Bind("CartId,AccountId,TransactionComplete,NumberOfProducts,TotalPrice,PointsGained")] Cart cart)
 		{
             if (ModelState.IsValid)
             {
@@ -306,7 +303,7 @@ namespace Geekium.Controllers
 
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
-            public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged)
+            public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged, string userId)
             {
                 var customers = new CustomerService();
                 var charges = new ChargeService();
@@ -319,11 +316,7 @@ namespace Geekium.Controllers
                 // Find the cart associated with this account
                 var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
-                .FirstOrDefaultAsync(s => s.AccountId.ToString() == HttpContext.Session.GetString("userId"));
-
-                // If the account does not have a cart associated with them, create one
-                if (cartContext == null)
-                await CreateCart();
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
                 // Find all the items associated with this cart
                 var cartItems = _context.ItemsForCart
@@ -354,8 +347,6 @@ namespace Geekium.Controllers
                     }
                 });
 
-                string accountId = HttpContext.Session.GetString("userId");
-
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
@@ -364,15 +355,11 @@ namespace Geekium.Controllers
 
                 //Set session objects for reward type and reward code to null to avoid redundency when
                 //a new cart object is created
-                if ((HttpContext.Session.GetString("rewardType")) != null)
-				{
-                    HttpContext.Session.SetString("rewardType", "");
-                    HttpContext.Session.SetString("rewardCode", "");
-                }
+                RemoveRewardSessionObjects();
 
                 //Find account object with previous point balance
                 var account = await _context.Accounts
-                .FirstOrDefaultAsync(m => m.AccountId == int.Parse(accountId));
+                .FirstOrDefaultAsync(m => m.AccountId == int.Parse(userId));
 
                 //Determing new points balance for the current account that is making the purchase
                 double newPointBalance = (double)(account.PointBalance + amount);
@@ -381,23 +368,15 @@ namespace Geekium.Controllers
                 AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
                 await accountsController.EditPoints(account, (int)newPointBalance);
 
-                double purchasePostPrice = SubTotal(cartItems.ToList());
-
-                //Create a new purchase item for the AccountPurchase Controller
-                AccountPurchase purchase = new AccountPurchase();
-                purchase.AccountId = int.Parse(HttpContext.Session.GetString("userId"));
-                purchase.CartId = cartContext.CartId;
-                purchase.PurchaseDate = DateTime.Now;
-                purchase.PurchasePrice = purchasePostPrice;
-                purchase.TrackingNumber = 0;
-                purchase.PointsGained = (int)purchasePostPrice;
-
                 //Save the new purchase item to the AccountPurchases Controller
+                double purchasePrice = SubTotal(cartItems.ToList());
+                int pointGain = (int)purchasePrice;
+
                 AccountPurchasesController accountPurchases = new AccountPurchasesController(_context);
-                await accountPurchases.Create(purchase);
+                await accountPurchases.AddPurchase(cartContext, purchasePrice, pointGain, int.Parse(userId));
 
                 //Update Cart Transaction Status
-                ChangeCartTransactionStatus(cartContext);
+                await ChangeCartTransactionStatus(cartContext);
 
                 return RedirectToAction("Index", "AccountPurchases", new { area = "" });
             }
@@ -421,6 +400,16 @@ namespace Geekium.Controllers
              *
              *
              */
+
+        //Remove session objects for the active reward in the cart
+        public void RemoveRewardSessionObjects()
+		{
+            if ((HttpContext.Session.GetString("rewardType")) != null)
+            {
+                HttpContext.Session.SetString("rewardType", "");
+                HttpContext.Session.SetString("rewardCode", "");
+            }
+        }
 
         public void customerNotifEmail(List<ItemsForCart> cart, Charge charge)
         {

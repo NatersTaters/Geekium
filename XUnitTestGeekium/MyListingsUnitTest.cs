@@ -109,7 +109,6 @@ namespace XUnitTestGeekium
 
             return listing;
         }
-
         #endregion
 
         // Call CityStateCountByIp

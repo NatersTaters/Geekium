@@ -161,5 +161,20 @@ namespace Geekium.Controllers
         {
             return _context.AccountPurchases.Any(e => e.AccountPurchaseId == id);
         }
-    }
+
+        //Add a new Purchased item to Account Purchase History
+		public async Task AddPurchase(Cart cartContext, double purchasePrice, int pointGain, int accountId)
+		{
+            //Create a new purchase item for the AccountPurchase Controller
+            AccountPurchase purchase = new AccountPurchase();
+            purchase.AccountId = accountId;
+            purchase.CartId = cartContext.CartId;
+            purchase.PurchaseDate = DateTime.Now;
+            purchase.PurchasePrice = purchasePrice;
+            purchase.TrackingNumber = 0;
+            purchase.PointsGained = pointGain;
+
+            await Create(purchase);
+        }
+	}
 }
