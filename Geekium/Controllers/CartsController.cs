@@ -381,23 +381,15 @@ namespace Geekium.Controllers
                 AccountsController accountsController = new AccountsController(_context, _hostEnvironment);
                 await accountsController.EditPoints(account, (int)newPointBalance);
 
-                double purchasePostPrice = SubTotal(cartItems.ToList());
-
-                //Create a new purchase item for the AccountPurchase Controller
-                AccountPurchase purchase = new AccountPurchase();
-                purchase.AccountId = int.Parse(HttpContext.Session.GetString("userId"));
-                purchase.CartId = cartContext.CartId;
-                purchase.PurchaseDate = DateTime.Now;
-                purchase.PurchasePrice = purchasePostPrice;
-                purchase.TrackingNumber = 0;
-                purchase.PointsGained = (int)purchasePostPrice;
-
                 //Save the new purchase item to the AccountPurchases Controller
+                double purchasePrice = SubTotal(cartItems.ToList());
+                int pointGain = (int)purchasePrice;
+
                 AccountPurchasesController accountPurchases = new AccountPurchasesController(_context);
-                await accountPurchases.Create(purchase);
+                await accountPurchases.AddPurchase(cartContext, purchasePrice, pointGain, int.Parse(accountId));
 
                 //Update Cart Transaction Status
-                ChangeCartTransactionStatus(cartContext);
+                await ChangeCartTransactionStatus(cartContext);
 
                 return RedirectToAction("Index", "AccountPurchases", new { area = "" });
             }
