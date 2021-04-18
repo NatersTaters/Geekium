@@ -48,7 +48,7 @@ namespace Geekium.Controllers
                 // If the account does not have a cart associated with them, create one
                 if (cartContext == null)
 				{
-                    await CreateCart();
+                    await CreateCart(accountId);
                     cartContext = await _context.Cart
                         .Where(s => s.TransactionComplete == false)
                         .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
@@ -99,17 +99,15 @@ namespace Geekium.Controllers
 
         #region Cart Functions
         // Creates the cart
-        public async Task<IActionResult> CreateCart()
+        public async Task<IActionResult> CreateCart(string id)
         {
-            string userId = HttpContext.Session.GetString("userId");
+            string userId = id;
             Cart cart = new Cart();
             cart.AccountId = int.Parse(userId);
             cart.TransactionComplete = false;
             cart.NumberOfProducts = 0;
             cart.TotalPrice = 0;
             cart.PointsGained = 0;
-
-            // We need the seller ID associated with this account ID
 
             if (ModelState.IsValid)
             {
@@ -139,11 +137,10 @@ namespace Geekium.Controllers
         }
 
         // Adding the item to cart
-        public async Task<IActionResult> Add(int id)
+        public async Task<IActionResult> Add(int listingId, string userId)
         {
-            string accountId = HttpContext.Session.GetString("userId");
             string url = "/Accounts/Login";
-            if (accountId == null)
+            if (userId == null)
             {
                 return LocalRedirect(url);
             }
@@ -152,27 +149,27 @@ namespace Geekium.Controllers
             // Find the cart associated with this account
             var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
-                .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
             // If the account does not have a cart associated with them, create one
             if (cartContext == null)
             {
-                await CreateCart();
+                await CreateCart(userId);
                 cartContext = await _context.Cart.
                     Where(s => s.TransactionComplete == false)
-                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == accountId);
+                    .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
             }
 
             // Does this item already exist in this cart?
             var itemContext = await _context.ItemsForCart
                 .Where(s => s.CartId == cartContext.CartId)
-                .FirstOrDefaultAsync(s => s.SellListingId == id);
+                .FirstOrDefaultAsync(s => s.SellListingId == listingId);
 
             if (itemContext == null)
             {
                 ItemsForCart item = new ItemsForCart();
                 item.CartId = cartContext.CartId;
-                item.SellListingId = id;
+                item.SellListingId = listingId;
                 item.Quantity = 1;
 
                 if (ModelState.IsValid)
@@ -320,10 +317,6 @@ namespace Geekium.Controllers
                 var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
                 .FirstOrDefaultAsync(s => s.AccountId.ToString() == HttpContext.Session.GetString("userId"));
-
-                // If the account does not have a cart associated with them, create one
-                if (cartContext == null)
-                await CreateCart();
 
                 // Find all the items associated with this cart
                 var cartItems = _context.ItemsForCart

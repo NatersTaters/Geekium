@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace XUnitTestGeekium
 {
@@ -13,6 +15,7 @@ namespace XUnitTestGeekium
 	{
 		AccountViewModel accountViewModel;
 		LoginViewModel loginViewModel;
+		Account account;
 		GeekiumContext context = new GeekiumContext();
 		IWebHostEnvironment hostEnvironment;
 
@@ -158,6 +161,36 @@ namespace XUnitTestGeekium
 
 			//Assert
 			Assert.False(isModelStateValid);
+		}
+
+		[Fact]
+		public async Task ValidAccountForEditPoints_ShouldNotThrowError()
+		{
+			//Arrange
+			Initialize();
+			var accountsController = new AccountsController(context, hostEnvironment);
+			var account = await context.Accounts.FindAsync(2);
+
+			//Act
+			await accountsController.EditPoints(account, 100);
+
+			//Assert
+			Assert.True(accountsController.ModelState.IsValid);
+		}
+
+		[Fact]
+		public async Task InvalidAccountForEditPoints_ShouldThrowError()
+		{
+			//Arrange
+			Initialize();
+			var accountsController = new AccountsController(context, hostEnvironment);
+			accountsController.ModelState.AddModelError("test", "test");
+
+			//Act
+			await accountsController.EditPoints(account: null, 100);
+
+			//Assert
+			Assert.False(accountsController.ModelState.IsValid);
 		}
 	}
 }
