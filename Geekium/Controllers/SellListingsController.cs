@@ -22,8 +22,6 @@ namespace Geekium.Controllers
         // Display the current sell listings
         public async Task<IActionResult> Index()
         {
-            string userId = HttpContext.Session.GetString("userId");
-
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
@@ -42,8 +40,6 @@ namespace Geekium.Controllers
         public async Task<IActionResult> MerchandiseIndex()
         {
             // Only display the sell listings of the administrator (accountId: 2 is admin)
-            string userId = HttpContext.Session.GetString("userId");
-
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
@@ -61,23 +57,38 @@ namespace Geekium.Controllers
         // When they hit back, go to the correct index
         public async Task<IActionResult> ChooseIndex(int id)
         {
-            string userId = HttpContext.Session.GetString("userId");
             var isThisMerch = await _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
                 .FirstOrDefaultAsync(s => s.SellListingId == id);
 
-            if (isThisMerch.Seller.AccountId == 2)
-                return RedirectToAction("MerchandiseIndex");
-            else
+            try
+            {
+                if (isThisMerch.Seller.AccountId == 2)
+                    return RedirectToAction("MerchandiseIndex");
+                else
+                    return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
                 return RedirectToAction("Index");
+            }
         }
 
         // Filter products with any search/filter parameters available
         [HttpPost]
         public async Task<IActionResult> FilterProducts(string searchProduct, float minPrice, float maxPrice)
         {
-            string type = Request.Form["typeList"].ToString();
+            string type = "";
+            try
+            {
+                type = Request.Form["typeList"].ToString();
+            }
+            catch (Exception)
+            {
+                type = "";
+            }
+
             var geekiumContext = _context.SellListings
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
@@ -121,7 +132,16 @@ namespace Geekium.Controllers
         [HttpPost]
         public async Task<IActionResult> FilterMerchandise(string searchProduct, float minPrice, float maxPrice)
         {
-            string type = Request.Form["typeList"].ToString();
+            string type = "";
+            try
+            {
+                type = Request.Form["typeList"].ToString();
+            }
+            catch (Exception)
+            {
+                type = "";
+            }
+
             var geekiumContext = _context.SellListings
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
@@ -189,7 +209,7 @@ namespace Geekium.Controllers
         }
 
         // Sets view bag based on filter
-        void SetViewBag(string search, float min, float max, string type)
+        public void SetViewBag(string search, float min, float max, string type)
         {
             if (search != null && search != "")
                 ViewBag.Search = search;
@@ -210,7 +230,7 @@ namespace Geekium.Controllers
             }
         }
 
-        private List<SelectListItem> PopulateDropdown(string type)
+        public List<SelectListItem> PopulateDropdown(string type)
         {
             List<SelectListItem> drop = new List<SelectListItem>();
 
@@ -236,5 +256,6 @@ namespace Geekium.Controllers
 
             return drop;
         }
+
     }
 }
