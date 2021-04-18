@@ -94,9 +94,9 @@ namespace XUnitTestGeekium
 
         // Call FilterMerchandise()
         // Pass in null, 0, 0
-        // Return redirection
+        // Return View
         [Fact]
-        public async Task FilterMerchandise_SendNullData_ReturnRedirect()
+        public async Task FilterMerchandise_SendNullData_ReturnView()
         {
             // Arrange
             SellListingsController controller = new SellListingsController(context);
