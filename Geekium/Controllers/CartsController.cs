@@ -303,7 +303,7 @@ namespace Geekium.Controllers
 
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
-            public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged)
+            public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged, string userId)
             {
                 var customers = new CustomerService();
                 var charges = new ChargeService();
@@ -316,7 +316,7 @@ namespace Geekium.Controllers
                 // Find the cart associated with this account
                 var cartContext = await _context.Cart
                 .Where(s => s.TransactionComplete == false)
-                .FirstOrDefaultAsync(s => s.AccountId.ToString() == HttpContext.Session.GetString("userId"));
+                .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
                 // Find all the items associated with this cart
                 var cartItems = _context.ItemsForCart
@@ -347,8 +347,6 @@ namespace Geekium.Controllers
                     }
                 });
 
-                string accountId = HttpContext.Session.GetString("userId");
-
             if (charge.Status == "succeeded")
             {
                 string BalanceTransactionId = charge.BalanceTransactionId;
@@ -357,15 +355,11 @@ namespace Geekium.Controllers
 
                 //Set session objects for reward type and reward code to null to avoid redundency when
                 //a new cart object is created
-                if ((HttpContext.Session.GetString("rewardType")) != null)
-				{
-                    HttpContext.Session.SetString("rewardType", "");
-                    HttpContext.Session.SetString("rewardCode", "");
-                }
+                RemoveRewardSessionObjects();
 
                 //Find account object with previous point balance
                 var account = await _context.Accounts
-                .FirstOrDefaultAsync(m => m.AccountId == int.Parse(accountId));
+                .FirstOrDefaultAsync(m => m.AccountId == int.Parse(userId));
 
                 //Determing new points balance for the current account that is making the purchase
                 double newPointBalance = (double)(account.PointBalance + amount);
@@ -379,7 +373,7 @@ namespace Geekium.Controllers
                 int pointGain = (int)purchasePrice;
 
                 AccountPurchasesController accountPurchases = new AccountPurchasesController(_context);
-                await accountPurchases.AddPurchase(cartContext, purchasePrice, pointGain, int.Parse(accountId));
+                await accountPurchases.AddPurchase(cartContext, purchasePrice, pointGain, int.Parse(userId));
 
                 //Update Cart Transaction Status
                 await ChangeCartTransactionStatus(cartContext);
@@ -406,6 +400,15 @@ namespace Geekium.Controllers
              *
              *
              */
+
+        public void RemoveRewardSessionObjects()
+		{
+            if ((HttpContext.Session.GetString("rewardType")) != null)
+            {
+                HttpContext.Session.SetString("rewardType", "");
+                HttpContext.Session.SetString("rewardCode", "");
+            }
+        }
 
         public void customerNotifEmail(List<ItemsForCart> cart, Charge charge)
         {
