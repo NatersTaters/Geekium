@@ -13,7 +13,7 @@
 <div class="text-center">
     <p>Sub Total: $@ViewBag.subTotal</p>
     <p>Tax: $@ViewBag.tax</p>
-    <form asp-action="CheckOut" asp-controller="Carts" method="POST">
+    <form asp-action="CheckOut" asp-controller="Carts" asp-route-userId="@HttpContextAccessor.HttpContext.Session.GetString("userId")" method="POST">
         <article>
             <label>Sum: $@ViewBag.total</label>
         </article>

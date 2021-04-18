@@ -401,6 +401,7 @@ namespace Geekium.Controllers
              *
              */
 
+        //Remove session objects for the active reward in the cart
         public void RemoveRewardSessionObjects()
 		{
             if ((HttpContext.Session.GetString("rewardType")) != null)
