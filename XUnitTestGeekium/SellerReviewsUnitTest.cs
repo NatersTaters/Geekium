@@ -92,7 +92,7 @@ namespace XUnitTestGeekium
         // Send in a seller review
         // Return valid model
         [Fact]
-        public async void Create_PassInNull_ReturnNotFound()
+        public async void Create_PassInSellerReview_ReturnValidModel()
         {
             // Arrange
             SellerReviewsController controller = new SellerReviewsController(context);
@@ -130,7 +130,7 @@ namespace XUnitTestGeekium
         // Send in a review id 0
         // Return view
         [Fact]
-        public async void DeleteConfirmed_PassIn0AndSellerReview_ReturnNotFound()
+        public async void DeleteConfirmed_PassIn0_ReturnNotFound()
         {
             // Arrange
             SellerReviewsController controller = new SellerReviewsController(context);
