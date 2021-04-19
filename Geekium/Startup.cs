@@ -47,7 +47,7 @@ namespace Geekium
 			});
 
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-			services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));  // This line was added, remove if not working!!!!!!!
+			services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
 			// **context - enable dependency injection for context of Geekium database
 			services.AddDbContext<GeekiumContext>(options =>
@@ -57,7 +57,7 @@ namespace Geekium
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]); ///This line was also added for stripe, also remove it if not working
+			StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
 
 			if (env.IsDevelopment())
 			{

@@ -11,11 +11,11 @@
 </div>
 
 <div class="text-center">
-    <p>Sub Total: $@ViewBag.subTotal</p>
-    <p>Tax: $@ViewBag.tax</p>
+    <p>Sub Total: $@ViewBag.subTotal.ToString("#0.00")</p>
+    <p>Tax: $@ViewBag.tax.ToString("#0.00")</p>
     <form asp-action="CheckOut" asp-controller="Carts" method="POST">
         <article>
-            <label>Sum: $@ViewBag.total</label>
+            <label>Sum: $@ViewBag.total.ToString("#0.00")</label>
         </article>
         <script src="//checkout.stripe.com/v2/checkout.js"
                 class="stripe-button"

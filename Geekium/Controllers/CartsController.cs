@@ -28,6 +28,10 @@ namespace Geekium.Controllers
             _hostEnvironment = hostEnvironment;
         }
 
+        //public CartsController()
+        //{
+        //}
+
         // Get contents of cart and return index page
         public async Task<IActionResult> Index()
         {
@@ -306,7 +310,7 @@ namespace Geekium.Controllers
 
         //Checkout - THIS IS WHERE PAYMENT PORTAL
         //public async Task<IActionResult> CheckOut()
-            public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged)
+            public async Task<IActionResult> CheckOut(string stripeEmail, string stripeToken, bool charged) 
             {
                 var customers = new CustomerService();
                 var charges = new ChargeService();
@@ -338,9 +342,7 @@ namespace Geekium.Controllers
                 long sAmount = (long)StripeSubTotal(model);
                 long tax = (long)StripeTax(sAmount);
                 long amount = (long)TotalCost(sAmount, tax);
-            //Amount is being charged correctly with the decimal places, but doesn't want to display them 
-            // (ex: 5082 should display $50.82 in email but only displays $50 instead)
-            var charge = charges.Create(new ChargeCreateOptions
+                var charge = charges.Create(new ChargeCreateOptions
                 {
                     Amount = amount,
                     Description = "Purchase off of Geekium",
@@ -474,7 +476,7 @@ namespace Geekium.Controllers
                 var email = item.SellListing.Seller.Account.Email;
 
                 var sEmail = new MailAddress("geekium1234@gmail.com");
-                var rEmail = new MailAddress(email.ToString()); //TODO: test
+                var rEmail = new MailAddress(email.ToString()); 
                 var password = "geekiumaccount1234";
                 var sub = "Purchase Confirmation";
                 var smtp = new SmtpClient
@@ -568,7 +570,6 @@ namespace Geekium.Controllers
         public double Tax(double subTotal)
         {
             double tax = 0.13;
-            //double totalPrice = cart.Sum(s => s.SellListing.SellPrice * s.Quantity);
             return Math.Round(subTotal * tax, 2);
         }
         //Stripe method of tax
@@ -577,8 +578,7 @@ namespace Geekium.Controllers
             double tax = 0.13;
             double taxAmount = Math.Round(subTotal * tax, 0, MidpointRounding.AwayFromZero);
             double totalTax = taxAmount;
-            //double totalPrice = cart.Sum(s => s.SellListing.SellPrice * s.Quantity);
-            //return Math.Round(subTotal * tax, 2);
+
             return totalTax;
         }
 
