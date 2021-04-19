@@ -180,7 +180,7 @@ namespace XUnitTestGeekium
         // Pass in null
         // Result should be okay
         [Fact]
-        public async Task SellDetails_PassInInitializedSellListingId_ReturnNotFound()
+        public async Task SellDetails_PassInNull_ReturnNotFound()
         {
             // Arrange
             MyListingsController controller = new MyListingsController(context, _hostEnvironment);
@@ -196,7 +196,7 @@ namespace XUnitTestGeekium
         // Pass in the sell listing id of 0
         // Get tot the redirection view
         [Fact]
-        public async Task DeleteConfirmedSelling_PassInInitializedSellListingId_ReturnOk()
+        public async Task DeleteConfirmedSelling_PassInInitializedSellListingId_ReturnRedirectionToActionResult ()
         {
             // Assert
             MyListingsController controller = new MyListingsController(context, _hostEnvironment);
@@ -287,10 +287,10 @@ namespace XUnitTestGeekium
         }
 
         // Call EditTrade
-        // Do not send in a model
+        // Send in Trade Listing and Trade Listing ID
         // Return valid model state
         [Fact]
-        public async Task EditTrade_PassInNull_ModelIsValid()
+        public async Task EditTrade_PassInTradeListingIdAndTradeListing_ModelIsValid()
         {
             // Assert
             MyListingsController controller = new MyListingsController(context, _hostEnvironment);
@@ -366,7 +366,7 @@ namespace XUnitTestGeekium
         // Do not send in a model
         // Return valid model state
         [Fact]
-        public async Task EditService_PassInNull_ModelIsValid()
+        public async Task EditService_PassInServiceListingAndServiceListingId_ModelIsValid()
         {
             // Assert
             MyListingsController controller = new MyListingsController(context, _hostEnvironment);
