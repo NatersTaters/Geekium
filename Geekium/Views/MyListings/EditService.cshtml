@@ -9,33 +9,38 @@
 <hr />
 <div class="row">
 	<div class="col-md-6">
-		<form asp-action="EditService" enctype="multipart/form-data">
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<input type="hidden" asp-for="ServiceListingId" />
-			<div class="form-group" hidden>
-				<label asp-for="AccountId" class="control-label"></label>
-				<select asp-for="AccountId" class="form-control" asp-items="ViewBag.AccountId"></select>
-				<span asp-validation-for="AccountId" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="ServiceTitle" class="control-label"></label>
-				<textarea required asp-for="ServiceTitle" class="form-control" maxlength="100"></textarea>
-				<span asp-validation-for="ServiceTitle" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="ServiceDescription" class="control-label"></label>
-				<textarea required asp-for="ServiceDescription" class="form-control" rows="3" maxlength="255"></textarea>
-				<span asp-validation-for="ServiceDescription" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="ListingDate" class="control-label"></label>
-				<input readonly value="@ViewBag.ServiceDate" class="form-control" />
-				<span asp-validation-for="ListingDate" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<input type="submit" value="Save" class="btn btn-primary" />
-			</div>
-		</form>
+        <form asp-action="EditService" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ServiceListingId" />
+            <div class="form-group" hidden>
+                <label asp-for="AccountId" class="control-label"></label>
+                <select asp-for="AccountId" class="form-control" asp-items="ViewBag.AccountId"></select>
+                <span asp-validation-for="AccountId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServiceTitle" class="control-label"></label>
+                <textarea required asp-for="ServiceTitle" class="form-control" maxlength="100"></textarea>
+                <span asp-validation-for="ServiceTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServiceDescription" class="control-label"></label>
+                <textarea required asp-for="ServiceDescription" class="form-control" rows="3" maxlength="255"></textarea>
+                <span asp-validation-for="ServiceDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" accept="image/*" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ListingDate" class="control-label"></label>
+                <input readonly value="@ViewBag.ServiceDate" class="form-control" />
+                <span asp-validation-for="ListingDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
 	</div>
 	<div style="width:50%;text-align:center">
 		@if (Model.ServiceImage != null)

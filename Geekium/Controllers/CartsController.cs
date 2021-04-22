@@ -207,21 +207,15 @@ namespace Geekium.Controllers
 
             // Find the associated cart item
             var itemContext = await _context.ItemsForCart
+                .Include(s => s.SellListing)
                 .Where(s => s.CartId == cartContext.CartId)
                 .FirstOrDefaultAsync(s => s.ItemsForCartId == id);
-
-            // Find all the items associated with this cart
-            var cartItems = _context.ItemsForCart
-                .Include(s => s.SellListing)
-                .Include(s => s.Cart)
-                .Where(s => s.SellListingId == s.SellListing.SellListingId)
-                .Where(s => s.CartId == cartContext.CartId);
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (!(quantity > itemContext.Quantity))
+                    if (!(quantity > itemContext.SellListing.SellQuantity))
                     {
                         itemContext.Quantity = quantity;
                         _context.Update(itemContext);

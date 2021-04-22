@@ -42,6 +42,11 @@
                 <select asp-for="TradeItemType" class="form-control" asp-items="ViewBag.TradeItemType"></select>
             </div>
             <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" accept="image/*" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="TradeDate" class="control-label"></label>
                 <input readonly value="@ViewBag.TradeDate" class="form-control" />
                 <span asp-validation-for="TradeDate" class="text-danger"></span>

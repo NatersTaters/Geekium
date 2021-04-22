@@ -56,9 +56,9 @@ namespace Geekium.Controllers
                     accountContext = await _context.SellerAccounts
                         .Include(s => s.Account)
                         .FirstOrDefaultAsync(s => s.SellerId == id);
-
-                    ViewBag.Seller = accountContext.Account.UserName;
                 }
+
+                ViewBag.Seller = accountContext.Account.UserName;
             }
             catch (Exception)
             {
@@ -137,10 +137,9 @@ namespace Geekium.Controllers
                 .Where(s => s.Seller.SellerId.ToString() == id)
                 .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
-            var sellerName = await _context.SellerReviews
-                .Include(s => s.Seller)
-                .Include(s => s.Seller.Account)
-                .FirstOrDefaultAsync(s => s.Seller.SellerId.ToString() == id);
+            var sellerName = await _context.SellerAccounts
+                .Include(s => s.Account)
+                .FirstOrDefaultAsync(s => s.SellerId.ToString() == id);
 
             // Optional: figure out if the reviewer actually bought something from seller
 
@@ -152,7 +151,7 @@ namespace Geekium.Controllers
 
             ViewData["SellerId"] = new SelectList(_context.SellerAccounts, "SellerId", "SellerId");
             ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "AccountId");
-            ViewData["SellerName"] = sellerName.Seller.Account.UserName;
+            ViewData["SellerName"] = sellerName.Account.UserName;
             return View();
         }
 
@@ -172,13 +171,26 @@ namespace Geekium.Controllers
             {
                 userId = "";
             }
+
+            string id = "";
+            try
+            {
+                id = HttpContext.Session.GetString("sellerid");
+            }
+            catch (Exception)
+            {
+                id = "";
+            }
+
             var account = await _context.Accounts
                 .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
 
+            // seller id is incorrect
             if (ModelState.IsValid)
             {
                 try
                 {
+                    sellerReview.SellerId = Convert.ToInt32(id);
                     sellerReview.Account = account;
                     sellerReview.AccountId = account.AccountId;
                     _context.Add(sellerReview);
@@ -281,6 +293,7 @@ namespace Geekium.Controllers
             }
             var account = await _context.Accounts
                 .FirstOrDefaultAsync(s => s.AccountId.ToString() == userId);
+
 
             if (ModelState.IsValid)
             {

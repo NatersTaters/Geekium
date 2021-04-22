@@ -15,7 +15,14 @@
     <p>
         Category: @Html.DisplayFor(model => model.SellItemType) <br />
         Seller: @Html.DisplayFor(model => model.Seller.Account.UserName) <br />
-        Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
+        @if (!Model.Seller.AverageRating.HasValue)
+        {
+            @:Rating: N/A
+        }
+        else
+        {
+            @:Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
+        }
     </p>
     <hr />
     <p>

@@ -72,7 +72,7 @@ namespace Geekium.Controllers
 				string adminEmail = "geekium1234@gmail.com";
 				SendEmail(adminSupportText, adminEmail);
 
-				return View("Index");
+				return RedirectToAction("Index");
 			}
 			ModelState.AddModelError("", "Invalid Attempt");
 			return View(support);

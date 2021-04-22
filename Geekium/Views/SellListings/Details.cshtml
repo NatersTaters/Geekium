@@ -18,7 +18,15 @@
 	<p>
 		Category: @Html.DisplayFor(model => model.SellItemType) <br />
 		Seller: <a asp-area="" asp-controller="SellerReviews" asp-action="Index" asp-route-id="@Model.SellerId">@Html.DisplayFor(model => model.Seller.Account.UserName)</a> <br />
-		Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
+		@if (!Model.Seller.AverageRating.HasValue)
+        {
+			@:Rating: N/A
+        }
+        else
+        {
+			@:Rating: @Html.DisplayFor(model => model.Seller.AverageRating)
+        }
+
 	</p>
 	<hr />
 	<p>

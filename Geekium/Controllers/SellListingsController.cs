@@ -39,7 +39,7 @@ namespace Geekium.Controllers
         // Display the merchandise sell listings
         public async Task<IActionResult> MerchandiseIndex()
         {
-            // Only display the sell listings of the administrator (accountId: 2 is admin)
+            // Only display the sell listings of the administrator (accountId: 1 is admin)
             var geekiumContext = _context.SellListings.Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
@@ -64,7 +64,7 @@ namespace Geekium.Controllers
 
             try
             {
-                if (isThisMerch.Seller.AccountId == 2)
+                if (isThisMerch.Seller.AccountId == 1)
                     return RedirectToAction("MerchandiseIndex");
                 else
                     return RedirectToAction("Index");
@@ -93,7 +93,7 @@ namespace Geekium.Controllers
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId != 2)
+                .Where(s => s.Seller.AccountId != 1)
                 .Where(s => s.Display == true);
 
             if (minPrice > maxPrice)
@@ -146,7 +146,7 @@ namespace Geekium.Controllers
                 .Include(s => s.PriceTrend)
                 .Include(s => s.Seller)
                 .Include(s => s.Seller.Account)
-                .Where(s => s.Seller.AccountId == 2)
+                .Where(s => s.Seller.AccountId == 1)
                 .Where(s => s.Display == true);
 
             if (minPrice > maxPrice)
