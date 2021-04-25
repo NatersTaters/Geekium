@@ -63,7 +63,7 @@ namespace Geekium.Controllers
 			if(ModelState.IsValid)
 			{
 				//Send support confirmation email to the user account email address
-				string accountSupportText = "Your support request has been submitted, please allow 3 to 5 buisness days for a responce";
+				string accountSupportText = "Your support request has been submitted, please allow 3 to 5 buisness days for a response";
 				string userEmail = HttpContext.Session.GetString("userEmail");
 				SendEmail(accountSupportText, userEmail);
 
