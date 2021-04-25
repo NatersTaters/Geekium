@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Geekium", "Geekium\Geekium.csproj", "{FB648AAB-9146-45C5-BF84-CFE7528E3FB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTestGeekium", "XUnitTestGeekium\XUnitTestGeekium.csproj", "{9E844427-B97B-4104-BFE5-94C703C65A1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XUnitTestGeekium", "XUnitTestGeekium\XUnitTestGeekium.csproj", "{9E844427-B97B-4104-BFE5-94C703C65A1F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitIntegrationTesting", "XUnitIntegrationTesting\XUnitIntegrationTesting.csproj", "{BE1D4C4B-4681-4686-B8FD-D3C4A985C0EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9E844427-B97B-4104-BFE5-94C703C65A1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E844427-B97B-4104-BFE5-94C703C65A1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E844427-B97B-4104-BFE5-94C703C65A1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE1D4C4B-4681-4686-B8FD-D3C4A985C0EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE1D4C4B-4681-4686-B8FD-D3C4A985C0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE1D4C4B-4681-4686-B8FD-D3C4A985C0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE1D4C4B-4681-4686-B8FD-D3C4A985C0EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
