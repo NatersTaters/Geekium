@@ -1,4 +1,4 @@
--- ********************************************************
+f-- ********************************************************
 -- This script creates the Geekium Webstore database
 -- for our INFO3220 Capstone project by Nathaniel Saunders, 
 -- Andrew Truong and Leunard Gervalla 
@@ -183,19 +183,19 @@ INSERT accounts (user_name, user_password, pasword_hash, email)
 GO
 
 INSERT accounts (user_name, user_password, pasword_hash, first_name, last_name, email, point_balance)
-	VALUES ('Naters_Taters', 'l+NPTnoiZkPLvsftBGgWMeJr0oAw1K1rC6bq4FN+Xt8=', 'R67LQK5XZHHQH9DC9S54U2T92BZ4ARIK', 'Nathan', 'Saunders', 'saunn1118@gmail.com', 500)
+	VALUES ('BullR00', 'l+NPTnoiZkPLvsftBGgWMeJr0oAw1K1rC6bq4FN+Xt8=', 'R67LQK5XZHHQH9DC9S54U2T92BZ4ARIK', 'Randall', 'Bullman', 'bullyboy@gmail.com', 500)
 GO
 
 INSERT accounts (user_name, user_password, pasword_hash, first_name, last_name, email, point_balance)
-	VALUES ('CanadianBacon99', '/H8b8fsLHguEOlFpvITzLrQcvj7zIadfJ6Tl18ndup8=', '7BTCPV68N1N0VJLRP0VLLZOMQ4GVVHNC', 'Jeff', 'Tranter', 'saunders885@gmail.com', 30)
+	VALUES ('CanadianBacon99', '/H8b8fsLHguEOlFpvITzLrQcvj7zIadfJ6Tl18ndup8=', '7BTCPV68N1N0VJLRP0VLLZOMQ4GVVHNC', 'Jeff', 'Tranter', 'tranter885@gmail.com', 30)
 GO
 
 INSERT accounts (user_name, user_password, pasword_hash, first_name, last_name, email, point_balance)
-	VALUES ('Irishboy154', 'ZcEv/ud0kGlhm435lvAwp004zzzsy0CT80KiFr6RFWI=', '5H1CLV42FBKNECARXUP6OFFIWGWUPLMG', 'George', 'Orwell', 'lego_master.nath@live.ca', 120)
+	VALUES ('L3GF5', 'ZcEv/ud0kGlhm435lvAwp004zzzsy0CT80KiFr6RFWI=', '5H1CLV42FBKNECARXUP6OFFIWGWUPLMG', 'George', 'Orwell', 'george@live.ca', 120)
 GO
 
 INSERT accounts (user_name, user_password, pasword_hash, first_name, last_name, email, point_balance)
-	VALUES ('TheDeadPixel00', 'IQ3CUMrhVDA4mHKijCrjcbz1pNATO2EbPBV2/zqb8mQ=', 'OL5ORIG353FJOAIO3Y7B1QXZBTQF9JM4', 'Adam', 'Klinger', 'saunn1118@outlook.com', 300)
+	VALUES ('TheDeadPixel00', 'IQ3CUMrhVDA4mHKijCrjcbz1pNATO2EbPBV2/zqb8mQ=', 'OL5ORIG353FJOAIO3Y7B1QXZBTQF9JM4', 'Adam', 'Klinger', 'AdamK@outlook.com', 300)
 GO
 
 INSERT sellerAccounts (account_id)
